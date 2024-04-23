@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32901.215
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS5 NOR Modifier", "PS5 NOR Modifier\PS5 NOR Modifier.csproj", "{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {406F6CF1-EBE8-4A32-86BA-26B4FEDF751B}
+	EndGlobalSection
+EndGlobal
