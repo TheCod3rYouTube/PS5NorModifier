@@ -2,9 +2,9 @@ The PS5 NOR Modifier is a Windows GUI based application making it easier for peo
 
 ![PS5 NOR Modifier](https://raw.githubusercontent.com/thecod3ryoutube/PS5NorModifier/main/Screenshot1.png)
 
-![PS5 NOR Modifier][(https://raw.githubusercontent.com/thecod3ryoutube/PS5NorModifier/main/Screenshot1.png)
+![PS5 NOR Modifier](https://raw.githubusercontent.com/thecod3ryoutube/PS5NorModifier/main/Screenshot2.png)
 
-![PS5 NOR Modifier](https://raw.githubusercontent.com/thecod3ryoutube/PS5NorModifier/main/Screenshot1.png)
+![PS5 NOR Modifier](https://raw.githubusercontent.com/thecod3ryoutube/PS5NorModifier/main/Screenshot3.png)
 
 If you just want to use the software, download the standalone ZIP
 
