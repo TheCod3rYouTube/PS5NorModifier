@@ -1,10 +1,10 @@
 The PS5 NOR Modifier is a Windows GUI based application making it easier for people to modify the NOR file for their PlayStation 5 console. This is especially useful if you need to generate a NOR file for your console to replace a corrupt or faulty NOR.
 
-!PS5 NOR Modifier(https://github.com/thecod3ryoutube/PS5NorModifier/blob/main/Screenshot1.png?raw=true)
+!PS5 NOR Modifier(https://raw.githubusercontent.com/thecod3ryoutube/PS5NorModifier/main/Screenshot1.png)
 
-!PS5 NOR Modifier(https://github.com/thecod3ryoutube/PS5NorModifier/blob/main/Screenshot2.png?raw=true)
+!PS5 NOR Modifier(https://raw.githubusercontent.com/thecod3ryoutube/PS5NorModifier/main/Screenshot1.png)
 
-!PS5 NOR Modifier(https://github.com/thecod3ryoutube/PS5NorModifier/blob/main/Screenshot3.png?raw=true)
+!PS5 NOR Modifier(https://raw.githubusercontent.com/thecod3ryoutube/PS5NorModifier/main/Screenshot1.png)
 
 If you just want to use the software, download the standalone ZIP
 
