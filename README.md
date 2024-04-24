@@ -1,5 +1,7 @@
 The PS5 NOR Modifier is a Windows GUI based application making it easier for people to modify the NOR file for their PlayStation 5 console. This is especially useful if you need to generate a NOR file for your console to replace a corrupt or faulty NOR.
 
+If you just want to use the software, download the standalone ZIP
+
 Some symptoms that your NOR is corrupt or faulty:
 1. No power at all. The console draws 8ma of current or 0ma of current when connecting to a bench power supply
 2. 3 beeps of death. The console beeps 3 times when you plug in the main power chord
