@@ -1,5 +1,11 @@
 The PS5 NOR Modifier is a Windows GUI based application making it easier for people to modify the NOR file for their PlayStation 5 console. This is especially useful if you need to generate a NOR file for your console to replace a corrupt or faulty NOR.
 
+!PS5 NOR Modifier(https://github.com/thecod3ryoutube/PS5NorModifier/blob/main/Screenshot1.png?raw=true)
+
+!PS5 NOR Modifier(https://github.com/thecod3ryoutube/PS5NorModifier/blob/main/Screenshot2.png?raw=true)
+
+!PS5 NOR Modifier(https://github.com/thecod3ryoutube/PS5NorModifier/blob/main/Screenshot3.png?raw=true)
+
 If you just want to use the software, download the standalone ZIP
 
 Some symptoms that your NOR is corrupt or faulty:
@@ -31,8 +37,13 @@ UART Features:
 System Requirements:
 
 Operating system: Windows 7, 8, 10, 11
+
 Hard Drive: 5MB
+
 Memory: 128MB
+
 CPU: Any X86 or X64 based CPU
+
 Software: Microsoft .NET 6.0 Desktop Runtime (v6.0.29)
+
 Internet connection when using online
