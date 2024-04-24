@@ -17,5 +17,11 @@ Features:
 6. Read WiFi MAC address
 7. Read LAN MAC address
 
-Coming soon:
-UART related tools to connect to UART and obtain error codes from motherboard
+UART Features:
+1. Connect to any compatible TTL device
+2. Read error codes stored on PS5 system
+3. Clear error codes stored on PS5 system
+4. Automatically convert the error codes into easy to understand descriptions (if they exist in the database)
+5. Fetch error codes in real time from uartcodes.com database
+6. Option to download entire uartcodes.com database for offline use
+7. Send custom UART commands and receive response in output box
