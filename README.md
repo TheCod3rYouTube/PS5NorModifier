@@ -27,3 +27,12 @@ UART Features:
 5. Fetch error codes in real time from uartcodes.com database
 6. Option to download entire uartcodes.com database for offline use
 7. Send custom UART commands and receive response in output box
+
+System Requirements:
+
+Operating system: Windows 7, 8, 10, 11
+Hard Drive: 5MB
+Memory: 128MB
+CPU: Any X86 or X64 based CPU
+Software: Microsoft .NET 6.0 Desktop Runtime (v6.0.29)
+Internet connection when using online
