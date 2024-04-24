@@ -11,6 +11,9 @@ using System.Threading;
 using System.Collections.Generic;
 using static System.Windows.Forms.LinkLabel;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Net;
+using System.Xml;
+using System.Security.Policy;
 
 namespace PS5_NOR_Modifier
 {
@@ -22,19 +25,25 @@ namespace PS5_NOR_Modifier
             InitializeComponent();
         }
 
+        static string CalculateChecksum(string str)
+        {
+            int sum = 0;
+            foreach (char c in str)
+            {
+                sum += (int)c;
+            }
+            return str + ":" + (sum & 0xFF).ToString("X2");
+        }
+
         private void throwError(string errmsg)
         {
             MessageBox.Show(errmsg, "An Error Has Occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
-        static SerialPort UARTSerial = new SerialPort();
+        // We want this app to work offline, so let's declare where the local "offline" database will be stored
+        string localDatabaseFile = "errorDB.xml";
 
-        internal static byte CalculateChecksum(string data)
-        {
-            var checksum = 0;
-            checksum = Encoding.ASCII.GetBytes(data).Sum(x => x);
-            return (byte)((checksum + 256) % 256);
-        }
+        static SerialPort UARTSerial = new SerialPort();
 
         /// <summary>
         /// With thanks to  @jjxtra on Github. The code has already been created and there's no need to reinvent the wheel is there?
@@ -97,6 +106,172 @@ namespace PS5_NOR_Modifier
         string variantValue = null;
         long moboSerialOffset = 0x1C7200;
         string moboSerialValue = null;
+
+        private void DownloadDatabase()
+        {
+            // Define the URL
+            string url = "http://uartcodes.com/xml.php"; // Update with your URL
+
+            // Define the file path to save the XML
+
+            try
+            {
+                // Create a WebClient instance
+                using (WebClient client = new WebClient())
+                {
+                    // Download the XML data from the URL
+                    string xmlData = client.DownloadString(url);
+
+                    // Create an XmlDocument instance and load the XML data
+                    XmlDocument xmlDoc = new XmlDocument();
+                    xmlDoc.LoadXml(xmlData);
+
+                    // Save the XML data to a file
+                    xmlDoc.Save(localDatabaseFile);
+
+                    MessageBox.Show("The most recent offline database has been updated successfully.", "Offline Database Updated!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// We need to be able to send the error code we received from the console and fetch an XML result back from the server
+        /// Once we have a result from the server, parse the XML data and output it in an easy to understand format for the user
+        /// </summary>
+        /// <param name="ErrorCode"></param>
+        /// <returns></returns>
+        string ParseErrors(string ErrorCode)
+        {
+            // If the user has opted to parse errors with an offline database, run the parse offline function
+            if (chkUseOffline.Checked == true)
+            {
+                return ParseErrorsOffline(ErrorCode);
+            }
+            else
+            {
+                // The user wants to use the online version. Proceed at will
+
+                // Define the URL with the error code parameter
+                string url = "http://uartcodes.com/xml.php?errorCode=" + ErrorCode;
+
+                string results = "";
+
+                try
+                {
+                    // Create a WebClient instance to send the request
+                    WebClient client = new();
+
+                    // Send the request and retrieve the response as a string
+                    string response = client.DownloadString(url);
+
+                    // Load the XML response into an XmlDocument
+                    XmlDocument xmlDoc = new XmlDocument();
+                    xmlDoc.LoadXml(response);
+
+                    // Get the root node
+                    XmlNode root = xmlDoc.DocumentElement;
+
+                    // Check if the root node is <errorCodes>
+                    if (root.Name == "errorCodes")
+                    {
+                        // Loop through each errorCode node
+                        foreach (XmlNode errorCodeNode in root.ChildNodes)
+                        {
+                            // Check if the node is <errorCode>
+                            if (errorCodeNode.Name == "errorCode")
+                            {
+                                // Get ErrorCode and Description
+                                string errorCode = errorCodeNode.SelectSingleNode("ErrorCode").InnerText;
+                                string description = errorCodeNode.SelectSingleNode("Description").InnerText;
+
+                                // Output the results
+                                results = "Error code: "
+                                    + errorCode
+                                    + Environment.NewLine
+                                    + "Description: "
+                                    + description;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        results = "Error code: "
+                                    + ErrorCode
+                                    + Environment.NewLine
+                                    + "An error occurred while fetching a result for this error. Please try again!";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    results = "Error code: "
+                        + ErrorCode
+                        + Environment.NewLine
+                        + ex.Message;
+                }
+                return results;
+            }
+        }
+
+        string ParseErrorsOffline(string errorCode)
+        {
+            string results = "";
+
+            try
+            {
+                // Check if the XML file exists
+                if (File.Exists(localDatabaseFile))
+                {
+                    // Load the XML file
+                    XmlDocument xmlDoc = new XmlDocument();
+                    xmlDoc.Load(localDatabaseFile);
+
+                    // Get the root node
+                    XmlNode root = xmlDoc.DocumentElement;
+
+                    // Check if the root node is <errorCodes>
+                    if (root.Name == "errorCodes")
+                    {
+                        // Loop through each errorCode node
+                        foreach (XmlNode errorCodeNode in root.ChildNodes)
+                        {
+                            // Check if the node is <errorCode>
+                            if (errorCodeNode.Name == "errorCode")
+                            {
+                                // Get ErrorCode and Description
+                                string errorCodeValue = errorCodeNode.SelectSingleNode("ErrorCode").InnerText;
+                                string description = errorCodeNode.SelectSingleNode("Description").InnerText;
+
+                                // Check if the current error code matches the requested error code
+                                if (errorCodeValue == errorCode)
+                                {
+                                    // Output the results
+                                    results = "Error code: " + errorCodeValue + Environment.NewLine + "Description: " + description;
+                                    break; // Exit the loop after finding the matching error code
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        results = "Error: Invalid XML database file. Please reconfigure the application, redownload the offline database, or uncheck the option to use the offline database.";
+                    }
+                }
+                else
+                {
+                    results = "Error: Local XML file not found.";
+                }
+            }
+            catch (Exception ex)
+            {
+                results = "Error: " + ex.Message;
+            }
+
+            return results;
+        }
 
         string HexStringToString(string hexString)
         {
@@ -799,6 +974,11 @@ namespace PS5_NOR_Modifier
             }
         }
 
+        /// <summary>
+        /// Read error codes from UART
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
             // Let's read the error codes from UART
@@ -814,16 +994,36 @@ namespace PS5_NOR_Modifier
                     for (var i = 0; i <= 10; i++)
                     {
                         var command = $"errlog {i}";
-                        UARTSerial.WriteLine(command);
+                        var checksum = CalculateChecksum(command);
+                        UARTSerial.WriteLine(checksum);
                         do
                         {
                             var line = UARTSerial.ReadLine();
-                            UARTLines.Add(line);
+                            if (!string.Equals($"{command}:{checksum:X2}", line, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                UARTLines.Add(line);
+                            }
                         } while (UARTSerial.BytesToRead != 0);
 
-                        foreach(var l in UARTLines)
+                        foreach (var l in UARTLines)
                         {
-                            txtUARTOutput.AppendText(l + Environment.NewLine);
+                            var split = l.Split(' ');
+                            if (!split.Any()) continue;
+                            switch (split[0])
+                            {
+                                case "NG":
+                                    break;
+                                case "OK":
+                                    var errorCode = split[2];
+                                    // Now that the error code has been isolated from the rest of the junk sent by the system
+                                    // let's check it against the database. The error server will need to return XML results
+                                    string errorResult = ParseErrors(errorCode);
+                                    if (!txtUARTOutput.Text.Contains(errorResult))
+                                    {
+                                        txtUARTOutput.AppendText(errorResult + Environment.NewLine);
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
@@ -856,9 +1056,185 @@ namespace PS5_NOR_Modifier
 
         }
 
+        /// <summary>
+        /// Clear the UART output window
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button3_Click(object sender, EventArgs e)
         {
             txtUARTOutput.Text = "";
+        }
+
+        /// <summary>
+        /// When the user clicks on the download error database button, show a confirmation first and then if they click yes,
+        /// continue to download the latest database from the update server
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnDownloadDatabase_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Downloading the error database will overwrite any existing offline database you currently have. Are you sure you would like to do this?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            // Check if user wants to proceed
+            if (result == DialogResult.Yes)
+            {
+                // Call the function to download and save the XML data
+                DownloadDatabase();
+            }
+            else
+            {
+                // Do nothing. The user cancelled the request// The user cancelled
+            }
+        }
+
+        /// <summary>
+        /// The user can clear the error codes from the console if required but let's make sure they actually want to do
+        /// that by showing a confirmation dialog first. If the click yes, send the UART command and wipe the codes from
+        /// the console. This action cannot be undone!
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnClearErrorCodes_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("This will clear error codes from the console by sending the \"errlog clear\" command. Are you sure you would like to proceed? This action cannot be undone!", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if(result == DialogResult.Yes)
+            {
+                // Let's read the error codes from UART
+                txtUARTOutput.Text = "";
+
+                if (UARTSerial.IsOpen == true)
+                {
+                    try
+                    {
+
+                        List<string> UARTLines = new();
+
+                            var command = "errlog clear";
+                            var checksum = CalculateChecksum(command);
+                            UARTSerial.WriteLine(checksum);
+                            do
+                            {
+                                var line = UARTSerial.ReadLine();
+                                if (!string.Equals($"{command}:{checksum:X2}", line, StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    UARTLines.Add(line);
+                                }
+                            } while (UARTSerial.BytesToRead != 0);
+
+                        foreach (var l in UARTLines)
+                        {
+                            var split = l.Split(' ');
+                            if (!split.Any()) continue;
+                            switch (split[0])
+                            {
+                                case "NG":
+                                    if (!txtUARTOutput.Text.Contains("FAIL"))
+                                    {
+                                        txtUARTOutput.AppendText("Response: FAIL" + Environment.NewLine + "Information: An error occurred while clearing the error logs from the system. Please try again...");
+                                    }
+                                    break;
+                                case "OK":
+                                    if (!txtUARTOutput.Text.Contains("SUCCESS"))
+                                    {
+                                        txtUARTOutput.AppendText("Response: SUCCESS" + Environment.NewLine + "Information: All error codes cleared successfully");
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "An error occurred...", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        toolStripStatusLabel1.Text = "An error occurred while attempting to send a UART command. Please try again...";
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please connect to UART before attempting to send commands.", "An error occurred...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            else
+            {
+                // Do nothing. The user cancelled the request
+            }
+        }
+
+        /// <summary>
+        /// Sometimes the user might want to send a custom command. Let them do that here!
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnSendCommand_Click(object sender, EventArgs e)
+        {
+            if (txtCustomCommand.Text != "")
+            {
+                // Let's read the error codes from UART
+                txtUARTOutput.Text = "";
+
+                if (UARTSerial.IsOpen == true)
+                {
+                    try
+                    {
+
+                        List<string> UARTLines = new();
+
+                        var checksum = CalculateChecksum(txtCustomCommand.Text);
+                        UARTSerial.WriteLine(checksum);
+                        do
+                        {
+                            var line = UARTSerial.ReadLine();
+                            if (!string.Equals($"{txtCustomCommand.Text}:{checksum:X2}", line, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                UARTLines.Add(line);
+                            }
+                        } while (UARTSerial.BytesToRead != 0);
+
+                        foreach (var l in UARTLines)
+                        {
+                            var split = l.Split(' ');
+                            if (!split.Any()) continue;
+                            switch (split[0])
+                            {
+                                case "NG":
+                                    txtUARTOutput.Text = "ERROR: " + l;
+                                    break;
+                                case "OK":
+                                    txtUARTOutput.Text = "SUCCESS: " + l;
+                                    break;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "An error occurred...", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        toolStripStatusLabel1.Text = "An error occurred while reading error codes from UART. Please try again...";
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please connect to UART before attempting to send commands.", "An error occurred...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please enter a command to send via UART.", "An error occurred...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        /// <summary>
+        /// If the user presses the enter key while using the custom command box, handle it by programmatically pressing the
+        /// send button. This is more of a convenience thing really!
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtCustomCommand_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if(e.KeyChar == (char)Keys.Enter)
+            {
+                btnSendCommand.PerformClick();
+            }
         }
     }
 }

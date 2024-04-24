@@ -70,11 +70,16 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.btnSendCommand = new System.Windows.Forms.Button();
+            this.txtCustomCommand = new System.Windows.Forms.TextBox();
+            this.label24 = new System.Windows.Forms.Label();
+            this.chkUseOffline = new System.Windows.Forms.CheckBox();
+            this.btnDownloadDatabase = new System.Windows.Forms.Button();
             this.btnRefreshPorts = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.txtUARTOutput = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnClearErrorCodes = new System.Windows.Forms.Button();
             this.label21 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.comboComPorts = new System.Windows.Forms.ComboBox();
@@ -82,7 +87,7 @@
             this.btnConnectCom = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
-            this.label24 = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -544,12 +549,17 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.label25);
+            this.tabPage2.Controls.Add(this.btnSendCommand);
+            this.tabPage2.Controls.Add(this.txtCustomCommand);
             this.tabPage2.Controls.Add(this.label24);
+            this.tabPage2.Controls.Add(this.chkUseOffline);
+            this.tabPage2.Controls.Add(this.btnDownloadDatabase);
             this.tabPage2.Controls.Add(this.btnRefreshPorts);
             this.tabPage2.Controls.Add(this.button3);
             this.tabPage2.Controls.Add(this.txtUARTOutput);
             this.tabPage2.Controls.Add(this.label22);
-            this.tabPage2.Controls.Add(this.button2);
+            this.tabPage2.Controls.Add(this.btnClearErrorCodes);
             this.tabPage2.Controls.Add(this.label21);
             this.tabPage2.Controls.Add(this.button1);
             this.tabPage2.Controls.Add(this.comboComPorts);
@@ -564,9 +574,56 @@
             this.tabPage2.Text = "UART Communication";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // btnSendCommand
+            // 
+            this.btnSendCommand.Location = new System.Drawing.Point(732, 125);
+            this.btnSendCommand.Name = "btnSendCommand";
+            this.btnSendCommand.Size = new System.Drawing.Size(75, 23);
+            this.btnSendCommand.TabIndex = 16;
+            this.btnSendCommand.Text = "Send";
+            this.btnSendCommand.UseVisualStyleBackColor = true;
+            this.btnSendCommand.Click += new System.EventHandler(this.btnSendCommand_Click);
+            // 
+            // txtCustomCommand
+            // 
+            this.txtCustomCommand.Location = new System.Drawing.Point(610, 96);
+            this.txtCustomCommand.Name = "txtCustomCommand";
+            this.txtCustomCommand.Size = new System.Drawing.Size(197, 23);
+            this.txtCustomCommand.TabIndex = 15;
+            this.txtCustomCommand.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtCustomCommand_KeyPress);
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(610, 78);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(186, 15);
+            this.label24.TabIndex = 14;
+            this.label24.Text = "Send custom command via UART:";
+            // 
+            // chkUseOffline
+            // 
+            this.chkUseOffline.AutoSize = true;
+            this.chkUseOffline.Location = new System.Drawing.Point(472, 47);
+            this.chkUseOffline.Name = "chkUseOffline";
+            this.chkUseOffline.Size = new System.Drawing.Size(132, 19);
+            this.chkUseOffline.TabIndex = 13;
+            this.chkUseOffline.Text = "Use offline database";
+            this.chkUseOffline.UseVisualStyleBackColor = true;
+            // 
+            // btnDownloadDatabase
+            // 
+            this.btnDownloadDatabase.Location = new System.Drawing.Point(310, 44);
+            this.btnDownloadDatabase.Name = "btnDownloadDatabase";
+            this.btnDownloadDatabase.Size = new System.Drawing.Size(156, 23);
+            this.btnDownloadDatabase.TabIndex = 12;
+            this.btnDownloadDatabase.Text = "Download Error Database";
+            this.btnDownloadDatabase.UseVisualStyleBackColor = true;
+            this.btnDownloadDatabase.Click += new System.EventHandler(this.btnDownloadDatabase_Click);
+            // 
             // btnRefreshPorts
             // 
-            this.btnRefreshPorts.Location = new System.Drawing.Point(489, 13);
+            this.btnRefreshPorts.Location = new System.Drawing.Point(515, 13);
             this.btnRefreshPorts.Name = "btnRefreshPorts";
             this.btnRefreshPorts.Size = new System.Drawing.Size(89, 23);
             this.btnRefreshPorts.TabIndex = 11;
@@ -576,7 +633,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(422, 254);
+            this.button3.Location = new System.Drawing.Point(448, 254);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(156, 23);
             this.button3.TabIndex = 10;
@@ -586,34 +643,36 @@
             // 
             // txtUARTOutput
             // 
-            this.txtUARTOutput.Location = new System.Drawing.Point(90, 78);
+            this.txtUARTOutput.Location = new System.Drawing.Point(73, 78);
             this.txtUARTOutput.Multiline = true;
             this.txtUARTOutput.Name = "txtUARTOutput";
-            this.txtUARTOutput.Size = new System.Drawing.Size(488, 170);
+            this.txtUARTOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtUARTOutput.Size = new System.Drawing.Size(531, 170);
             this.txtUARTOutput.TabIndex = 9;
             // 
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(23, 78);
+            this.label22.Location = new System.Drawing.Point(6, 78);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(48, 15);
             this.label22.TabIndex = 8;
             this.label22.Text = "Output:";
             // 
-            // button2
+            // btnClearErrorCodes
             // 
-            this.button2.Location = new System.Drawing.Point(203, 44);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(118, 23);
-            this.button2.TabIndex = 7;
-            this.button2.Text = "Clear Error Codes";
-            this.button2.UseVisualStyleBackColor = true;
+            this.btnClearErrorCodes.Location = new System.Drawing.Point(186, 44);
+            this.btnClearErrorCodes.Name = "btnClearErrorCodes";
+            this.btnClearErrorCodes.Size = new System.Drawing.Size(118, 23);
+            this.btnClearErrorCodes.TabIndex = 7;
+            this.btnClearErrorCodes.Text = "Clear Error Codes";
+            this.btnClearErrorCodes.UseVisualStyleBackColor = true;
+            this.btnClearErrorCodes.Click += new System.EventHandler(this.btnClearErrorCodes_Click);
             // 
             // label21
             // 
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(23, 48);
+            this.label21.Location = new System.Drawing.Point(6, 48);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(52, 15);
             this.label21.TabIndex = 6;
@@ -621,7 +680,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(90, 44);
+            this.button1.Location = new System.Drawing.Point(73, 44);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(107, 23);
             this.button1.TabIndex = 5;
@@ -632,14 +691,14 @@
             // comboComPorts
             // 
             this.comboComPorts.FormattingEnabled = true;
-            this.comboComPorts.Location = new System.Drawing.Point(90, 13);
+            this.comboComPorts.Location = new System.Drawing.Point(73, 13);
             this.comboComPorts.Name = "comboComPorts";
-            this.comboComPorts.Size = new System.Drawing.Size(231, 23);
+            this.comboComPorts.Size = new System.Drawing.Size(274, 23);
             this.comboComPorts.TabIndex = 4;
             // 
             // btnDisconnectCom
             // 
-            this.btnDisconnectCom.Location = new System.Drawing.Point(408, 13);
+            this.btnDisconnectCom.Location = new System.Drawing.Point(434, 13);
             this.btnDisconnectCom.Name = "btnDisconnectCom";
             this.btnDisconnectCom.Size = new System.Drawing.Size(75, 23);
             this.btnDisconnectCom.TabIndex = 3;
@@ -649,7 +708,7 @@
             // 
             // btnConnectCom
             // 
-            this.btnConnectCom.Location = new System.Drawing.Point(327, 13);
+            this.btnConnectCom.Location = new System.Drawing.Point(353, 12);
             this.btnConnectCom.Name = "btnConnectCom";
             this.btnConnectCom.Size = new System.Drawing.Size(75, 23);
             this.btnConnectCom.TabIndex = 2;
@@ -660,7 +719,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(23, 16);
+            this.label3.Location = new System.Drawing.Point(6, 16);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(61, 15);
             this.label3.TabIndex = 0;
@@ -676,14 +735,14 @@
             this.label23.TabIndex = 47;
             this.label23.Text = "and UART stuff too... BwE can SUCK IT!";
             // 
-            // label24
+            // label25
             // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(584, 78);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(221, 195);
-            this.label24.TabIndex = 12;
-            this.label24.Text = resources.GetString("label24.Text");
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(610, 151);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(198, 105);
+            this.label25.TabIndex = 17;
+            this.label25.Text = resources.GetString("label25.Text");
             // 
             // Form1
             // 
@@ -765,7 +824,7 @@
         private Button button3;
         private TextBox txtUARTOutput;
         private Label label22;
-        private Button button2;
+        private Button btnClearErrorCodes;
         private Label label21;
         private Button button1;
         private ComboBox comboComPorts;
@@ -774,6 +833,11 @@
         private Label label3;
         private Button btnRefreshPorts;
         private Label label23;
+        private Button btnDownloadDatabase;
+        private CheckBox chkUseOffline;
+        private Button btnSendCommand;
+        private TextBox txtCustomCommand;
         private Label label24;
+        private Label label25;
     }
 }
