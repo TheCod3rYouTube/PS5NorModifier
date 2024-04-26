@@ -95,19 +95,19 @@ namespace PS5_NOR_Modifier
         long offsetOne = 0x1c7010;
         long offsetTwo = 0x1c7030;
         long WiFiMacOffset = 0x1C73C0;
-        string WiFiMacValue = null;
+        string? WiFiMacValue = null;
         long LANMacOffset = 0x1C4020;
-        string LANMacValue = null;
-        string offsetOneValue = null;
-        string offsetTwoValue = null;
+        string? LANMacValue = null;
+        string? offsetOneValue = null;
+        string? offsetTwoValue = null;
         long serialOffset = 0x1c7210;
-        string serialValue = null;
+        string? serialValue = null;
         long variantOffset = 0x1c7226;
-        string variantValue = null;
+        string? variantValue = null;
         long moboSerialOffset = 0x1C7200;
-        string moboSerialValue = null;
+        string? moboSerialValue = null;
 
-        private void DownloadDatabase()
+        private async Task DownloadDatabaseAsync()
         {
             // Define the URL
             string url = "http://uartcodes.com/xml.php"; // Update with your URL
@@ -117,10 +117,10 @@ namespace PS5_NOR_Modifier
             try
             {
                 // Create a WebClient instance
-                using (WebClient client = new WebClient())
+                using (HttpClient client = new())
                 {
                     // Download the XML data from the URL
-                    string xmlData = client.DownloadString(url);
+                    string xmlData = await client.GetStringAsync(url);
 
                     // Create an XmlDocument instance and load the XML data
                     XmlDocument xmlDoc = new XmlDocument();
@@ -144,7 +144,7 @@ namespace PS5_NOR_Modifier
         /// </summary>
         /// <param name="ErrorCode"></param>
         /// <returns></returns>
-        string ParseErrors(string ErrorCode)
+        async Task<string> ParseErrorsAsync(string ErrorCode)
         {
             // If the user has opted to parse errors with an offline database, run the parse offline function
             if (chkUseOffline.Checked == true)
@@ -162,18 +162,23 @@ namespace PS5_NOR_Modifier
 
                 try
                 {
+                    string response = "";
                     // Create a WebClient instance to send the request
-                    WebClient client = new();
-
-                    // Send the request and retrieve the response as a string
-                    string response = client.DownloadString(url);
-
+                    using (HttpClient client = new()) 
+                    {
+                        // Send the request and retrieve the response as a string
+                        response = await client.GetStringAsync(url);
+                    }
                     // Load the XML response into an XmlDocument
                     XmlDocument xmlDoc = new XmlDocument();
                     xmlDoc.LoadXml(response);
 
+                    
                     // Get the root node
-                    XmlNode root = xmlDoc.DocumentElement;
+                    XmlNode? root = xmlDoc.DocumentElement;
+                    if (root is null) {
+                        throw new Exception("Error reading the file");
+                    }
 
                     // Check if the root node is <errorCodes>
                     if (root.Name == "errorCodes")
@@ -185,8 +190,8 @@ namespace PS5_NOR_Modifier
                             if (errorCodeNode.Name == "errorCode")
                             {
                                 // Get ErrorCode and Description
-                                string errorCode = errorCodeNode.SelectSingleNode("ErrorCode").InnerText;
-                                string description = errorCodeNode.SelectSingleNode("Description").InnerText;
+                                string errorCode = errorCodeNode.SelectSingleNode("ErrorCode")?.InnerText ?? "";
+                                string description = errorCodeNode.SelectSingleNode("Description")?.InnerText??"";
 
                                 // Output the results
                                 results = "Error code: "
@@ -230,7 +235,8 @@ namespace PS5_NOR_Modifier
                     xmlDoc.Load(localDatabaseFile);
 
                     // Get the root node
-                    XmlNode root = xmlDoc.DocumentElement;
+                    XmlNode? root = xmlDoc.DocumentElement;
+                    if (root is null) return results;
 
                     // Check if the root node is <errorCodes>
                     if (root.Name == "errorCodes")
@@ -242,8 +248,8 @@ namespace PS5_NOR_Modifier
                             if (errorCodeNode.Name == "errorCode")
                             {
                                 // Get ErrorCode and Description
-                                string errorCodeValue = errorCodeNode.SelectSingleNode("ErrorCode").InnerText;
-                                string description = errorCodeNode.SelectSingleNode("Description").InnerText;
+                                string errorCodeValue = errorCodeNode.SelectSingleNode("ErrorCode")?.InnerText??"";
+                                string description = errorCodeNode.SelectSingleNode("Description")?.InnerText??"";
 
                                 // Check if the current error code matches the requested error code
                                 if (errorCodeValue == errorCode)
@@ -414,13 +420,14 @@ namespace PS5_NOR_Modifier
                             offsetTwoValue = null;
                         }
 
-                        if(offsetOneValue.Contains("22020101"))
+                        
+                        if(offsetOneValue?.Contains("22020101")??false)
                         {
                             modelInfo.Text = "Disc Edition";
                         }
                         else
                         {
-                            if(offsetTwoValue.Contains("22030101"))
+                            if(offsetTwoValue?.Contains("22030101") ?? false)
                             {
                                 modelInfo.Text = "Digital Edition";
                             }
@@ -582,113 +589,25 @@ namespace PS5_NOR_Modifier
                             boardVariant.Text = "Unknown";
                         }
 
-                        if (boardVariant.Text.EndsWith("00A") || boardVariant.Text.EndsWith("00B"))
-                        {
-                            boardVariant.Text = boardVariant.Text + " - Japan";
-                        }
-                        else
-                        {
-                            if (boardVariant.Text.EndsWith("01A") || boardVariant.Text.EndsWith("01B"))
-                            {
-                                boardVariant.Text = boardVariant.Text + " - US, Canada, (North America)";
-                            }
-                            else
-                            {
-                                if (boardVariant.Text.EndsWith("15A") || boardVariant.Text.EndsWith("15B"))
-                                {
-                                    boardVariant.Text = boardVariant.Text + " - US, Canada, (North America)";
-                                }
-                                else
-                                {
-                                    if (boardVariant.Text.EndsWith("02A") || boardVariant.Text.EndsWith("02B"))
-                                    {
-                                        boardVariant.Text = boardVariant.Text + " - Australia / New Zealand, (Oceania)";
-                                    }
-                                    else
-                                    {
-                                        if (boardVariant.Text.EndsWith("03A") || boardVariant.Text.EndsWith("03B"))
-                                        {
-                                            boardVariant.Text = boardVariant.Text + " - United Kingdom / Ireland";
-                                        }
-                                        else
-                                        {
-                                            if (boardVariant.Text.EndsWith("04A") || boardVariant.Text.EndsWith("04B"))
-                                            {
-                                                boardVariant.Text = boardVariant.Text + " - Europe / Middle East / Africa";
-                                            }
-                                            else
-                                            {
-                                                if (boardVariant.Text.EndsWith("05A") || boardVariant.Text.EndsWith("05B"))
-                                                {
-                                                    boardVariant.Text = boardVariant.Text + " - South Korea";
-                                                }
-                                                else
-                                                {
-                                                    if (boardVariant.Text.EndsWith("06A") || boardVariant.Text.EndsWith("06B"))
-                                                    {
-                                                        boardVariant.Text = boardVariant.Text + " - Southeast Asia / Hong Kong";
-                                                    }
-                                                    else
-                                                    {
-                                                        if (boardVariant.Text.EndsWith("07A") || boardVariant.Text.EndsWith("07B"))
-                                                        {
-                                                            boardVariant.Text = boardVariant.Text + " - Taiwan";
-                                                        }
-                                                        else
-                                                        {
-                                                            if (boardVariant.Text.EndsWith("08A") || boardVariant.Text.EndsWith("08B"))
-                                                            {
-                                                                boardVariant.Text = boardVariant.Text + " - Russia, Ukraine, India, Central Asia";
-                                                            }
-                                                            else
-                                                            {
-                                                                if (boardVariant.Text.EndsWith("09A") || boardVariant.Text.EndsWith("09B"))
-                                                                {
-                                                                    boardVariant.Text = boardVariant.Text + " - Mainland China";
-                                                                }
-                                                                else
-                                                                {
-                                                                    if (boardVariant.Text.EndsWith("11A") || boardVariant.Text.EndsWith("11B"))
-                                                                    {
-                                                                        boardVariant.Text = boardVariant.Text + " - Mexico, Central America, South America";
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        if (boardVariant.Text.EndsWith("14A") || boardVariant.Text.EndsWith("14B"))
-                                                                        {
-                                                                            boardVariant.Text = boardVariant.Text + " - Mexico, Central America, South America";
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            if (boardVariant.Text.EndsWith("16A") || boardVariant.Text.EndsWith("16B"))
-                                                                            {
-                                                                                boardVariant.Text = boardVariant.Text + " - Europe / Middle East / Africa";
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                if (boardVariant.Text.EndsWith("18A") || boardVariant.Text.EndsWith("18B"))
-                                                                                {
-                                                                                    boardVariant.Text = boardVariant.Text + " - Singapore, Korea, Asia";
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    boardVariant.Text = boardVariant.Text + " - Unknown Region";
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
+                        boardVariant.Text += boardVariant.Text switch {
+                            _ when boardVariant.Text.EndsWith("00A") || boardVariant.Text.EndsWith("00B") => " - Japan",
+                            _ when boardVariant.Text.EndsWith("01A") || boardVariant.Text.EndsWith("01B") ||
+                                   boardVariant.Text.EndsWith("15A") || boardVariant.Text.EndsWith("15B") => " - US, Canada, (North America)",
+                            _ when boardVariant.Text.EndsWith("02A") || boardVariant.Text.EndsWith("02B") => " - Australia / New Zealand, (Oceania)",
+                            _ when boardVariant.Text.EndsWith("03A") || boardVariant.Text.EndsWith("03B") => " - United Kingdom / Ireland",
+                            _ when boardVariant.Text.EndsWith("04A") || boardVariant.Text.EndsWith("04B") => " - Europe / Middle East / Africa",
+                            _ when boardVariant.Text.EndsWith("05A") || boardVariant.Text.EndsWith("05B") => " - South Korea",
+                            _ when boardVariant.Text.EndsWith("06A") || boardVariant.Text.EndsWith("06B") => " - Southeast Asia / Hong Kong",
+                            _ when boardVariant.Text.EndsWith("07A") || boardVariant.Text.EndsWith("07B") => " - Taiwan",
+                            _ when boardVariant.Text.EndsWith("08A") || boardVariant.Text.EndsWith("08B") => " - Russia, Ukraine, India, Central Asia",
+                            _ when boardVariant.Text.EndsWith("09A") || boardVariant.Text.EndsWith("09B") => " - Mainland China",
+                            _ when boardVariant.Text.EndsWith("11A") || boardVariant.Text.EndsWith("11B") ||
+                                   boardVariant.Text.EndsWith("14A") || boardVariant.Text.EndsWith("14B") 
+                                => " - Mexico, Central America, South America",
+                            _ when boardVariant.Text.EndsWith("16A") || boardVariant.Text.EndsWith("16B") => " - Europe / Middle East / Africa",
+                            _ when boardVariant.Text.EndsWith("18A") || boardVariant.Text.EndsWith("18B") => " - Singapore, Korea, Asia",
+                            _=> " - Unknown Region"
+                        };
                         #endregion
                     }
                 }
@@ -979,7 +898,7 @@ namespace PS5_NOR_Modifier
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
             // Let's read the error codes from UART
             txtUARTOutput.Text = "";
@@ -1017,7 +936,7 @@ namespace PS5_NOR_Modifier
                                     var errorCode = split[2];
                                     // Now that the error code has been isolated from the rest of the junk sent by the system
                                     // let's check it against the database. The error server will need to return XML results
-                                    string errorResult = ParseErrors(errorCode);
+                                    string errorResult = await ParseErrorsAsync(errorCode);
                                     if (!txtUARTOutput.Text.Contains(errorResult))
                                     {
                                         txtUARTOutput.AppendText(errorResult + Environment.NewLine);
@@ -1072,7 +991,7 @@ namespace PS5_NOR_Modifier
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnDownloadDatabase_Click(object sender, EventArgs e)
+        private async void btnDownloadDatabase_Click(object sender, EventArgs e)
         {
             DialogResult result = MessageBox.Show("Downloading the error database will overwrite any existing offline database you currently have. Are you sure you would like to do this?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -1080,7 +999,7 @@ namespace PS5_NOR_Modifier
             if (result == DialogResult.Yes)
             {
                 // Call the function to download and save the XML data
-                DownloadDatabase();
+                await DownloadDatabaseAsync();
             }
             else
             {
