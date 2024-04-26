@@ -1,4 +1,7 @@
 The PS5 NOR Modifier is a Windows GUI based application making it easier for people to modify the NOR file for their PlayStation 5 console. This is especially useful if you need to generate a NOR file for your console to replace a corrupt or faulty NOR.
+Command line UART reader available:
+Windows: Download UART-CL By TheCod3r (Standalone).zip
+Linux: Download UART-CL-linux-x64.rar
 
 ![PS5 NOR Modifier](https://raw.githubusercontent.com/thecod3ryoutube/PS5NorModifier/main/Screenshot1.png)
 
@@ -7,8 +10,6 @@ The PS5 NOR Modifier is a Windows GUI based application making it easier for peo
 ![PS5 NOR Modifier](https://raw.githubusercontent.com/thecod3ryoutube/PS5NorModifier/main/Screenshot3.png)
 
 If you just want to use the software, download the standalone ZIP
-
-There is now a command line version which can be used instead of the full application. Just download the source code or standalone version for UART-CL (this is for UART only, not wokring with NOR files)...
 
 Some symptoms that your NOR is corrupt or faulty:
 1. No power at all. The console draws 8ma of current or 0ma of current when connecting to a bench power supply
