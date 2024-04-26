@@ -164,7 +164,8 @@ namespace PS5_NOR_Modifier
                 {
                     string response;
                     // Create a WebClient instance to send the request
-                    using (WebClient client = new()){
+                    using (WebClient client = new())
+                    {
                         // Send the request and retrieve the response as a string
                         response = client.DownloadString(url);
                     }
