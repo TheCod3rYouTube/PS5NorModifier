@@ -2,26 +2,6 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs/*
+/.vs
 /PS5 NOR Modifier/bin/
 /PS5 NOR Modifier/obj/
-/PS5 NOR Modifier/obj/Debug/
-/PS5 NOR Modifier/obj/Debug/net6.0-windows/apphost.exe
-/PS5 NOR Modifier/obj/Debug/net6.0-windows/PS5 NOR Modifier.AssemblyInfo.cs
-/PS5 NOR Modifier/obj/Debug/net6.0-windows/PS5 NOR Modifier.AssemblyInfoInputs.cache
-/PS5 NOR Modifier/obj/Debug/net6.0-windows/PS5 NOR Modifier.assets.cache
-/PS5 NOR Modifier/obj/Debug/net6.0-windows/PS5 NOR Modifier.csproj.AssemblyReference.cache
-/PS5 NOR Modifier/obj/Debug/net6.0-windows/PS5 NOR Modifier.csproj.CoreCompileInputs.cache
-/PS5 NOR Modifier/obj/Debug/net6.0-windows/PS5 NOR Modifier.csproj.FileListAbsolute.txt
-/PS5 NOR Modifier/obj/Debug/net6.0-windows/PS5 NOR Modifier.csproj.GenerateResource.cache
-/PS5 NOR Modifier/obj/Debug/net6.0-windows/PS5 NOR Modifier.designer.deps.json
-/PS5 NOR Modifier/obj/Debug/net6.0-windows/PS5 NOR Modifier.designer.runtimeconfig.json
-/PS5 NOR Modifier/obj/Debug/net6.0-windows/PS5 NOR Modifier.dll
-/PS5 NOR Modifier/obj/Debug/net6.0-windows/PS5 NOR Modifier.GeneratedMSBuildEditorConfig.editorconfig
-/PS5 NOR Modifier/obj/Debug/net6.0-windows/PS5 NOR Modifier.genruntimeconfig.cache
-/PS5 NOR Modifier/obj/Debug/net6.0-windows/PS5_NOR_Modifier.Form1.resources
-/PS5 NOR Modifier/obj/Debug/net6.0-windows/refint/PS5 NOR Modifier.dll
-/PS5 NOR Modifier/obj/project.assets.json
-/PS5 NOR Modifier/obj/project.nuget.cache
-/PS5 NOR Modifier/obj/PS5 NOR Modifier.csproj.nuget.dgspec.json
-/PS5 NOR Modifier/obj/PS5 NOR Modifier.csproj.nuget.g.props
