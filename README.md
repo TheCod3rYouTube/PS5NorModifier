@@ -8,6 +8,8 @@ The PS5 NOR Modifier is a Windows GUI based application making it easier for peo
 
 If you just want to use the software, download the standalone ZIP
 
+There is now a command line version which can be used instead of the full application. Just download the source code or standalone version for UART-CL (this is for UART only, not wokring with NOR files)...
+
 Some symptoms that your NOR is corrupt or faulty:
 1. No power at all. The console draws 8ma of current or 0ma of current when connecting to a bench power supply
 2. 3 beeps of death. The console beeps 3 times when you plug in the main power chord
