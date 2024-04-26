@@ -584,67 +584,67 @@ namespace PS5_NOR_Modifier
 
                         if (boardVariant.Text.EndsWith("00A") || boardVariant.Text.EndsWith("00B"))
                         {
-                            boardVariant.Text = boardVariant.Text + " - Japan";
+                            boardVariant.Text += " - Japan";
                         }
                         else if (boardVariant.Text.EndsWith("01A") || boardVariant.Text.EndsWith("01B"))
                         {
-                            boardVariant.Text = boardVariant.Text + " - US, Canada, (North America)";
+                            boardVariant.Text += " - US, Canada, (North America)";
                         }
                         else if (boardVariant.Text.EndsWith("15A") || boardVariant.Text.EndsWith("15B"))
                         {
-                            boardVariant.Text = boardVariant.Text + " - US, Canada, (North America)";
+                            boardVariant.Text += " - US, Canada, (North America)";
                         }
                         else if (boardVariant.Text.EndsWith("02A") || boardVariant.Text.EndsWith("02B"))
                         {
-                            boardVariant.Text = boardVariant.Text + " - Australia / New Zealand, (Oceania)";
+                            boardVariant.Text += " - Australia / New Zealand, (Oceania)";
                         }
                         else if (boardVariant.Text.EndsWith("03A") || boardVariant.Text.EndsWith("03B"))
                         {
-                            boardVariant.Text = boardVariant.Text + " - United Kingdom / Ireland";
+                            boardVariant.Text += " - United Kingdom / Ireland";
                         }
                         else if (boardVariant.Text.EndsWith("04A") || boardVariant.Text.EndsWith("04B"))
                         {
-                            boardVariant.Text = boardVariant.Text + " - Europe / Middle East / Africa";
+                            boardVariant.Text += " - Europe / Middle East / Africa";
                         }
                         else if (boardVariant.Text.EndsWith("05A") || boardVariant.Text.EndsWith("05B"))
                         {
-                            boardVariant.Text = boardVariant.Text + " - South Korea";
+                            boardVariant.Text += " - South Korea";
                         }
                         else if (boardVariant.Text.EndsWith("06A") || boardVariant.Text.EndsWith("06B"))
                         {
-                            boardVariant.Text = boardVariant.Text + " - Southeast Asia / Hong Kong";
+                            boardVariant.Text += " - Southeast Asia / Hong Kong";
                         }
                         else if (boardVariant.Text.EndsWith("07A") || boardVariant.Text.EndsWith("07B"))
                         {
-                            boardVariant.Text = boardVariant.Text + " - Taiwan";
+                            boardVariant.Text += " - Taiwan";
                         }
                         else if (boardVariant.Text.EndsWith("08A") || boardVariant.Text.EndsWith("08B"))
                         {
-                            boardVariant.Text = boardVariant.Text + " - Russia, Ukraine, India, Central Asia";
+                            boardVariant.Text += " - Russia, Ukraine, India, Central Asia";
                         }
                         else if (boardVariant.Text.EndsWith("09A") || boardVariant.Text.EndsWith("09B"))
                         {
-                            boardVariant.Text = boardVariant.Text + " - Mainland China";
+                            boardVariant.Text += " - Mainland China";
                         }
                         else if (boardVariant.Text.EndsWith("11A") || boardVariant.Text.EndsWith("11B"))
                         {
-                            boardVariant.Text = boardVariant.Text + " - Mexico, Central America, South America";
+                            boardVariant.Text += " - Mexico, Central America, South America";
                         }
                         else if (boardVariant.Text.EndsWith("14A") || boardVariant.Text.EndsWith("14B"))
                         {
-                            boardVariant.Text = boardVariant.Text + " - Mexico, Central America, South America";
+                            boardVariant.Text += " - Mexico, Central America, South America";
                         }
                         else if (boardVariant.Text.EndsWith("16A") || boardVariant.Text.EndsWith("16B"))
                         {
-                            boardVariant.Text = boardVariant.Text + " - Europe / Middle East / Africa";
+                            boardVariant.Text += " - Europe / Middle East / Africa";
                         }
                         else if (boardVariant.Text.EndsWith("18A") || boardVariant.Text.EndsWith("18B"))
                         {
-                            boardVariant.Text = boardVariant.Text + " - Singapore, Korea, Asia";
+                            boardVariant.Text += " - Singapore, Korea, Asia";
                         }
                         else
                         {
-                            boardVariant.Text = boardVariant.Text + " - Unknown Region";
+                            boardVariant.Text += " - Unknown Region";
                         }
 
                         #endregion
