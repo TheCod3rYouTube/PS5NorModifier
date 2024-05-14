@@ -838,6 +838,7 @@ namespace PS5_NOR_Modifier
                 btnConnectCom.Enabled = true;
                 btnDisconnectCom.Enabled = false;
             }
+            else MessageBox.Show("Not existing COM ports were found!", "COM Ports", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnConnectCom_Click(object sender, EventArgs e)
