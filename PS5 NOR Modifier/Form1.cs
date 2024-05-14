@@ -830,11 +830,14 @@ namespace PS5_NOR_Modifier
         {
             // When the "refresh ports" button is pressed, we need to refresh the list of available COM ports for UART
             string[] ports = SerialPort.GetPortNames();
-            comboComPorts.Items.Clear();
-            comboComPorts.Items.AddRange(ports);
-            comboComPorts.SelectedIndex = 0;
-            btnConnectCom.Enabled = true;
-            btnDisconnectCom.Enabled = false;
+            if (ports.Length > 0)
+            {
+                comboComPorts.Items.Clear();
+                comboComPorts.Items.AddRange(ports);
+                comboComPorts.SelectedIndex = 0;
+                btnConnectCom.Enabled = true;
+                btnDisconnectCom.Enabled = false;
+            }
         }
 
         private void btnConnectCom_Click(object sender, EventArgs e)
