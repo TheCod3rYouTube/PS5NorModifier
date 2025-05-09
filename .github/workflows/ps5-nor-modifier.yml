@@ -1,0 +1,30 @@
+name: PS5 NOR Modifier Test Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Execute unit tests
+      working-directory: "PS5 NOR Modifier"
+      run: dotnet test -a x86
+
+    - name: Build release
+      working-directory: "PS5 NOR Modifier"
+      run: dotnet publish -a x86
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: "PS5 NOR Modifier"
+        path: "PS5 NOR Modifier/bin/Release/net6.0-windows/win-x86/publish/"

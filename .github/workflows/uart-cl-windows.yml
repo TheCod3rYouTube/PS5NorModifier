@@ -1,0 +1,30 @@
+name: UART-CL Windows Test Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Execute unit tests
+      working-directory: "UART-CL By TheCod3r"
+      run: dotnet test -a x86
+
+    - name: Build release
+      working-directory: "UART-CL By TheCod3r"
+      run: dotnet publish -a x86
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: "UART-CL Windows"
+        path: "UART-CL By TheCod3r/bin/Release/net6.0/win-x86/publish/"
