@@ -9,6 +9,10 @@
     <ApplicationIcon>Terminal.ico</ApplicationIcon>
     <SignAssembly>False</SignAssembly>
     <Title>UART-CL</Title>
+    <Platforms>AnyCPU-32bitPreferred</Platforms>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <PublishRelease>true</PublishRelease>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

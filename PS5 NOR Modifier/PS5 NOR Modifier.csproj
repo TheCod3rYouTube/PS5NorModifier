@@ -8,9 +8,11 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon>HardwareChip.ico</ApplicationIcon>
-    <PlatformTarget>x86</PlatformTarget>
     <Title>PS5 NOR Modifier</Title>
-    <Platforms>AnyCPU;x86</Platforms>
+    <Platforms>AnyCPU-32bitPreferred</Platforms>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <PublishRelease>true</PublishRelease>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
