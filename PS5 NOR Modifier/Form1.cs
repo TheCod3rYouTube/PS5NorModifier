@@ -46,7 +46,7 @@ namespace PS5_NOR_Modifier
         static SerialPort UARTSerial = new SerialPort();
 
         /// <summary>
-        /// With thanks to  @jjxtra on Github. The code has already been created and there's no need to reinvent the wheel is there?
+        /// 2-pointer search algorithm based on code by @jjxtra on GitHub.
         /// </summary>
         #region Hex Code
 
@@ -54,7 +54,7 @@ namespace PS5_NOR_Modifier
         {
             for (int i = 0; i < source.Length; i++)
             {
-                if (source.Skip(i).Take(pattern.Length).SequenceEqual(pattern))
+                if (source.AsSpan(i).StartsWith(pattern))
                 {
                     yield return i;
                 }
