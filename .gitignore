@@ -1,1 +1,4 @@
-﻿
+﻿**/.vs
+**/bin/
+**/obj/
+**/errorDB.xml
