@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32901.215
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PS5 NOR Modifier", "PS5 NOR Modifier.csproj", "{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Debug|x86.ActiveCfg = Debug|x86
+		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Debug|x86.Build.0 = Debug|x86
+		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Release|x86.ActiveCfg = Release|x86
+		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {406F6CF1-EBE8-4A32-86BA-26B4FEDF751B}
+	EndGlobalSection
+EndGlobal
