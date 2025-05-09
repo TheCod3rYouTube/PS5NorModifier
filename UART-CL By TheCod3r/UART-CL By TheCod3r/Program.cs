@@ -726,8 +726,8 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                         {
                                             bytes[i] = replace[replaceIndex];
                                         }
-                                        File.WriteAllBytes(pathToDump, bytes);
                                     }
+                                    File.WriteAllBytes(pathToDump, bytes);
 
                                     byte[] find2 = ConvertHexStringToByteArray(Regex.Replace("22020101", "0x|[ ,]", string.Empty).Normalize().Trim());
                                     byte[] replace2 = ConvertHexStringToByteArray(Regex.Replace("22030101", "0x|[ ,]", string.Empty).Normalize().Trim());
@@ -738,8 +738,8 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                         {
                                             bytes[i] = replace2[replaceIndex];
                                         }
-                                        File.WriteAllBytes(pathToDump, bytes);
                                     }
+                                    File.WriteAllBytes(pathToDump, bytes);
 
                                     System.Console.WriteLine("Your BIOS file has been updated successfully. The new .bin file will now report to");
                                     System.Console.WriteLine("the PlayStation 5 as a 'digital edition' console.");
@@ -859,8 +859,8 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                         {
                                             bytes[i] = replace[replaceIndex];
                                         }
-                                        File.WriteAllBytes(pathToDump, bytes);
                                     }
+                                    File.WriteAllBytes(pathToDump, bytes);
 
                                     byte[] find2 = ConvertHexStringToByteArray(Regex.Replace("22030101", "0x|[ ,]", string.Empty).Normalize().Trim());
                                     byte[] replace2 = ConvertHexStringToByteArray(Regex.Replace("22020101", "0x|[ ,]", string.Empty).Normalize().Trim());
@@ -871,8 +871,8 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                         {
                                             bytes[i] = replace2[replaceIndex];
                                         }
-                                        File.WriteAllBytes(pathToDump, bytes);
                                     }
+                                    File.WriteAllBytes(pathToDump, bytes);
 
                                     System.Console.WriteLine("Your BIOS file has been updated successfully. The new .bin file will now report to");
                                     System.Console.WriteLine("the PlayStation 5 as a 'disc edition' console.");
@@ -991,8 +991,8 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                         {
                                             bytes[i] = replace[replaceIndex];
                                         }
-                                        File.WriteAllBytes(pathToDump, bytes);
                                     }
+                                    File.WriteAllBytes(pathToDump, bytes);
 
                                     byte[] find2 = ConvertHexStringToByteArray(Regex.Replace("22030101", "0x|[ ,]", string.Empty).Normalize().Trim());
                                     byte[] replace2 = ConvertHexStringToByteArray(Regex.Replace("22010101", "0x|[ ,]", string.Empty).Normalize().Trim());
@@ -1003,8 +1003,8 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                         {
                                             bytes[i] = replace2[replaceIndex];
                                         }
-                                        File.WriteAllBytes(pathToDump, bytes);
                                     }
+                                    File.WriteAllBytes(pathToDump, bytes);
 
                                     System.Console.WriteLine("Your BIOS file has been updated successfully. The new .bin file will now report to");
                                     System.Console.WriteLine("the PlayStation 5 as a 'slim edition' console.");
@@ -1247,8 +1247,8 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                         {
                                             bytes[i] = replace[replaceIndex];
                                         }
-                                        File.WriteAllBytes(pathToDump, bytes);
                                     }
+                                    File.WriteAllBytes(pathToDump, bytes);
 
                                     System.Console.WriteLine("The new motherboard serial number you entered been saved successfully.");
                                     System.Console.WriteLine("Press Enter to continue...");
@@ -1373,8 +1373,8 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                         {
                                             bytes[i] = replace[replaceIndex];
                                         }
-                                        File.WriteAllBytes(pathToDump, bytes);
                                     }
+                                    File.WriteAllBytes(pathToDump, bytes);
 
                                     System.Console.WriteLine("The new console model you chose has been saved successfully.");
                                     System.Console.WriteLine("Press Enter to continue...");
