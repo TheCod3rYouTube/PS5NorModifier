@@ -361,7 +361,7 @@ namespace PS5_NOR_Modifier
         {
             OpenFileDialog fileDialogBox = new OpenFileDialog();
             fileDialogBox.Title = "Open NOR BIN File";
-            fileDialogBox.Filter = "PS5 BIN Files|*.bin";
+            fileDialogBox.Filter = "PS5 BIN Files|*.bin;*.BIN";
 
             if (fileDialogBox.ShowDialog() == DialogResult.OK)
             {
