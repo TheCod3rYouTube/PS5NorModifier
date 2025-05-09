@@ -84,7 +84,7 @@ namespace PS5_NOR_Modifier
         {
             // Upon first launch, we need to get a list of COM ports available for UART
             string[] ports = SerialPort.GetPortNames();
-            if (ports.Length > 0)
+            if (ports != null && ports.Length > 0)
             {
                 comboComPorts.Items.Clear();
                 comboComPorts.Items.AddRange(ports);
@@ -92,6 +92,7 @@ namespace PS5_NOR_Modifier
                 btnConnectCom.Enabled = true;
                 btnDisconnectCom.Enabled = false;
             }
+            else MessageBox.Show("No available COM ports were detected.", "COM Ports", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         // Declare offsets to detect console version
