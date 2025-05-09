@@ -11,6 +11,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <Title>PS5 NOR Modifier</Title>
     <Platforms>AnyCPU;x86</Platforms>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -34,6 +35,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.0" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.0" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.0" />
+    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="11.3.0" />
+    <PackageReference Include="Avalonia.Themes.Simple" Version="11.3.0" />
+    <PackageReference Include="DialogHost.Avalonia" Version="0.9.2" />
     <PackageReference Include="System.IO.Ports" Version="8.0.0" />
   </ItemGroup>
 
@@ -47,6 +55,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Update="App.cs">
+      <DependentUpon>App.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -62,6 +73,13 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\PS5 Nor Logo.png" />
+    <AvaloniaResource Include="Resources\PS5 Nor Logo.png" />
+    <None Remove="Resources\Paypal-128.png" />
+    <AvaloniaResource Include="Resources\Paypal-128.png" />
   </ItemGroup>
 
 </Project>
