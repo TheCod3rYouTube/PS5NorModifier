@@ -680,8 +680,8 @@ namespace PS5_NOR_Modifier
                                             {
                                                 bytes[i] = replace[replaceIndex];
                                             }
-                                            File.WriteAllBytes(newFile, bytes);
                                         }
+                                        File.WriteAllBytes(newFile, bytes);
                                     }
 
                                 }
@@ -716,8 +716,8 @@ namespace PS5_NOR_Modifier
                                                 {
                                                     bytes[i] = replace[replaceIndex];
                                                 }
-                                                File.WriteAllBytes(newFile, bytes);
                                             }
+                                            File.WriteAllBytes(newFile, bytes);
                                         }
 
                                     }
@@ -750,8 +750,8 @@ namespace PS5_NOR_Modifier
                                     {
                                         bytes[i] = replace[replaceIndex];
                                     }
-                                    File.WriteAllBytes(newFile, bytes);
                                 }
+                                File.WriteAllBytes(newFile, bytes);
 
                             }
                             catch(System.ArgumentException ex)
@@ -783,8 +783,8 @@ namespace PS5_NOR_Modifier
                                     {
                                         bytes[i] = replace[replaceIndex];
                                     }
-                                    File.WriteAllBytes(newFile, bytes);
                                 }
+                                File.WriteAllBytes(newFile, bytes);
 
                             }
                             catch (System.ArgumentException ex)
