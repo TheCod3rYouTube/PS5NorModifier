@@ -361,7 +361,7 @@ namespace PS5_NOR_Modifier
         {
             OpenFileDialog fileDialogBox = new OpenFileDialog();
             fileDialogBox.Title = "Open NOR BIN File";
-            fileDialogBox.Filter = "PS5 BIN Files|*.bin;*.BIN";
+            fileDialogBox.Filter = "PS5 BIN Files|*.bin";
 
             if (fileDialogBox.ShowDialog() == DialogResult.OK)
             {
@@ -371,7 +371,7 @@ namespace PS5_NOR_Modifier
                 }
                 else
                 {
-                    if(!fileDialogBox.SafeFileName.EndsWith(".bin"))
+                    if(!fileDialogBox.SafeFileName.EndsWith(".bin", StringComparison.OrdinalIgnoreCase))
                     {
                         throwError("The file you selected is not a valid. Please ensure the file you are choosing is a correct BIN file and try again.");
                     }
