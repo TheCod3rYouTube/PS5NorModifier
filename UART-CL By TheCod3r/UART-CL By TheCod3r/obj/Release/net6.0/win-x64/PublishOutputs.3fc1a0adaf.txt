@@ -1,1 +1,0 @@
-C:\Users\TheCod3r\source\repos\UART-CL By TheCod3r\UART-CL By TheCod3r\bin\Release\net6.0\publish\UART-CL By TheCod3r.exe

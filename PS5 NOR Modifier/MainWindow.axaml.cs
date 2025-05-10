@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Ports;
+using System.Linq;
 using System.Text;
 using Avalonia;
 using Avalonia.Controls;
@@ -34,7 +38,6 @@ public partial class MainWindow : Window
     };
     
     private readonly SerialPort _uartSerial = new();
-    private readonly NORData _norData = new();
     
     public MainWindow()
     {
@@ -182,16 +185,16 @@ public partial class MainWindow : Window
 
         #region Extract PS5 Version
 
-        SetData(norPath, Offsets.One, 12, ref _norData.OffsetOne, out _);
-        SetData(norPath, Offsets.Two, 12, ref _norData.OffsetTwo, out _);
+        SetData(norPath, Offsets.One, 12, out string? offsetOne, out _);
+        SetData(norPath, Offsets.Two, 12, out string? offsetTwo, out _);
                         
-        if(_norData.OffsetOne?.Contains("22020101") ?? false)
+        if(offsetOne?.Contains("22020101") ?? false)
         {
             PS5ModelOut.Content = "Disc Edition";
         }
         else
         {
-            if(_norData.OffsetTwo?.Contains("22030101") ?? false)
+            if(offsetTwo?.Contains("22030101") ?? false)
             {
                 PS5ModelOut.Content = "Digital Edition";
             }
@@ -205,9 +208,9 @@ public partial class MainWindow : Window
 
         #region Extract Motherboard Serial Number
 
-        SetData(norPath, Offsets.MoboSerial, 16, ref _norData.MoboSerial, out string moboSerialText);
+        SetData(norPath, Offsets.MoboSerial, 16, out string? moboSerial, out string moboSerialText);
 
-        MotherboardSerialOut.Content = _norData.MoboSerial != null
+        MotherboardSerialOut.Content = moboSerial != null
             ? moboSerialText
             : "Unknown";
 
@@ -215,9 +218,9 @@ public partial class MainWindow : Window
 
         #region Extract Board Serial Number
 
-        SetData(norPath, Offsets.Serial, 17, ref _norData.Serial, out string serialText);
+        SetData(norPath, Offsets.Serial, 17, out string? serial, out string serialText);
         
-        if (_norData.Serial != null)
+        if (serial != null)
         {
             SerialNumberOut.Content = serialText;
             SerialNumberIn.Text = serialText;
@@ -232,14 +235,14 @@ public partial class MainWindow : Window
 
         #region Extract WiFi Mac Address
 
-        SetData(norPath, Offsets.WiFiMAC, 6, ref _norData.WiFiMAC, out _);
-        if (_norData.WiFiMAC != null)
-            _norData.WiFiMAC = string.Join("", _norData.WiFiMAC.Select((c, i) => i % 2 == 0 ? $"{c}" : $"{c}-"))[..^1];
+        SetData(norPath, Offsets.WiFiMAC, 6, out string? wiFiMAC, out _);
+        if (wiFiMAC != null)
+            wiFiMAC = string.Join("", wiFiMAC.Select((c, i) => i % 2 == 0 ? $"{c}" : $"{c}-"))[..^1];
 
-        if (_norData.WiFiMAC != null)
+        if (wiFiMAC != null)
         {
-            WiFiMACAddressOut.Content = _norData.WiFiMAC;
-            WiFiMACAddressIn.Text = _norData.WiFiMAC;
+            WiFiMACAddressOut.Content = wiFiMAC;
+            WiFiMACAddressIn.Text = wiFiMAC;
         }
         else
         {
@@ -251,14 +254,14 @@ public partial class MainWindow : Window
 
         #region Extract LAN Mac Address
 
-        SetData(norPath, Offsets.LANMAC, 6, ref _norData.LANMAC, out _);
-        if (_norData.LANMAC != null)
-            _norData.LANMAC = string.Join("", _norData.LANMAC.Select((c, i) => i % 2 == 0 ? $"{c}" : $"{c}-"))[..^1];
+        SetData(norPath, Offsets.LANMAC, 6, out string? lanmac, out _);
+        if (lanmac != null)
+            lanmac = string.Join("", lanmac.Select((c, i) => i % 2 == 0 ? $"{c}" : $"{c}-"))[..^1];
 
-        if (_norData.LANMAC != null)
+        if (lanmac != null)
         {
-            LANMACAddressOut.Content = _norData.LANMAC;
-            LANMACAddressIn.Text = _norData.LANMAC;
+            LANMACAddressOut.Content = lanmac;
+            LANMACAddressIn.Text = lanmac;
         }
         else
         {
@@ -270,19 +273,19 @@ public partial class MainWindow : Window
 
         #region Extract Board Variant
         
-        SetData(norPath, Offsets.Variant, 19, ref _norData.Variant, out string variantText);
-        if (_norData.Variant != null)
-            _norData.Variant = _norData.Variant.Replace("FF", null);
+        SetData(norPath, Offsets.Variant, 19, out string? variant, out string variantText);
+        if (variant != null)
+            variant = variant.Replace("FF", null);
 
         variantText += " - " + Regions.GetValueOrDefault(variantText[^3..^1], "Unknown Region");
 
-        BoardVariantOut.Content = _norData.Variant != null ? variantText : "Unknown";
+        BoardVariantOut.Content = variant != null ? variantText : "Unknown";
 
         #endregion
 
         return;
         
-        void SetData(string path, long offset, int bytes, ref string? dataValue, out string outputText)
+        void SetData(string path, long offset, int bytes, out string? dataValue, out string outputText)
         {
             try
             {
