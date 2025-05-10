@@ -168,7 +168,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        if(!file.Name.EndsWith(".bin"))
+        if(!file.Name.EndsWith(".bin", StringComparison.InvariantCultureIgnoreCase))
         {
             ShowError("You did not select a .bin file. Please ensure the file you are choosing is a correct BIN file and try again.");
             return;
