@@ -45,6 +45,12 @@ public partial class MainWindow : Window
     private void RefreshComPorts()
     {
         string[] ports = SerialPort.GetPortNames();
+        if (ports == null || ports.Length == 0)
+        {
+            ShowError("No available COM ports were detected.");
+            return;
+        }
+        
         ComPorts.Items.Clear();
         foreach (string port in ports)
         {
