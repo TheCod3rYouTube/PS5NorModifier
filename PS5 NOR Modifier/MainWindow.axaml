@@ -6,7 +6,7 @@
         mc:Ignorable="d" d:DesignWidth="847" d:DesignHeight="590"
         Width="847" Height="557"
         x:Class="PS5_NOR_Modifier.MainWindow"
-        Title="MainWindow" FontSize="12" WindowStartupLocation="CenterScreen">
+        Title="PS5 NOR Modifier" FontSize="12" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid RowDefinitions="85 55 * 81 22" ColumnDefinitions="*" Margin="10 10 10 0">
             <StackPanel Grid.Row="0" Orientation="Horizontal">
@@ -28,7 +28,7 @@
             </TextBlock>
             <TabControl Grid.Row="2" Background="#20000000" Padding="0">
                 <TabItem Header="NOR Modifier">
-                    <Grid RowDefinitions="50 *" ColumnDefinitions="* * * *" Margin="4">
+                    <Grid RowDefinitions="50 *" ColumnDefinitions="Auto * Auto *" Margin="4">
                         <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4">
                             <Label>Select NOR Dump</Label>
                             <Grid ColumnDefinitions="* Auto">
@@ -45,6 +45,11 @@
                             <Label>File Size:</Label>
                             <Label>WiFi MAC Address:</Label>
                             <Label>LAN MAC Address:</Label>
+                            <StackPanel.Styles>
+                                <Style Selector="Label">
+                                    <Setter Property="Padding" Value="3 5 15 5" />
+                                </Style>
+                            </StackPanel.Styles>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Grid.Row="1" Margin="0 22 0 0">
                             <Label Name="SerialNumberOut">...</Label>
@@ -54,6 +59,11 @@
                             <Label Name="FileSizeOut">...</Label>
                             <Label Name="WiFiMACAddressOut">...</Label>
                             <Label Name="LANMACAddressOut">...</Label>
+                            <StackPanel.Styles>
+                                <Style Selector="Label">
+                                    <Setter Property="Padding" Value="3 5" />
+                                </Style>
+                            </StackPanel.Styles>
                         </StackPanel>
                         <StackPanel Grid.Column="2" Grid.Row="1">
                             <Label FontWeight="Bold">Modify Values</Label>
@@ -64,45 +74,18 @@
                             <Label>LAN MAC Address:</Label>
                             <StackPanel.Styles>
                                 <Style Selector="Label">
-                                    <Setter Property="Padding" Value="3 5" />
+                                    <Setter Property="Padding" Value="3 5 15 5" />
                                 </Style>
                             </StackPanel.Styles>
                         </StackPanel>
                         <StackPanel Grid.Column="3" Grid.Row="1" Margin="0 27 0 0">
                             <TextBox Name="SerialNumberIn" />
-                            <ComboBox Name="BoardVariantIn">
-                                <ComboBoxItem>CFI-1000A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1000A01</ComboBoxItem>
-                                <ComboBoxItem>CFI-1000B</ComboBoxItem>
-                                <ComboBoxItem>CFI-1002A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1008A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1014A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1015A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1015B</ComboBoxItem>
-                                <ComboBoxItem>CFI-1016A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1018A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1100A01</ComboBoxItem>
-                                <ComboBoxItem>CFI-1102A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1108A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1109A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1114A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1115A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1116A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1118A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1208A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1215A</ComboBoxItem>
-                                <ComboBoxItem>CFI-1216A</ComboBoxItem>
-                                <ComboBoxItem>DFI-T1000AA</ComboBoxItem>
-                                <ComboBoxItem>DFI-D1000AA</ComboBoxItem>
-                            </ComboBox>
-                            <ComboBox Name="PS5ModelIn">
-                                <ComboBoxItem>Digital Edition</ComboBoxItem>
-                                <ComboBoxItem>Disc Edition</ComboBoxItem>
-                            </ComboBox>
+                            <ComboBox Name="BoardVariantIn" />
+                            <ComboBox Name="PS5ModelIn" />
                             <TextBox Name="WiFiMACAddressIn" IsEnabled="False" />
                             <TextBox Name="LANMACAddressIn" IsEnabled="False" />
 
-                            <Button>Save New BIOS Information</Button>
+                            <Button Name="SaveButton" Click="SaveButton_OnClick" Margin="0 5 0 0">Save New BIOS Information</Button>
                         </StackPanel>
                     </Grid>
                 </TabItem>
