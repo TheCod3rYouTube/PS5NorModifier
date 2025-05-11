@@ -2,8 +2,7 @@ namespace PS5_NOR_Modifier;
 
 public static class Offsets
 {
-    public const int One = 0x1c7010; // TODO: These two need better names
-    public const int Two = 0x1c7030;
+    public const int One = 0x1c7010; // TODO: This needs a better name.
     public const int WiFiMAC = 0x1C73C0;
     public const int LANMAC = 0x1C4020;
     public const int Serial = 0x1c7210;

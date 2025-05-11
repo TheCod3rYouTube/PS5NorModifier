@@ -202,9 +202,9 @@ public partial class MainWindow : Window
 
         _norData = new(norPath);
 
-        string edition = _norData.Edition;
-        PS5ModelOut.Content = edition;
-        PS5ModelIn.SelectedItem = edition;
+        NORData.Editions edition = _norData.Edition;
+        PS5ModelOut.Content = edition + " Edition";
+        PS5ModelIn.SelectedItem = edition == NORData.Editions.Unknown ? null : edition + " Edition";
 
         string serial = _norData.Serial;
         SerialNumberOut.Content = serial;
@@ -221,210 +221,55 @@ public partial class MainWindow : Window
         MotherboardSerialOut.Content = _norData.MoboSerial;
         
         BoardVariantOut.Content = _norData.Variant;
-        BoardVariantIn.SelectedItem = _norData.VariantRaw;
+        BoardVariantIn.SelectedValue = _norData.VariantCode;
     }
 
     private async void SaveButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        string fileNameToLookFor = "";
-        bool errorShownAlready = false;
-/*
-        if (!File.Exists(NORDumpPath.Text))
+        if (!File.Exists(_norData?.Path))
         {
             ShowError("Please select a valid BIOS file first.");
-            errorShownAlready = true;
+            return;
         }
-        else
+        if (PS5ModelIn.SelectedValue == null)
         {
-            if((string)PS5ModelIn.SelectedValue! == "")
-            {
-                ShowError("Please select a valid board model before saving new BIOS information!");
-                errorShownAlready = true;
-            }
-            else
-            {
-                if((string)BoardVariantIn.SelectedValue! == "")
-                {
-                    ShowError("Please select a valid board variant before saving new BIOS information!");
-                    errorShownAlready = true;
-                }
-                else
-                {
-                    IStorageFile? file = await StorageProvider.SaveFilePickerAsync(new()
-                    {
-                        Title = "Save NOR BIN File",
-                        SuggestedStartLocation = await StorageProvider.TryGetFolderFromPathAsync(NORDumpPath.Text),
-                        SuggestedFileName = "bios.bin",
-                        FileTypeChoices =
-                        [
-                            new("PS5 BIN Files")
-                            {
-                                Patterns = [ "*.bin" ]
-                            }
-                        ]
-                    });
-
-                    if (file != null)
-                    {
-                        // First create a copy of the old BIOS file
-                        byte[] existingFile = await File.ReadAllBytesAsync(NORDumpPath.Text);
-                        string newFile = Uri.UnescapeDataString(file.Path.AbsolutePath);
-
-                        await File.WriteAllBytesAsync(newFile, existingFile);
-
-                        fileNameToLookFor = newFile;
-
-                        #region Set the new model info
-                        if ((string)PS5ModelOut.Content! == "Disc Edition")
-                        {
-                            try
-                            {
-                                if ((string)PS5ModelIn.SelectedItem! == "Digital Edition")
-                                {
-
-                                    byte[] find = ConvertHexStringToByteArray("22020101");
-                                    byte[] replace = ConvertHexStringToByteArray("22030101");
-                                    if (find.Length != replace.Length)
-                                    {
-                                        ShowError("The length of the old hex value does not match the length of the new hex value!");
-                                        errorShownAlready = true;
-                                    }
-                                    byte[] bytes = await File.ReadAllBytesAsync(newFile);
-                                    foreach (int index in PatternAt(bytes, find))
-                                    {
-                                        for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
-                                        {
-                                            bytes[i] = replace[replaceIndex];
-                                        }
-                                        await File.WriteAllBytesAsync(newFile, bytes);
-                                    }
-                                }
-
-                            }
-                            catch
-                            {
-                                ShowError("An error occurred while saving your BIOS file");
-                                errorShownAlready = true;
-                            }
-                        }
-                        else
-                        {
-                            if(modelInfo.Text == "Digital Edition")
-                            {
-                                try
-                                {
-
-                                    if (boardModelSelectionBox.Text == "Disc Edition")
-
-                                    {
-
-                                        byte[] find = ConvertHexStringToByteArray(Regex.Replace("22030101", "0x|[ ,]", string.Empty).Normalize().Trim());
-                                        byte[] replace = ConvertHexStringToByteArray(Regex.Replace("22020101", "0x|[ ,]", string.Empty).Normalize().Trim());
-                                        if (find.Length != replace.Length)
-                                        {
-                                            ShowError("The length of the old hex value does not match the length of the new hex value!");
-                                            errorShownAlready = true;
-                                        }
-                                        byte[] bytes = File.ReadAllBytes(newFile);
-                                        foreach (int index in PatternAt(bytes, find))
-                                        {
-                                            for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
-                                            {
-                                                bytes[i] = replace[replaceIndex];
-                                            }
-                                            File.WriteAllBytes(newFile, bytes);
-                                        }
-                                    }
-
-                                }
-                                catch
-                                {
-                                    ShowError("An error occurred while saving your BIOS file");
-                                    errorShownAlready = true;
-                                }
-                            }
-                        }
-                        #endregion
-
-                        #region Set the new board variant
-
-                        try
-                        {
-                            byte[] oldVariant = Encoding.UTF8.GetBytes(boardVariant.Text);
-                            string oldVariantHex = Convert.ToHexString(oldVariant);
-
-                            byte[] newVariantSelection = Encoding.UTF8.GetBytes(boardVariantSelectionBox.Text);
-                            string newVariantHex = Convert.ToHexString(newVariantSelection);
-
-                            byte[] find = ConvertHexStringToByteArray(Regex.Replace(oldVariantHex, "0x|[ ,]", string.Empty).Normalize().Trim());
-                            byte[] replace = ConvertHexStringToByteArray(Regex.Replace(newVariantHex, "0x|[ ,]", string.Empty).Normalize().Trim());
-
-                            byte[] bytes = File.ReadAllBytes(newFile);
-                            foreach (int index in PatternAt(bytes, find))
-                            {
-                                for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
-                                {
-                                    bytes[i] = replace[replaceIndex];
-                                }
-                                File.WriteAllBytes(newFile, bytes);
-                            }
-
-                        }
-                        catch(System.ArgumentException ex)
-                        {
-                            ShowError(ex.Message.ToString());
-                            errorShownAlready = true;
-                        }
-
-                        #endregion
-
-                        #region Change Serial Number
-
-                        try
-                        {
-
-                            byte[] oldSerial = Encoding.UTF8.GetBytes(serialNumber.Text);
-                            string oldSerialHex = Convert.ToHexString(oldSerial);
-
-                            byte[] newSerial = Encoding.UTF8.GetBytes(serialNumberTextbox.Text);
-                            string newSerialHex = Convert.ToHexString(newSerial);
-
-                            byte[] find = ConvertHexStringToByteArray(Regex.Replace(oldSerialHex, "0x|[ ,]", string.Empty).Normalize().Trim());
-                            byte[] replace = ConvertHexStringToByteArray(Regex.Replace(newSerialHex, "0x|[ ,]", string.Empty).Normalize().Trim());
-
-                            byte[] bytes = File.ReadAllBytes(newFile);
-                            foreach (int index in PatternAt(bytes, find))
-                            {
-                                for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
-                                {
-                                    bytes[i] = replace[replaceIndex];
-                                }
-                                File.WriteAllBytes(newFile, bytes);
-                            }
-
-                        }
-                        catch (System.ArgumentException ex)
-                        {
-                            ShowError(ex.Message.ToString());
-                            errorShownAlready = true;
-                        }
-
-                        #endregion
-                    }
-                    else
-                    {
-                        ShowError("Save operation cancelled!");
-                        errorShownAlready = true;
-                    }
-                }
-            }
+            ShowError("Please select a valid board model before saving new BIOS information!");
+            return;
+        }
+        if (BoardVariantIn.SelectedValue == null)
+        {
+            ShowError("Please select a valid board variant before saving new BIOS information!");
+            return;
+        }
+        if (string.IsNullOrEmpty(SerialNumberIn.Text))
+        {
+            ShowError("Please enter a valid serial number before saving new BIOS information!");
+            return;
         }
 
-        if (File.Exists(fileNameToLookFor) && errorShownAlready == false)
+        IStorageFile? file = await StorageProvider.SaveFilePickerAsync(new()
         {
-            // Reset everything and show message
-            ResetAppFields();
-            MessageBox.Show("A new BIOS file was successfully created. Please load the new BIOS file to verify the information you entered before installing onto your motherboard. Remember this software was created by TheCod3r with nothing but love. Why not show some love back by dropping me a small donation to say thanks ;).", "All done!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }*/
+            Title = "Save NOR BIN File",
+            SuggestedStartLocation = await StorageProvider.TryGetFolderFromPathAsync(NORDumpPath.Text),
+            SuggestedFileName = "bios.bin",
+            FileTypeChoices =
+            [
+                new("PS5 BIN Files")
+                {
+                    Patterns = [ "*.bin" ]
+                }
+            ]
+        });
+
+        if (file == null)
+            return;
+
+        string filePath = Uri.UnescapeDataString(file.Path.AbsolutePath);
+
+        _norData.Edition = (NORData.Editions)PS5ModelIn.SelectedIndex;
+        _norData.VariantCode = BoardVariantIn.SelectedValue.ToString() ?? null;
+        _norData.Serial = SerialNumberIn.Text;
+        
+        _norData.Save(filePath);
     }
 }

@@ -24,23 +24,29 @@ public class NORData(string path)
     };
     
     private byte[] _data = File.ReadAllBytes(path);
-    
     // TODO: These two need better names
-    private string? One => GetData(Offsets.One, 12, false);
+    private string? One => GetData(Offsets.One, 4, false);
 
-    private string? Two => GetData(Offsets.Two, 12, false);
-
-    public string Edition
+    public string Path => path;
+    public Editions Edition
     {
         get
         {
-            if (One?.Contains("22020101") ?? false)
-                return "Disc Edition";
-            
-            if (Two?.Contains("22030101") ?? false)
-                return "Digital Edition";
+            return One switch
+            {
+                "22020101" => Editions.Disc,
+                "22030101" => Editions.Digital,
+                _ => Editions.Unknown
+            };
+        }
+        set
+        {
+            if (value == Editions.Unknown)
+                return;
 
-            return "Unknown";
+            byte[] replace = [0x22, (byte)(value == Editions.Disc ? 0x02 : 0x03), 0x01, 0x01];
+            
+            Array.Copy(replace, 0, _data, Offsets.One, replace.Length);
         }
     }
     public string WiFiMAC
@@ -63,29 +69,51 @@ public class NORData(string path)
                 : string.Join("", val.Select((c, i) => i % 2 == 0 ? $"{c}" : $"{c}-"))[..^1];
         }
     }
-    public string Serial => GetData(Offsets.Serial, 16, true) ?? "Unknown";
-    public string? VariantRaw
+
+    public string Serial
+    {
+        get => GetData(Offsets.Serial, 16, true) ?? "Unknown";
+        set
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(value);
+            
+            Array.Copy(new byte[16], 0, _data, Offsets.Serial, bytes.Length);
+            Array.Copy(bytes, 0, _data, Offsets.Serial, bytes.Length);
+        }
+    }
+    public string? VariantCode
     {
         get 
         {
             try
             {
                 byte[] variantBytes = _data[Offsets.Variant..(Offsets.Variant + 19)].Where(b => b != 0xFF).ToArray();
-                return Encoding.ASCII.GetString(variantBytes);
+                return Encoding.UTF8.GetString(variantBytes).Split(' ')[0];
             }
             catch
             {
                 return null;
             }
         }
+        set
+        {
+            if (value == null)
+                return;
+
+            // this is stupid, because i'm almost certain that this doesn't work for all models, but it's what the old
+            // code did (or, more accurately, what it *would have* done, had it actually *worked*), and i don't know how
+            // to make it right, so i'm leaving it as is for now.
+            byte[] bytes = Encoding.UTF8.GetBytes(value);
+            Array.Copy(bytes, 0, _data, Offsets.Variant + 10, bytes.Length);
+        }
     }
-    public string Variant
+    public string? Variant
     {
         get 
         {
-            string? variant = VariantRaw;
+            string? variant = VariantCode;
             return variant == null
-                ? "Unknown"
+                ? null
                 : $"{variant} - {Regions.GetValueOrDefault(variant[^3..^1], "Unknown Region")}";
         }
     }
@@ -97,12 +125,27 @@ public class NORData(string path)
         {
             byte[] bytes = _data[offset..(offset + length)];
             return useString
-                ? Encoding.ASCII.GetString(bytes)
+                ? Encoding.UTF8.GetString(bytes)
                 : BitConverter.ToString(bytes).Replace("-", null);
         }
         catch
         {
             return null;
         }
+    }
+
+    // ReSharper disable once ParameterHidesPrimaryConstructorParameter
+    public void Save(string path)
+    {
+        using FileStream stream = new(path, FileMode.Create);
+        stream.Write(_data, 0, _data.Length);
+        stream.Close();
+    }
+    
+    public enum Editions
+    {
+        Disc,
+        Digital,
+        Unknown,
     }
 }
