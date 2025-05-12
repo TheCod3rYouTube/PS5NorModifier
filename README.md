@@ -1,3 +1,7 @@
+Help contribute to the project with a donation: https://www.streamelements.com/thecod3r/tip
+
+News update: This project will continue soon. We've just aquired the domain "uart.codes" and I'm in the process of building a team and a roadmap to really take this project places it's never seen!
+
 The PS5 NOR Modifier is a Windows GUI based application making it easier for people to modify the NOR file for their PlayStation 5 console. This is especially useful if you need to generate a NOR file for your console to replace a corrupt or faulty NOR.
 
 
