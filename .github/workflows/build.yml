@@ -1,0 +1,48 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  PROJECT_PATH: "UART-CL By TheCod3r/UART-CL By TheCod3r/UART-CL By TheCod3r.csproj"
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            runtime: win-x64
+          - os: macos-latest
+            runtime: osx-arm64
+          - os: ubuntu-latest
+            runtime: linux-x64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore "${{ env.PROJECT_PATH }}"
+
+    - name: Build
+      run: dotnet build "${{ env.PROJECT_PATH }}" --configuration Release --no-restore
+
+    - name: Publish
+      run: dotnet publish "${{ env.PROJECT_PATH }}" --configuration Release --runtime ${{ matrix.runtime }} --self-contained true -p:PublishSingleFile=true --no-restore
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: UART-CL-${{ matrix.runtime }}
+        path: UART-CL By TheCod3r/UART-CL By TheCod3r/bin/Release/net6.0/${{ matrix.runtime }}/publish/ 
