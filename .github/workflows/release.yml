@@ -54,14 +54,23 @@ jobs:
           PREV_TAG=$(git tag -l "v${BASE_VERSION}.*" | sort -V | tail -n 1 || echo "")
           if [ -z "$PREV_TAG" ]; then
             # If no previous tag, use all commits
-            CHANGELOG=$(echo "## What's Changed\n\n"; git log --pretty=format:"* %s" || echo "Initial release")
+            CHANGELOG=$(git log --pretty=format:"* %s" || echo "Initial release")
           else
             # Get commits since last tag
-            CHANGELOG=$(echo "## What's Changed\n\n"; git log --pretty=format:"* %s" ${PREV_TAG}..HEAD || echo "No changes")
+            CHANGELOG=$(git log --pretty=format:"* %s" ${PREV_TAG}..HEAD || echo "No changes")
           fi
           {
             echo "changelog<<EOF"
+            echo "## What's Changed"
             echo "${CHANGELOG}"
+            echo "## How to use"
+            echo "This section is still a WIP, I will update it once I am able to better test out the execution of the files we are generating."
+            echo "### Windows"
+            echo "After downloading the windows binary, you should just be able to run the executable and after allowing it to run, you should be able to use it."
+            echo "### MacOS"
+            echo "After downloading the macos binary, you will need to run the `UART-CL By TheCod3r` command once to have macos gatekeeper block it, from there you can open your settings app, then scroll down to Security section and find the blocked app. Note a seperate lib for serial connections for macos is required which is why `libSystem.IO.Ports.Native.dylib` exists, it too will be blocked and will require unblocking."
+            echo "### Linux"
+            echo "Theoretically this works on all x86_64 linux distros, if you have any issues please let me know."
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
