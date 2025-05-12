@@ -15,10 +15,6 @@ The PS5 NOR Modifier is a user-friendly tool designed to help you modify NOR fil
 ![PS5 NOR Modifier - Features](https://raw.githubusercontent.com/thecod3ryoutube/PS5NorModifier/main/Screenshot2.png)
 ![PS5 NOR Modifier - UART Interface](https://raw.githubusercontent.com/thecod3ryoutube/PS5NorModifier/main/Screenshot3.png)
 
-## 📥 Download
-
-Download the standalone ZIP from the releases section.
-
 ## 🚨 When to Use This Tool
 
 ### Signs of a Corrupt NOR
@@ -72,10 +68,10 @@ Your PS5 might need NOR file modification if you experience:
 - Backup your original NOR file before modifications
 
 ## 📦 Downloads
-[Download from Releases](link-to-releases-page)
+[For simple use, download Standalone zip](https://github.com/TheCod3rYouTube/PS5NorModifier/blob/main/PS5%20NOR%20Modifier%20Standalone.zip)
 
 ## 🤝 Contributing
-[Contribution guidelines or link to contribution docs]
+If you want to contribute, make a PR and the changes will be reviewed
 
 ## 📄 License
-[License information]
+This Project is under GPL-2.0 License
