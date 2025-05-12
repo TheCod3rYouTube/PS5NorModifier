@@ -11,6 +11,7 @@ using System.Xml;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using UART.Core.Extensions;
 
 #region Reminders (remove before publishing)
 // Add check inside sub menu to confirm that the selected .bin file is a valid PS5 dump
@@ -23,64 +24,6 @@ bool showMenu = false;
 
 // Set the application title
 System.Console.Title = appTitle;
-
-#region Checksum generation
-static string CalculateChecksum(string str)
-{
-    // Math stuff. I don't understand it either!
-    int sum = 0;
-    foreach (char c in str)
-    {
-        sum += (int)c;
-    }
-    return str + ":" + (sum & 0xFF).ToString("X2");
-}
-#endregion
-
-#region Hex conversions
-static string HexStringToString(string hexString)
-{
-    if (hexString == null || (hexString.Length & 1) == 1)
-    {
-        throw new ArgumentException();
-    }
-    var sb = new StringBuilder();
-    for (var i = 0; i < hexString.Length; i += 2)
-    {
-        var hexChar = hexString.Substring(i, 2);
-        sb.Append((char)Convert.ToByte(hexChar, 16));
-    }
-    return sb.ToString();
-}
-
-static IEnumerable<int> PatternAt(byte[] source, byte[] pattern)
-{
-    for (int i = 0; i < source.Length; i++)
-    {
-        if (source.Skip(i).Take(pattern.Length).SequenceEqual(pattern))
-        {
-            yield return i;
-        }
-    }
-}
-
-static byte[] ConvertHexStringToByteArray(string hexString)
-{
-    if (hexString.Length % 2 != 0)
-    {
-        throw new ArgumentException(String.Format(CultureInfo.InvariantCulture, "The binary key cannot have an odd number of digits: {0}", hexString));
-    }
-
-    byte[] data = new byte[hexString.Length / 2];
-    for (int index = 0; index < data.Length; index++)
-    {
-        string byteValue = hexString.Substring(index * 2, 2);
-        data[index] = Convert.ToByte(byteValue, 16); // Parse hex string directly
-    }
-
-    return data;
-}
-#endregion
 
 #region Error parsing (via XML database)
 
@@ -491,7 +434,7 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                         // Catch any exceptions and ignore, setting variantValue to null
                     }
 
-                    ConsoleModelInfo = HexStringToString(variantValue);
+                    ConsoleModelInfo = variantValue.HexStringToString();
 
                     string region = "Unknown Region";
                     if (ConsoleModelInfo != null && ConsoleModelInfo.Length >= 3)
@@ -503,7 +446,7 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                         }
                     }
 
-                    ModelInfo = HexStringToString(variantValue) + " - " + region;
+                    ModelInfo = variantValue.HexStringToString() + " - " + region;
                     #endregion
 
                     #region Get Console Serial Number
@@ -527,8 +470,8 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
 
                     if (serialValue != null)
                     {
-                        ConsoleSerialNumber = HexStringToString(serialValue);
-                        ConsoleSerialNumber = HexStringToString(serialValue);
+                        ConsoleSerialNumber = serialValue.HexStringToString();
+                        ConsoleSerialNumber = serialValue.HexStringToString();
 
                     }
                     else
@@ -559,7 +502,7 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
 
                     if (moboSerialValue != null)
                     {
-                        MotherboardSerialNumber = HexStringToString(moboSerialValue);
+                        MotherboardSerialNumber = moboSerialValue.HexStringToString();
                     }
                     else
                     {
@@ -716,11 +659,11 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                 // Modify the values to set the file as "Digital Edition"
                                 try
                                 {
-                                    byte[] find = ConvertHexStringToByteArray(Regex.Replace("22010101", "0x|[ ,]", string.Empty).Normalize().Trim());
-                                    byte[] replace = ConvertHexStringToByteArray(Regex.Replace("22030101", "0x|[ ,]", string.Empty).Normalize().Trim());
+                                    byte[] find = "22010101".ConvertHexStringToByteArray("0x|[ ,]", string.Empty);
+                                    byte[] replace = "22030101".ConvertHexStringToByteArray("0x|[ ,]", string.Empty);
 
                                     byte[] bytes = File.ReadAllBytes(pathToDump);
-                                    foreach (int index in PatternAt(bytes, find))
+                                    foreach (int index in bytes.PatternAt(find))
                                     {
                                         for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
                                         {
@@ -729,10 +672,10 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                         File.WriteAllBytes(pathToDump, bytes);
                                     }
 
-                                    byte[] find2 = ConvertHexStringToByteArray(Regex.Replace("22020101", "0x|[ ,]", string.Empty).Normalize().Trim());
-                                    byte[] replace2 = ConvertHexStringToByteArray(Regex.Replace("22030101", "0x|[ ,]", string.Empty).Normalize().Trim());
+                                    byte[] find2 = "22020101".ConvertHexStringToByteArray("0x|[ ,]", string.Empty);
+                                    byte[] replace2 = "22030101".ConvertHexStringToByteArray("0x|[ ,]", string.Empty);
 
-                                    foreach (int index in PatternAt(bytes, find2))
+                                    foreach (int index in bytes.PatternAt(find2))
                                     {
                                         for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
                                         {
@@ -849,11 +792,11 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                 // Modify the values to set the file as "Disc Edition"
                                 try
                                 {
-                                    byte[] find = ConvertHexStringToByteArray(Regex.Replace("22010101", "0x|[ ,]", string.Empty).Normalize().Trim());
-                                    byte[] replace = ConvertHexStringToByteArray(Regex.Replace("22020101", "0x|[ ,]", string.Empty).Normalize().Trim());
+                                    byte[] find = "22010101".ConvertHexStringToByteArray("0x|[ ,]", string.Empty);
+                                    byte[] replace = "22020101".ConvertHexStringToByteArray( "0x|[ ,]", string.Empty);
 
                                     byte[] bytes = File.ReadAllBytes(pathToDump);
-                                    foreach (int index in PatternAt(bytes, find))
+                                    foreach (int index in bytes.PatternAt(find))
                                     {
                                         for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
                                         {
@@ -862,10 +805,10 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                         File.WriteAllBytes(pathToDump, bytes);
                                     }
 
-                                    byte[] find2 = ConvertHexStringToByteArray(Regex.Replace("22030101", "0x|[ ,]", string.Empty).Normalize().Trim());
-                                    byte[] replace2 = ConvertHexStringToByteArray(Regex.Replace("22020101", "0x|[ ,]", string.Empty).Normalize().Trim());
+                                    byte[] find2 = "22030101".ConvertHexStringToByteArray("0x|[ ,]", string.Empty);
+                                    byte[] replace2 = "22020101".ConvertHexStringToByteArray("0x|[ ,]", string.Empty);
 
-                                    foreach (int index in PatternAt(bytes, find2))
+                                    foreach (int index in bytes.PatternAt(find2))
                                     {
                                         for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
                                         {
@@ -981,11 +924,11 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                 // Modify the values to set the file as "Slim Edition"
                                 try
                                 {
-                                    byte[] find = ConvertHexStringToByteArray(Regex.Replace("22020101", "0x|[ ,]", string.Empty).Normalize().Trim());
-                                    byte[] replace = ConvertHexStringToByteArray(Regex.Replace("22010101", "0x|[ ,]", string.Empty).Normalize().Trim());
+                                    byte[] find = "22020101".ConvertHexStringToByteArray("0x|[ ,]", string.Empty);
+                                    byte[] replace = "22010101".ConvertHexStringToByteArray("0x|[ ,]", string.Empty);
 
                                     byte[] bytes = File.ReadAllBytes(pathToDump);
-                                    foreach (int index in PatternAt(bytes, find))
+                                    foreach (int index in bytes.PatternAt(find))
                                     {
                                         for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
                                         {
@@ -994,10 +937,10 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                         File.WriteAllBytes(pathToDump, bytes);
                                     }
 
-                                    byte[] find2 = ConvertHexStringToByteArray(Regex.Replace("22030101", "0x|[ ,]", string.Empty).Normalize().Trim());
-                                    byte[] replace2 = ConvertHexStringToByteArray(Regex.Replace("22010101", "0x|[ ,]", string.Empty).Normalize().Trim());
+                                    byte[] find2 = "22030101".ConvertHexStringToByteArray("0x|[ ,]", string.Empty);
+                                    byte[] replace2 = "22010101".ConvertHexStringToByteArray("0x|[ ,]", string.Empty);
 
-                                    foreach (int index in PatternAt(bytes, find2))
+                                    foreach (int index in bytes.PatternAt(find2))
                                     {
                                         for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
                                         {
@@ -1119,7 +1062,7 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                     Array.Copy(newSerialBytes, newSerialBytesPadded, Math.Min(newSerialBytes.Length, 17));
 
                                     // Find the index of the old serial number in the file
-                                    int index = PatternAt(existingFile, oldSerialBytes).FirstOrDefault();
+                                    int index = existingFile.PatternAt(oldSerialBytes).FirstOrDefault();
 
                                     if (index != -1)
                                     {
@@ -1192,7 +1135,7 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                         // Catch any exceptions and ignore, setting MotherboardSerial to null
                     }
 
-                    MotherboardSerial = HexStringToString(moboValue);
+                    MotherboardSerial = moboValue.HexStringToString();
 
                     if (!string.IsNullOrEmpty(moboValue) != null && !string.IsNullOrEmpty(MotherboardSerial))
                     {
@@ -1237,11 +1180,11 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                     byte[] newSerialBytes = Encoding.UTF8.GetBytes(newSerial);
                                     string newSerialHex = Convert.ToHexString(newSerialBytes);
 
-                                    byte[] find = ConvertHexStringToByteArray(Regex.Replace(oldSerialHex, "0x|[ ,]", string.Empty).Normalize().Trim());
-                                    byte[] replace = ConvertHexStringToByteArray(Regex.Replace(newSerialHex, "0x|[ ,]", string.Empty).Normalize().Trim());
+                                    byte[] find = oldSerialHex.ConvertHexStringToByteArray("0x|[ ,]", string.Empty);
+                                    byte[] replace = newSerialHex.ConvertHexStringToByteArray("0x|[ ,]", string.Empty);
 
                                     byte[] bytes = File.ReadAllBytes(pathToDump);
-                                    foreach (int index in PatternAt(bytes, find))
+                                    foreach (int index in bytes.PatternAt(find))
                                     {
                                         for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
                                         {
@@ -1317,7 +1260,7 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                         // Catch any exceptions and ignore, setting variantValue to null
                     }
 
-                    ConsoleModel = HexStringToString(variantValue);
+                    ConsoleModel = variantValue.HexStringToString();
 
                     if(!string.IsNullOrEmpty(variantValue) != null && !string.IsNullOrEmpty(ConsoleModel))
                     {
@@ -1363,11 +1306,11 @@ static void RunSubMenu(string appTitle, Dictionary<string, string> regionMap)
                                     byte[] newModelBytes = Encoding.UTF8.GetBytes(newModel);
                                     string newModelHex = Convert.ToHexString(newModelBytes);
 
-                                    byte[] find = ConvertHexStringToByteArray(Regex.Replace(oldModelHex, "0x|[ ,]", string.Empty).Normalize().Trim());
-                                    byte[] replace = ConvertHexStringToByteArray(Regex.Replace(newModelHex, "0x|[ ,]", string.Empty).Normalize().Trim());
+                                    byte[] find = oldModelHex.ConvertHexStringToByteArray("0x|[ ,]", string.Empty);
+                                    byte[] replace = newModelHex.ConvertHexStringToByteArray("0x|[ ,]", string.Empty);
 
                                     byte[] bytes = File.ReadAllBytes(pathToDump);
-                                    foreach (int index in PatternAt(bytes, find))
+                                    foreach (int index in bytes.PatternAt(find))
                                     {
                                         for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
                                         {
@@ -1530,7 +1473,7 @@ static bool MainMenu(string appTitle, Dictionary<string, string> regionMap)
                     // Create a command variable depending on what number we're at in the loop (where "i" is the current number)
                     var command = $"errlog {i}";
                     // Add the checksum to the command
-                    var checksum = CalculateChecksum(command);
+                    var checksum = command.CalculateChecksum();
                     // Send the current command to the UART device
                     serialPort.WriteLine(checksum);
 
@@ -1653,7 +1596,7 @@ static bool MainMenu(string appTitle, Dictionary<string, string> regionMap)
                 // Reset the foreground color to default before proceeding
                 System.Console.ResetColor();
 
-                var checksum = CalculateChecksum("errlog clear");
+                var checksum = "errlog clear".CalculateChecksum();
                 serialPort.WriteLine(checksum);
 
                 List<string> UARTLines = new();
@@ -1751,7 +1694,7 @@ static bool MainMenu(string appTitle, Dictionary<string, string> regionMap)
                     }
                     else if (!string.IsNullOrEmpty(UARTCommand)) // If the command is not empty or null
                     {
-                        var checksum = CalculateChecksum(UARTCommand);
+                        var checksum = UARTCommand.CalculateChecksum();
                         serialPort.WriteLine(checksum);
 
                         List<string> UARTLines = new();
