@@ -1,4 +1,4 @@
-namespace PS5_NOR_Modifier;
+namespace PS5NORModifier;
 
 public static class Offsets
 {

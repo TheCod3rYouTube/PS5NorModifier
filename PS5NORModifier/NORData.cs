@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace PS5_NOR_Modifier;
+namespace PS5NORModifier;
 
 public class NORData(string path)
 {

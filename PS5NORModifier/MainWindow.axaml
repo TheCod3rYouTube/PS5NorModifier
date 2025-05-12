@@ -5,12 +5,12 @@
         xmlns:dialogHost="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
         mc:Ignorable="d" d:DesignWidth="847" d:DesignHeight="590"
         Width="847" Height="557"
-        x:Class="PS5_NOR_Modifier.MainWindow"
+        x:Class="PS5NORModifier.MainWindow"
         Title="PS5 NOR Modifier" FontSize="12" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid RowDefinitions="85 55 * 81 22" ColumnDefinitions="*" Margin="10 10 10 0">
             <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Image Source="Resources/PS5 Nor Logo.png" />
+                <Image Source="Assets/PS5 Nor Logo.png" />
                 <StackPanel Margin="10 0 0 0">
                     <Label FontWeight="Bold" FontSize="28" HorizontalAlignment="Right">PS5 NOR Modifier</Label>
                     <Label FontWeight="SemiBold" FontStyle="Italic" HorizontalAlignment="Right">
@@ -33,7 +33,7 @@
                             <Label>Select NOR Dump</Label>
                             <Grid ColumnDefinitions="* Auto">
                                 <TextBox Grid.Column="0" Name="NORDumpPath" />
-                                <Button Grid.Column="1" Margin="5 0 0 0" Click="Button_OnClick">Browse</Button>
+                                <Button Grid.Column="1" Name="BrowseButton" Margin="5 0 0 0" Click="BrowseButton_OnClick">Browse</Button>
                             </Grid>
                         </StackPanel>
                         <StackPanel Grid.Column="0" Grid.Row="1">
@@ -94,23 +94,23 @@
                         <Label Grid.Row="0" Grid.Column="0">Com Port:</Label>
                         <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="* Auto Auto Auto" Margin="0 6">
                             <ComboBox Grid.Column="0" Name="ComPorts" Margin="0 0 2 0" />
-                            <Button Grid.Column="1" Name="ConnectComButton">Connect</Button>
-                            <Button Grid.Column="2" Name="DisconnectComButton">Disconnect</Button>
+                            <Button Grid.Column="1" Name="ConnectComButton" Click="ConnectComButton_OnClick">Connect</Button>
+                            <Button Grid.Column="2" Name="DisconnectComButton" IsEnabled="False" Click="DisconnectComButton_OnClick">Disconnect</Button>
                             <Button Grid.Column="3" Name="RefreshComButton" Click="RefreshComButton_OnClick">Refresh Ports</Button>
                         </Grid>
 
                         <Label Grid.Row="1" Grid.Column="0">Options:</Label>
                         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0 6">
-                            <Button Name="GetErrorCodesButton">Get Error Codes</Button>
-                            <Button Name="ClearErrorCodesButton">Clear Error Codes</Button>
-                            <Button Name="DownloadErrorDBButton">Download Error Database</Button>
+                            <Button Name="GetErrorCodesButton" Click="GetErrorCodesButton_OnClick">Get Error Codes</Button>
+                            <Button Name="ClearErrorCodesButton" Click="ClearErrorCodesButton_OnClick">Clear Error Codes</Button>
+                            <Button Name="DownloadErrorDBButton" Click="DownloadErrorDBButton_OnClick">Download Error Database</Button>
                             <CheckBox Name="UseOfflineDB" Margin="2 0 0 0">Use offline database</CheckBox>
                         </StackPanel>
 
                         <Label Grid.Row="2" Grid.Column="0" Margin="0 6">Output:</Label>
-                        <SelectableTextBlock Grid.Row="2" Grid.Column="1" Name="OutputText" Background="#10FFFFFF" />
+                        <SelectableTextBlock Grid.Row="2" Grid.Column="1" Name="OutputText" Background="#10FFFFFF" FontSize="11" />
 
-                        <StackPanel Grid.Row="2" Grid.Column="2" Margin="0 6 0 0">
+                        <StackPanel Grid.Row="2" Grid.Column="2" Margin="4 6 0 0">
                             <Label>Send custom command via UART:</Label>
                             <TextBox Name="CustomCommand" />
                             <Button Name="SendCustomCommandButton" Margin="0 2 0 4"
@@ -144,9 +144,17 @@
                 </TabItem>
             </TabControl>
             <Grid Grid.Row="3" RowDefinitions="*" ColumnDefinitions="Auto *" Margin="0 3">
-                <Image Grid.Row="0" Grid.Column="0" Source="Resources/Paypal-128.png" />
+                <Button Grid.Row="0" Grid.Column="0" Name="PayPalLink" Classes="link" Click="PayPalLink_OnClick">
+                    <Image Source="Assets/Paypal-128.png" />
+                </Button>
                 <Grid Grid.Row="0" Grid.Column="1" RowDefinitions="* Auto" Margin="10 4 0 4">
-                    <TextBlock Grid.Row="0" TextWrapping="Wrap">Please consider supporting my work and time with a small donation. Your contribution will make my wallet happy and help feed my coffee addiction! Click here to donate to me. Even a dollar helps :) Don't forget to subscribe to me on YouTube, too!</TextBlock>
+                    <TextBlock Grid.Row="0" TextWrapping="Wrap">
+                        Please consider supporting my work and time with a small donation. Your contribution will make my wallet happy and help feed my coffee addiction!
+                        <InlineUIContainer>
+                            <Button Name="DonateLink" Classes="link" Click="DonateLink_OnClick">Click here to donate to me.</Button>
+                        </InlineUIContainer>
+                        Even a dollar helps :) Don't forget to subscribe to me on YouTube, too!
+                    </TextBlock>
                     <TextBlock Grid.Row="1" FontSize="16" FontWeight="Bold">
                         This project is sponsored by
                         <InlineUIContainer>
@@ -171,6 +179,7 @@
         </Style>
         <Style Selector="Button.link">
             <Setter Property="Foreground" Value="#7080FF" />
+            <Setter Property="BorderBrush" Value="#7080FF" />
             <Setter Property="Margin" Value="0" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="BorderThickness" Value="0" />

@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 using DialogHostAvalonia;
 using Button = Avalonia.Controls.Button;
 
-namespace PS5_NOR_Modifier;
+namespace PS5NORModifier;
 
 public partial class DialogContents : Avalonia.Controls.UserControl
 {
@@ -25,11 +25,11 @@ public partial class DialogContents : Avalonia.Controls.UserControl
             };
             
             if (i == 0 && i == buttons.Length - 1)
-                button.Margin = new(0);
+                button.Margin = new(0, 2, 0, 0);
             else if (i == 0)
-                button.Margin = new(2, 2, 0, 0);
-            else if (i == buttons.Length - 1)
                 button.Margin = new(0, 2, 2, 0);
+            else if (i == buttons.Length - 1)
+                button.Margin = new(2, 2, 0, 0);
             else
                 button.Margin = new(2, 2, 2, 0);
             

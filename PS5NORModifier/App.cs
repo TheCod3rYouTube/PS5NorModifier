@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
-namespace PS5_NOR_Modifier;
+namespace PS5NORModifier;
 
 public partial class App : Avalonia.Application
 {
