@@ -1,4 +1,5 @@
 using System.Text;
+using UARTLib;
 
 namespace PS5NORModifier;
 
@@ -34,6 +35,7 @@ public class NORData(string path)
         {
             return One switch
             {
+                "22010101" => Editions.Slim,
                 "22020101" => Editions.Disc,
                 "22030101" => Editions.Digital,
                 _ => Editions.Unknown
@@ -117,8 +119,18 @@ public class NORData(string path)
                 : $"{variant} - {Regions.GetValueOrDefault(variant[^3..^1], "Unknown Region")}";
         }
     }
-    public string MoboSerial => GetData(Offsets.MoboSerial, 16, true) ?? "Unknown";
-        
+    public string MoboSerial
+    {
+        get => GetData(Offsets.MoboSerial, 16, true) ?? "Unknown";
+        set
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(value);
+            
+            Array.Copy(new byte[16], 0, _data, Offsets.MoboSerial, bytes.Length);
+            Array.Copy(bytes, 0, _data, Offsets.MoboSerial, bytes.Length);
+        }
+    }
+
     private string? GetData(int offset, int length, bool useString)
     {
         try
@@ -140,12 +152,5 @@ public class NORData(string path)
         using FileStream stream = new(path, FileMode.Create);
         stream.Write(_data, 0, _data.Length);
         stream.Close();
-    }
-    
-    public enum Editions
-    {
-        Disc,
-        Digital,
-        Unknown,
     }
 }

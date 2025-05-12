@@ -1,5 +1,6 @@
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using UARTLib;
 
 namespace PS5NORModifier;
 
@@ -80,9 +81,9 @@ public partial class MainWindow
 
         _norData = new(norPath);
 
-        NORData.Editions edition = _norData.Edition;
+        Editions edition = _norData.Edition;
         PS5ModelOut.Content = edition + " Edition";
-        PS5ModelIn.SelectedItem = edition == NORData.Editions.Unknown ? null : edition + " Edition";
+        PS5ModelIn.SelectedItem = edition == Editions.Unknown ? null : edition + " Edition";
 
         string serial = _norData.Serial;
         SerialNumberOut.Content = serial;
@@ -144,7 +145,7 @@ public partial class MainWindow
 
         string filePath = Uri.UnescapeDataString(file.Path.AbsolutePath);
 
-        _norData.Edition = (NORData.Editions)PS5ModelIn.SelectedIndex;
+        _norData.Edition = (Editions)PS5ModelIn.SelectedIndex;
         _norData.VariantCode = BoardVariantIn.SelectedValue.ToString() ?? null;
         _norData.Serial = SerialNumberIn.Text;
         
