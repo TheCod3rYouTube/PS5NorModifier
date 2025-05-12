@@ -1,7 +1,0 @@
-C:\Users\TheCod3r\source\repos\PS5 NOR Modifier\PS5 NOR Modifier\bin\publish\PS5 NOR Modifier.pdb
-C:\Users\TheCod3r\source\repos\PS5 NOR Modifier\PS5 NOR Modifier\bin\publish\D3DCompiler_47_cor3.dll
-C:\Users\TheCod3r\source\repos\PS5 NOR Modifier\PS5 NOR Modifier\bin\publish\PenImc_cor3.dll
-C:\Users\TheCod3r\source\repos\PS5 NOR Modifier\PS5 NOR Modifier\bin\publish\PresentationNative_cor3.dll
-C:\Users\TheCod3r\source\repos\PS5 NOR Modifier\PS5 NOR Modifier\bin\publish\vcruntime140_cor3.dll
-C:\Users\TheCod3r\source\repos\PS5 NOR Modifier\PS5 NOR Modifier\bin\publish\wpfgfx_cor3.dll
-C:\Users\TheCod3r\source\repos\PS5 NOR Modifier\PS5 NOR Modifier\bin\publish\PS5 NOR Modifier.exe
