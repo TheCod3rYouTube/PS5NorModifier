@@ -27,9 +27,13 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: UART-CL-*
           path: artifacts
           run-id: ${{ github.event.workflow_run.id }}
+
+      - name: List downloaded artifacts
+        run: |
+          echo "Listing contents of artifacts directory:"
+          ls -R artifacts/
 
       - name: Calculate next version
         id: version
