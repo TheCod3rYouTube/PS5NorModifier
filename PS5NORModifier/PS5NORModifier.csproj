@@ -65,4 +65,8 @@
     <AvaloniaResource Include="Assets\Paypal-128.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\UARTLib\UARTLib.csproj" />
+  </ItemGroup>
+
 </Project>

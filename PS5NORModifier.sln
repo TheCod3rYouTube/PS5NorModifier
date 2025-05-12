@@ -5,6 +5,10 @@ VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PS5NORModifier", "PS5NORModifier\PS5NORModifier.csproj", "{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UART-CL_By_TheCod3r", "UART-CL_By_TheCod3r\UART-CL_By_TheCod3r.csproj", "{0438F03C-BC9A-4F8E-88F3-CDAF252487C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UARTLib", "UARTLib\UARTLib.csproj", "{AF657D71-B71E-4066-A312-91E5C797361E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,22 @@ Global
 		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Release|x86.ActiveCfg = Release|x86
 		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Release|x86.Build.0 = Release|x86
+		{0438F03C-BC9A-4F8E-88F3-CDAF252487C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0438F03C-BC9A-4F8E-88F3-CDAF252487C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0438F03C-BC9A-4F8E-88F3-CDAF252487C2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0438F03C-BC9A-4F8E-88F3-CDAF252487C2}.Debug|x86.Build.0 = Debug|Any CPU
+		{0438F03C-BC9A-4F8E-88F3-CDAF252487C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0438F03C-BC9A-4F8E-88F3-CDAF252487C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0438F03C-BC9A-4F8E-88F3-CDAF252487C2}.Release|x86.ActiveCfg = Release|Any CPU
+		{0438F03C-BC9A-4F8E-88F3-CDAF252487C2}.Release|x86.Build.0 = Release|Any CPU
+		{AF657D71-B71E-4066-A312-91E5C797361E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF657D71-B71E-4066-A312-91E5C797361E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF657D71-B71E-4066-A312-91E5C797361E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AF657D71-B71E-4066-A312-91E5C797361E}.Debug|x86.Build.0 = Debug|Any CPU
+		{AF657D71-B71E-4066-A312-91E5C797361E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF657D71-B71E-4066-A312-91E5C797361E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF657D71-B71E-4066-A312-91E5C797361E}.Release|x86.ActiveCfg = Release|Any CPU
+		{AF657D71-B71E-4066-A312-91E5C797361E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

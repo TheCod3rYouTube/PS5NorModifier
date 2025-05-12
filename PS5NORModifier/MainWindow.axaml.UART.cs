@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using System.Linq.Expressions;
 using System.Xml;
 using DialogHostAvalonia;
+using UARTLib;
 
 namespace PS5NORModifier;
 
@@ -58,7 +59,7 @@ public partial class MainWindow
         {
             List<string> uartLines = [];
 
-            string checksum = CalculateChecksum(CustomCommand.Text);
+            string checksum = UART.CalculateChecksum(CustomCommand.Text);
             _uartSerial.WriteLine(checksum);
             do
             {
@@ -150,7 +151,7 @@ public partial class MainWindow
             for (var i = 0; i <= 10; i++)
             {
                 var command = $"errlog {i}";
-                string checksum = CalculateChecksum(command);
+                string checksum = UART.CalculateChecksum(command);
                 _uartSerial.WriteLine(checksum);
                 do
                 {
@@ -170,8 +171,8 @@ public partial class MainWindow
                         case "OK":
                             string errorCode = split[2];
                             string errorResult = UseOfflineDB.IsChecked == true
-                                ? ParseErrorsOffline(errorCode)
-                                : await ParseErrorsOnline(errorCode);
+                                ? UART.ParseErrorsOffline(errorCode)
+                                : await UART.ParseErrorsOnline(errorCode);
                             
                             OutputText.Text += errorResult + Environment.NewLine;
                             break;
@@ -184,71 +185,6 @@ public partial class MainWindow
             ShowError(ex.ToString());
             StatusLabel.Content = "An error occurred while reading error codes from UART. Please try again.";
         }
-    }
-    
-    private static async Task<string> ParseErrorsOnline(string error)
-    {
-        string url = "https://uartcodes.com/xml.php?errorCode=" + error;
-
-        try
-        {
-            string response;
-            using (HttpClient client = new())
-            {
-                response = await client.GetStringAsync(url);
-            }
-            
-            XmlDocument xmlDoc = new();
-            xmlDoc.LoadXml(response);
-            
-            XmlNode? description = xmlDoc.SelectSingleNode("errorCodes/errorCode/Description");
-            if (description == null)
-            {
-                return $"Error code: {error}\n" +
-                       "An error occurred while fetching a result for this error. Please try again!";
-            }
-            
-            return $"Error code: {error}\n" +
-                   $"Description: {description.InnerText}";
-        }
-        catch (Exception ex)
-        {
-            return $"Error code: {error}\n" +
-                   $"{ex}";
-        }
-    }
-    
-    private static string ParseErrorsOffline(string errorCode)
-    {
-        try
-        {
-            if (!File.Exists("errorDB.xml"))
-                return "Error: Local XML file not found.";
-            
-            XmlDocument xmlDoc = new();
-            xmlDoc.Load("errorDB.xml");
-
-            XmlNode? errorNode = xmlDoc.SelectSingleNode($"//errorCode[ErrorCode='{errorCode}']");
-            XmlNode? descriptionNode = errorNode?.SelectSingleNode("Description");
-            
-            if (descriptionNode == null)
-                return "Error: Invalid XML database file. Please re-download the offline database or use the online database.";
-            
-            string description = descriptionNode.InnerText;
-            return $"Error code: {errorCode}\n" +
-                   $"Description: {description}";
-        }
-        catch (Exception ex)
-        {
-            return $"Error: {ex}\n" +
-                   "Is the database present and valid?";
-        }
-    }
-
-    private static string CalculateChecksum(string str)
-    {
-        int sum = str.Aggregate(0, (current, c) => current + c);
-        return str + ":" + (sum & 0xFF).ToString("X2");
     }
 
     private async void ClearErrorCodesButton_OnClick(object? sender, RoutedEventArgs e)
@@ -276,7 +212,7 @@ public partial class MainWindow
 
             const string command = "errlog clear";
             
-            string checksum = CalculateChecksum(command);
+            string checksum = UART.CalculateChecksum(command);
             
             _uartSerial.WriteLine(checksum);
             do
