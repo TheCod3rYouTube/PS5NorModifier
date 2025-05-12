@@ -6,6 +6,7 @@ namespace PS5NORModifier;
 
 public partial class App : Avalonia.Application
 {
+    public static MainWindow MainWindow;
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -15,7 +16,8 @@ public partial class App : Avalonia.Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow();
+            MainWindow = new();
+            desktop.MainWindow = MainWindow;
         }
 
         base.OnFrameworkInitializationCompleted();

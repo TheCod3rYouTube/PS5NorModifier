@@ -1,10 +1,13 @@
+using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
 using UARTLib;
 
 namespace PS5NORModifier;
 
-public partial class MainWindow
+public partial class NOREditor : UserControl
 {
     private NORData? _norData;
     
@@ -40,10 +43,17 @@ public partial class MainWindow
         "DFI-T1000AA",
         "DFI-D1000AA"
     ];
+    public NOREditor()
+    {
+        InitializeComponent();
+        BoardVariantIn.ItemsSource = _boardVariants;
+        PS5ModelIn.ItemsSource = _models;
+    }
     
     private async void BrowseButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        var files = await StorageProvider.OpenFilePickerAsync(new()
+        MainWindow mainWindow = MainWindow.Instance;
+        var files = await mainWindow.StorageProvider.OpenFilePickerAsync(new()
         {
             Title = "Open NOR BIN File",
             AllowMultiple = false,
@@ -63,17 +73,17 @@ public partial class MainWindow
         string norPath =  Uri.UnescapeDataString(file.Path.AbsolutePath);
         if (!File.Exists(norPath))
         {
-            ShowError("The file you selected could not be found. Please check the file exists and is a valid BIN file.");
+            mainWindow.ShowError("The file you selected could not be found. Please check the file exists and is a valid BIN file.");
             return;
         }
 
         if(!file.Name.EndsWith(".bin", StringComparison.InvariantCultureIgnoreCase))
         {
-            ShowError("You did not select a .bin file. Please ensure the file you are choosing is a correct BIN file and try again.");
+            mainWindow.ShowError("You did not select a .bin file. Please ensure the file you are choosing is a correct BIN file and try again.");
             return;
         }
 
-        StatusLabel.Content = "Status: Selected file " + norPath;
+        mainWindow.StatusLabel.Content = "Status: Selected file " + norPath;
         NORDumpPath.Text = norPath;
 
         long length = new FileInfo(norPath).Length;
@@ -105,31 +115,32 @@ public partial class MainWindow
 
     private async void SaveButton_OnClick(object? sender, RoutedEventArgs e)
     {
+        MainWindow mainWindow = MainWindow.Instance;
         if (!File.Exists(_norData?.Path))
         {
-            ShowError("Please select a valid BIOS file first.");
+            mainWindow.ShowError("Please select a valid BIOS file first.");
             return;
         }
         if (PS5ModelIn.SelectedValue == null)
         {
-            ShowError("Please select a valid board model before saving new BIOS information!");
+            mainWindow.ShowError("Please select a valid board model before saving new BIOS information!");
             return;
         }
         if (BoardVariantIn.SelectedValue == null)
         {
-            ShowError("Please select a valid board variant before saving new BIOS information!");
+            mainWindow.ShowError("Please select a valid board variant before saving new BIOS information!");
             return;
         }
         if (string.IsNullOrEmpty(SerialNumberIn.Text))
         {
-            ShowError("Please enter a valid serial number before saving new BIOS information!");
+            mainWindow.ShowError("Please enter a valid serial number before saving new BIOS information!");
             return;
         }
 
-        IStorageFile? file = await StorageProvider.SaveFilePickerAsync(new()
+        IStorageFile? file = await mainWindow.StorageProvider.SaveFilePickerAsync(new()
         {
             Title = "Save NOR BIN File",
-            SuggestedStartLocation = await StorageProvider.TryGetFolderFromPathAsync(NORDumpPath.Text),
+            SuggestedStartLocation = await mainWindow.StorageProvider.TryGetFolderFromPathAsync(NORDumpPath.Text),
             SuggestedFileName = "bios.bin",
             FileTypeChoices =
             [

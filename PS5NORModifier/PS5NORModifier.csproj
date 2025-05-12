@@ -50,12 +50,6 @@
     <Compile Update="App.cs">
       <DependentUpon>App.axaml</DependentUpon>
     </Compile>
-    <Compile Update="MainWindow.axaml.NOR.cs">
-      <DependentUpon>MainWindow.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="MainWindow.axaml.UART.cs">
-      <DependentUpon>MainWindow.axaml</DependentUpon>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>

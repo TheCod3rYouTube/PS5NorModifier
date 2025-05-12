@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dialogHost="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+        xmlns:local="clr-namespace:PS5NORModifier"
         mc:Ignorable="d" d:DesignWidth="847" d:DesignHeight="590"
         Width="847" Height="557"
         x:Class="PS5NORModifier.MainWindow"
@@ -28,119 +29,10 @@
             </TextBlock>
             <TabControl Grid.Row="2" Background="#20000000" Padding="0">
                 <TabItem Header="NOR Modifier">
-                    <Grid RowDefinitions="50 *" ColumnDefinitions="Auto * Auto *" Margin="4">
-                        <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4">
-                            <Label>Select NOR Dump</Label>
-                            <Grid ColumnDefinitions="* Auto">
-                                <TextBox Grid.Column="0" Name="NORDumpPath" />
-                                <Button Grid.Column="1" Name="BrowseButton" Margin="5 0 0 0" Click="BrowseButton_OnClick">Browse</Button>
-                            </Grid>
-                        </StackPanel>
-                        <StackPanel Grid.Column="0" Grid.Row="1">
-                            <Label FontWeight="Bold">Dump Results:</Label>
-                            <Label>Serial Number:</Label>
-                            <Label>Motherboard Serial:</Label>
-                            <Label>Board Variant:</Label>
-                            <Label>PS5 Model:</Label>
-                            <Label>File Size:</Label>
-                            <Label>WiFi MAC Address:</Label>
-                            <Label>LAN MAC Address:</Label>
-                            <StackPanel.Styles>
-                                <Style Selector="Label">
-                                    <Setter Property="Padding" Value="3 5 15 5" />
-                                </Style>
-                            </StackPanel.Styles>
-                        </StackPanel>
-                        <StackPanel Grid.Column="1" Grid.Row="1" Margin="0 22 0 0">
-                            <Label Name="SerialNumberOut">...</Label>
-                            <Label Name="MotherboardSerialOut">...</Label>
-                            <Label Name="BoardVariantOut">...</Label>
-                            <Label Name="PS5ModelOut">...</Label>
-                            <Label Name="FileSizeOut">...</Label>
-                            <Label Name="WiFiMACAddressOut">...</Label>
-                            <Label Name="LANMACAddressOut">...</Label>
-                            <StackPanel.Styles>
-                                <Style Selector="Label">
-                                    <Setter Property="Padding" Value="3 5" />
-                                </Style>
-                            </StackPanel.Styles>
-                        </StackPanel>
-                        <StackPanel Grid.Column="2" Grid.Row="1">
-                            <Label FontWeight="Bold">Modify Values</Label>
-                            <Label>Serial Number:</Label>
-                            <Label>Board Variant:</Label>
-                            <Label>PS5 Model:</Label>
-                            <Label>WiFi MAC Address:</Label>
-                            <Label>LAN MAC Address:</Label>
-                            <StackPanel.Styles>
-                                <Style Selector="Label">
-                                    <Setter Property="Padding" Value="3 5 15 5" />
-                                </Style>
-                            </StackPanel.Styles>
-                        </StackPanel>
-                        <StackPanel Grid.Column="3" Grid.Row="1" Margin="0 27 0 0">
-                            <TextBox Name="SerialNumberIn" />
-                            <ComboBox Name="BoardVariantIn" />
-                            <ComboBox Name="PS5ModelIn" />
-                            <TextBox Name="WiFiMACAddressIn" IsEnabled="False" />
-                            <TextBox Name="LANMACAddressIn" IsEnabled="False" />
-
-                            <Button Name="SaveButton" Click="SaveButton_OnClick" Margin="0 5 0 0">Save New BIOS Information</Button>
-                        </StackPanel>
-                    </Grid>
+                    <local:NOREditor Name="NorEditor" />
                 </TabItem>
                 <TabItem Header="UART Communication">
-                    <Grid RowDefinitions="36 36 * 36" ColumnDefinitions="Auto 2* *" Margin="4">
-                        <Label Grid.Row="0" Grid.Column="0">Com Port:</Label>
-                        <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="* Auto Auto Auto" Margin="0 6">
-                            <ComboBox Grid.Column="0" Name="ComPorts" Margin="0 0 2 0" />
-                            <Button Grid.Column="1" Name="ConnectComButton" Click="ConnectComButton_OnClick">Connect</Button>
-                            <Button Grid.Column="2" Name="DisconnectComButton" IsEnabled="False" Click="DisconnectComButton_OnClick">Disconnect</Button>
-                            <Button Grid.Column="3" Name="RefreshComButton" Click="RefreshComButton_OnClick">Refresh Ports</Button>
-                        </Grid>
-
-                        <Label Grid.Row="1" Grid.Column="0">Options:</Label>
-                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0 6">
-                            <Button Name="GetErrorCodesButton" Click="GetErrorCodesButton_OnClick">Get Error Codes</Button>
-                            <Button Name="ClearErrorCodesButton" Click="ClearErrorCodesButton_OnClick">Clear Error Codes</Button>
-                            <Button Name="DownloadErrorDBButton" Click="DownloadErrorDBButton_OnClick">Download Error Database</Button>
-                            <CheckBox Name="UseOfflineDB" Margin="2 0 0 0">Use offline database</CheckBox>
-                        </StackPanel>
-
-                        <Label Grid.Row="2" Grid.Column="0" Margin="0 6">Output:</Label>
-                        <SelectableTextBlock Grid.Row="2" Grid.Column="1" Name="OutputText" Background="#10FFFFFF" FontSize="11" />
-
-                        <StackPanel Grid.Row="2" Grid.Column="2" Margin="4 6 0 0">
-                            <Label>Send custom command via UART:</Label>
-                            <TextBox Name="CustomCommand" />
-                            <Button Name="SendCustomCommandButton" Margin="0 2 0 4"
-                                    Click="SendCustomCommandButton_OnClick">
-                                Send
-                            </Button>
-                            <TextBlock TextWrapping="Wrap">You can send custom commands with UART using this feature. Note that any command entered here will return unparsed results. Please also be sure to know what you are doing as sending unsafe commands can damage your device.</TextBlock>
-                        </StackPanel>
-
-                        <Button Grid.Row="3" Grid.Column="1" Name="ClearOutputButton" HorizontalAlignment="Right"
-                                Margin="0 6" Click="ClearOutputButton_OnClick">
-                            Clear Output Window
-                        </Button>
-
-                        <Grid.Styles>
-                            <Style Selector="Button">
-                                <Setter Property="Padding" Value="4 0 4 1" />
-                                <Setter Property="Margin" Value="2 0" />
-                            </Style>
-                            <Style Selector="Button:nth-child(1)">
-                                <Setter Property="Margin" Value="0 0 2 0" />
-                            </Style>
-                            <Style Selector="Button:nth-last-child(1)">
-                                <Setter Property="Margin" Value="2 0 0 0" />
-                            </Style>
-                            <Style Selector="Grid>Label">
-                                <Setter Property="Margin" Value="0 6 10 0" />
-                            </Style>
-                        </Grid.Styles>
-                    </Grid>
+                    <local:UARTCommander Name="UartCommander" />
                 </TabItem>
             </TabControl>
             <Grid Grid.Row="3" RowDefinitions="*" ColumnDefinitions="Auto *" Margin="0 3">

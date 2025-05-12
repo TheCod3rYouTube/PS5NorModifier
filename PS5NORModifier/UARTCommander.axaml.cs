@@ -1,23 +1,31 @@
 using System.IO.Ports;
-using Avalonia.Interactivity;
-
-using System.Linq.Expressions;
 using System.Xml;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml;
 using DialogHostAvalonia;
 using UARTLib;
 
 namespace PS5NORModifier;
 
-public partial class MainWindow
+public partial class UARTCommander : UserControl
 {
+    public UARTCommander()
+    {
+        InitializeComponent();
+    }
+    
     private readonly SerialPort _uartSerial = new();
     
-    private void RefreshComPorts()
+    internal void RefreshComPorts()
     {
+        MainWindow mainWindow = MainWindow.Instance;
         string[] ports = SerialPort.GetPortNames();
         if (ports == null || ports.Length == 0)
         {
-            ShowError("No available COM ports were detected.");
+            mainWindow.ShowError("No available COM ports were detected.");
             return;
         }
         
@@ -43,15 +51,16 @@ public partial class MainWindow
 
     private void SendCustomCommandButton_OnClick(object? sender, RoutedEventArgs e)
     {
+        MainWindow mainWindow = MainWindow.Instance;
         if (string.IsNullOrEmpty(CustomCommand.Text))
         {
-            ShowError("Please enter a command to send via UART.");
+            mainWindow.ShowError("Please enter a command to send via UART.");
             return;
         }
 
         if (!_uartSerial.IsOpen)
         {
-            ShowError("Please connect to UART before attempting to send commands.");
+            mainWindow.ShowError("Please connect to UART before attempting to send commands.");
             return;
         }
         
@@ -85,18 +94,19 @@ public partial class MainWindow
         }
         catch (Exception ex)
         {
-            ShowError(ex.ToString());
-            StatusLabel.Content = "An error occurred while reading error codes from UART. Please try again...";
+            mainWindow.ShowError(ex.ToString());
+            mainWindow.StatusLabel.Content = "An error occurred while reading error codes from UART. Please try again...";
         }
     }
 
     private void ConnectComButton_OnClick(object? sender, RoutedEventArgs e)
     {
+        MainWindow mainWindow = MainWindow.Instance;
         var selectedPort = (string?)ComPorts.SelectedItem;
         if (string.IsNullOrEmpty(selectedPort))
         {
-            ShowError("Please select a COM port from the ports list to establish a connection.");
-            StatusLabel.Content = "Could not connect to UART. Please try again!";
+            mainWindow.ShowError("Please select a COM port from the ports list to establish a connection.");
+            mainWindow.StatusLabel.Content = "Could not connect to UART. Please try again!";
             return;
         }
 
@@ -109,17 +119,18 @@ public partial class MainWindow
             
             DisconnectComButton.IsEnabled = true;
             ConnectComButton.IsEnabled = false;
-            StatusLabel.Content = $"Connected to UART via COM port {selectedPort} at a BAUD rate of 115200.";
+            mainWindow.StatusLabel.Content = $"Connected to UART via COM port {selectedPort} at a BAUD rate of 115200.";
         }
         catch (Exception ex)
         {
-            ShowError(ex.ToString());
-            StatusLabel.Content = "Could not connect to UART. Please try again!";
+            mainWindow.ShowError(ex.ToString());
+            mainWindow.StatusLabel.Content = "Could not connect to UART. Please try again!";
         }
     }
 
     private void DisconnectComButton_OnClick(object? sender, RoutedEventArgs e)
     {
+        MainWindow mainWindow = MainWindow.Instance;
         try
         {
             if (!_uartSerial.IsOpen)
@@ -128,19 +139,20 @@ public partial class MainWindow
             _uartSerial.Close();
             ConnectComButton.IsEnabled = true;
             DisconnectComButton.IsEnabled = false;
-            StatusLabel.Content = "Disconnected from UART.";
+            mainWindow.StatusLabel.Content = "Disconnected from UART.";
         }
         catch(Exception ex)
         {
-            ShowError(ex.ToString());
-            StatusLabel.Content = "An error occurred while disconnecting from UART. Please try again.";
+            mainWindow.ShowError(ex.ToString());
+            mainWindow.StatusLabel.Content = "An error occurred while disconnecting from UART. Please try again.";
         }
     }
     private async void GetErrorCodesButton_OnClick(object? sender, RoutedEventArgs e)
     {
+        MainWindow mainWindow = MainWindow.Instance;
         if (_uartSerial.IsOpen != true)
         {
-            ShowError("Please connect to UART before attempting to read the error codes.");
+            mainWindow.ShowError("Please connect to UART before attempting to read the error codes.");
             return;
         }
         
@@ -182,27 +194,28 @@ public partial class MainWindow
         }
         catch (Exception ex)
         {
-            ShowError(ex.ToString());
-            StatusLabel.Content = "An error occurred while reading error codes from UART. Please try again.";
+            mainWindow.ShowError(ex.ToString());
+            mainWindow.StatusLabel.Content = "An error occurred while reading error codes from UART. Please try again.";
         }
     }
 
     private async void ClearErrorCodesButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        //DialogResult result = MessageBox.Show(, , MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-        var result = (string?)await DialogHost.Show(new DialogContents(Dialog, 
+        MainWindow mainWindow = MainWindow.Instance;
+        DialogHost dialog = mainWindow.Dialog;
+        var result = (string?)await DialogHost.Show(new DialogContents(dialog, 
             "This will clear error codes from the console by sending the \"errlog clear\" command." +
             "Are you sure you would like to proceed? This action cannot be undone!",
             "Are you sure?", 
             "No", "Yes"),
-            Dialog);
+            dialog);
         
         if (result != "Yes")
             return;
 
         if (!_uartSerial.IsOpen)
         {
-            ShowError("Please connect to UART before attempting to send commands.");
+            mainWindow.ShowError("Please connect to UART before attempting to send commands.");
             return;
         }
 
@@ -243,18 +256,20 @@ public partial class MainWindow
         }
         catch (Exception ex)
         {
-            ShowError(ex.ToString());
-            StatusLabel.Content = "An error occurred while attempting to send a UART command. Please try again.";
+            mainWindow.ShowError(ex.ToString());
+            mainWindow.StatusLabel.Content = "An error occurred while attempting to send a UART command. Please try again.";
         }
     }
 
     private async void DownloadErrorDBButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        var result = (string?)await DialogHost.Show(new DialogContents(Dialog, 
+        MainWindow mainWindow = MainWindow.Instance;
+        DialogHost dialog = mainWindow.Dialog;
+        var result = (string?)await DialogHost.Show(new DialogContents(dialog, 
                 "Downloading the error database will overwrite any existing offline database you currently have. Are you sure you would like to do this?",
                 "Are you sure?",
                 "No", "Yes"),
-            Dialog);
+            dialog);
 
         if (result != "Yes")
             return;
@@ -274,15 +289,15 @@ public partial class MainWindow
 
             xmlDoc.Save("errorDB.xml");
 
-            await DialogHost.Show(new DialogContents(Dialog,
+            await DialogHost.Show(new DialogContents(dialog,
                 "The offline database has been updated successfully.", 
                 "Offline Database Updated!", 
                 "OK"));
         }
         catch (Exception ex)
         {
-            ShowError(ex.ToString());
-            StatusLabel.Content = "An error occurred while downloading the offline database. Please try again.";
+            mainWindow.ShowError(ex.ToString());
+            mainWindow.StatusLabel.Content = "An error occurred while downloading the offline database. Please try again.";
         }
     }
 }

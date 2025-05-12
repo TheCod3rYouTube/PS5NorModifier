@@ -1,0 +1,67 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="PS5NORModifier.NOREditor">
+    <Grid RowDefinitions="50 *" ColumnDefinitions="Auto * Auto *" Margin="4">
+        <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4">
+            <Label>Select NOR Dump</Label>
+            <Grid ColumnDefinitions="* Auto">
+                <TextBox Grid.Column="0" Name="NORDumpPath" />
+                <Button Grid.Column="1" Name="BrowseButton" Margin="5 0 0 0" Click="BrowseButton_OnClick">Browse</Button>
+            </Grid>
+        </StackPanel>
+        <StackPanel Grid.Column="0" Grid.Row="1">
+            <Label FontWeight="Bold">Dump Results:</Label>
+            <Label>Serial Number:</Label>
+            <Label>Motherboard Serial:</Label>
+            <Label>Board Variant:</Label>
+            <Label>PS5 Model:</Label>
+            <Label>File Size:</Label>
+            <Label>WiFi MAC Address:</Label>
+            <Label>LAN MAC Address:</Label>
+            <StackPanel.Styles>
+                <Style Selector="Label">
+                    <Setter Property="Padding" Value="3 5 15 5" />
+                </Style>
+            </StackPanel.Styles>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Grid.Row="1" Margin="0 22 0 0">
+            <Label Name="SerialNumberOut">...</Label>
+            <Label Name="MotherboardSerialOut">...</Label>
+            <Label Name="BoardVariantOut">...</Label>
+            <Label Name="PS5ModelOut">...</Label>
+            <Label Name="FileSizeOut">...</Label>
+            <Label Name="WiFiMACAddressOut">...</Label>
+            <Label Name="LANMACAddressOut">...</Label>
+            <StackPanel.Styles>
+                <Style Selector="Label">
+                    <Setter Property="Padding" Value="3 5" />
+                </Style>
+            </StackPanel.Styles>
+        </StackPanel>
+        <StackPanel Grid.Column="2" Grid.Row="1">
+            <Label FontWeight="Bold">Modify Values</Label>
+            <Label>Serial Number:</Label>
+            <Label>Board Variant:</Label>
+            <Label>PS5 Model:</Label>
+            <Label>WiFi MAC Address:</Label>
+            <Label>LAN MAC Address:</Label>
+            <StackPanel.Styles>
+                <Style Selector="Label">
+                    <Setter Property="Padding" Value="3 5 15 5" />
+                </Style>
+            </StackPanel.Styles>
+        </StackPanel>
+        <StackPanel Grid.Column="3" Grid.Row="1" Margin="0 27 0 0">
+            <TextBox Name="SerialNumberIn" />
+            <ComboBox Name="BoardVariantIn" />
+            <ComboBox Name="PS5ModelIn" />
+            <TextBox Name="WiFiMACAddressIn" IsEnabled="False" />
+            <TextBox Name="LANMACAddressIn" IsEnabled="False" />
+
+            <Button Name="SaveButton" Click="SaveButton_OnClick" Margin="0 5 0 0">Save New BIOS Information</Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="PS5NORModifier.UARTCommander">
+    <Grid RowDefinitions="36 36 * 36" ColumnDefinitions="Auto 2* *" Margin="4">
+        <Label Grid.Row="0" Grid.Column="0">Com Port:</Label>
+        <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="* Auto Auto Auto" Margin="0 6">
+            <ComboBox Grid.Column="0" Name="ComPorts" Margin="0 0 2 0" />
+            <Button Grid.Column="1" Name="ConnectComButton" Click="ConnectComButton_OnClick">Connect</Button>
+            <Button Grid.Column="2" Name="DisconnectComButton" IsEnabled="False" Click="DisconnectComButton_OnClick">Disconnect</Button>
+            <Button Grid.Column="3" Name="RefreshComButton" Click="RefreshComButton_OnClick">Refresh Ports</Button>
+        </Grid>
+
+        <Label Grid.Row="1" Grid.Column="0">Options:</Label>
+        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0 6">
+            <Button Name="GetErrorCodesButton" Click="GetErrorCodesButton_OnClick">Get Error Codes</Button>
+            <Button Name="ClearErrorCodesButton" Click="ClearErrorCodesButton_OnClick">Clear Error Codes</Button>
+            <Button Name="DownloadErrorDBButton" Click="DownloadErrorDBButton_OnClick">Download Error Database</Button>
+            <CheckBox Name="UseOfflineDB" Margin="2 0 0 0">Use offline database</CheckBox>
+        </StackPanel>
+
+        <Label Grid.Row="2" Grid.Column="0" Margin="0 6">Output:</Label>
+        <SelectableTextBlock Grid.Row="2" Grid.Column="1" Name="OutputText" Background="#10FFFFFF" FontSize="11" />
+
+        <StackPanel Grid.Row="2" Grid.Column="2" Margin="4 6 0 0">
+            <Label>Send custom command via UART:</Label>
+            <TextBox Name="CustomCommand" />
+            <Button Name="SendCustomCommandButton" Margin="0 2 0 4"
+                    Click="SendCustomCommandButton_OnClick">
+                Send
+            </Button>
+            <TextBlock TextWrapping="Wrap">You can send custom commands with UART using this feature. Note that any command entered here will return unparsed results. Please also be sure to know what you are doing as sending unsafe commands can damage your device.</TextBlock>
+        </StackPanel>
+
+        <Button Grid.Row="3" Grid.Column="1" Name="ClearOutputButton" HorizontalAlignment="Right"
+                Margin="0 6" Click="ClearOutputButton_OnClick">
+            Clear Output Window
+        </Button>
+
+        <Grid.Styles>
+            <Style Selector="Button">
+                <Setter Property="Padding" Value="4 0 4 1" />
+                <Setter Property="Margin" Value="2 0" />
+            </Style>
+            <Style Selector="Button:nth-child(1)">
+                <Setter Property="Margin" Value="0 0 2 0" />
+            </Style>
+            <Style Selector="Button:nth-last-child(1)">
+                <Setter Property="Margin" Value="2 0 0 0" />
+            </Style>
+            <Style Selector="Grid>Label">
+                <Setter Property="Margin" Value="0 6 10 0" />
+            </Style>
+        </Grid.Styles>
+    </Grid>
+</UserControl>

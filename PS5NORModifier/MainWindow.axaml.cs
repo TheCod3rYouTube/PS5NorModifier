@@ -19,13 +19,13 @@ namespace PS5NORModifier;
 
 public partial class MainWindow : Window
 {
-    
+    // I don't like this
+    public static MainWindow Instance;
     public MainWindow()
     {
+        Instance = this;
         InitializeComponent();
-        RefreshComPorts();
-        BoardVariantIn.ItemsSource = _boardVariants;
-        PS5ModelIn.ItemsSource = _models;
+        UartCommander.RefreshComPorts();
     }
 
     private void SponsorLink_OnClick(object? sender, RoutedEventArgs e)
@@ -52,7 +52,7 @@ public partial class MainWindow : Window
         });
     }
 
-    private void ShowError(string error)
+    internal void ShowError(string error)
     {
         DialogHost.Show(new DialogContents(Dialog, error, "An error occurred.", "OK"), Dialog);
     }
