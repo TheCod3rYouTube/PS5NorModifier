@@ -10,7 +10,7 @@ on:
 
 env:
   MAJOR_VERSION: "1"
-  MINOR_VERSION: "0"
+  MINOR_VERSION: "1"
 
 jobs:
   release:
@@ -54,10 +54,10 @@ jobs:
           PREV_TAG=$(git tag -l "v${BASE_VERSION}.*" | sort -V | tail -n 1 || echo "")
           if [ -z "$PREV_TAG" ]; then
             # If no previous tag, use all commits
-            CHANGELOG=$(git log --pretty=format:"* %s" || echo "Initial release")
+            CHANGELOG=$(git log --pretty=format:"* %s%n" || echo "Initial release")
           else
             # Get commits since last tag
-            CHANGELOG=$(git log --pretty=format:"* %s" ${PREV_TAG}..HEAD || echo "No changes")
+            CHANGELOG=$(git log --pretty=format:"* %s%n" ${PREV_TAG}..HEAD || echo "No changes")
           fi
           # Escape newlines for GitHub Actions
           CHANGELOG="${CHANGELOG//'%'/'%25'}"
