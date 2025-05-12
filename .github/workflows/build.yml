@@ -33,7 +33,7 @@ jobs:
         dotnet-version: 6.0.x
 
     - name: Restore dependencies
-      run: dotnet restore "${{ env.PROJECT_PATH }}"
+      run: dotnet restore "${{ env.PROJECT_PATH }}" -r ${{ matrix.runtime }}
 
     - name: Build
       run: dotnet build "${{ env.PROJECT_PATH }}" --configuration Release --no-restore
