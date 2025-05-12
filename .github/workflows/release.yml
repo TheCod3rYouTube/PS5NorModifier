@@ -82,7 +82,9 @@ jobs:
           name: Release ${{ steps.version.outputs.new_tag }}
           body: ${{ steps.version.outputs.changelog }}
           files: |
-            artifacts/UART-CL-*/*
+            artifacts/UART-CL-linux-x64/**/*
+            artifacts/UART-CL-osx-arm64/**/*
+            artifacts/UART-CL-win-x64/**/*
           draft: false
           prerelease: false
         env:
