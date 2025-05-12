@@ -54,12 +54,16 @@ jobs:
           PREV_TAG=$(git tag -l "v${BASE_VERSION}.*" | sort -V | tail -n 1 || echo "")
           if [ -z "$PREV_TAG" ]; then
             # If no previous tag, use all commits
-            CHANGELOG=$(git log --pretty=format:"* %s" || echo "Initial release")
+            CHANGELOG=$(echo "## What's Changed\n\n"; git log --pretty=format:"* %s" || echo "Initial release")
           else
             # Get commits since last tag
-            CHANGELOG=$(git log --pretty=format:"* %s" ${PREV_TAG}..HEAD || echo "No changes")
+            CHANGELOG=$(echo "## What's Changed\n\n"; git log --pretty=format:"* %s" ${PREV_TAG}..HEAD || echo "No changes")
           fi
-          echo "changelog=${CHANGELOG}" >> $GITHUB_OUTPUT
+          {
+            echo "changelog<<EOF"
+            echo "${CHANGELOG}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
