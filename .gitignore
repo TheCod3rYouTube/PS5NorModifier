@@ -3,3 +3,7 @@
 ################################################################################
 
 /.vs
+/UART-CL By TheCod3r/bin/Debug/net6.0
+/UART-CL By TheCod3r/obj
+/UART-CL Tests/bin/Debug/net9.0
+/UART-CL Tests/obj
