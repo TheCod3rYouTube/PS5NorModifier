@@ -5,6 +5,22 @@ VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PS5 NOR Modifier", "PS5 NOR Modifier\PS5 NOR Modifier.csproj", "{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{1AC636D7-87A9-40A2-8008-AD282DA5D185}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UART-CL By TheCod3r", "UART-CL By TheCod3r\UART-CL By TheCod3r\UART-CL By TheCod3r.csproj", "{5FA52746-F93B-4DF4-8BBE-970D5C744AFF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{2437D9F4-EC35-400C-9D98-AA510B1DAD3B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D9AD1813-3D4C-4CD9-82F2-1A56BCA2B0E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UART.Core", "UART.Core\UART.Core.csproj", "{AC5043E7-B7B2-45A1-8FCD-1B935DD93BCD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UART.Core.Tests", "UART.Core.Tests\UART.Core.Tests.csproj", "{5B44A453-8C97-4024-8701-4C4AA5E7EB0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,11 +37,39 @@ Global
 		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Release|x86.ActiveCfg = Release|x86
 		{BBBF9E78-9480-436A-92F1-B5B8943BCDEF}.Release|x86.Build.0 = Release|x86
+		{5FA52746-F93B-4DF4-8BBE-970D5C744AFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FA52746-F93B-4DF4-8BBE-970D5C744AFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FA52746-F93B-4DF4-8BBE-970D5C744AFF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5FA52746-F93B-4DF4-8BBE-970D5C744AFF}.Debug|x86.Build.0 = Debug|Any CPU
+		{5FA52746-F93B-4DF4-8BBE-970D5C744AFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FA52746-F93B-4DF4-8BBE-970D5C744AFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FA52746-F93B-4DF4-8BBE-970D5C744AFF}.Release|x86.ActiveCfg = Release|Any CPU
+		{5FA52746-F93B-4DF4-8BBE-970D5C744AFF}.Release|x86.Build.0 = Release|Any CPU
+		{AC5043E7-B7B2-45A1-8FCD-1B935DD93BCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC5043E7-B7B2-45A1-8FCD-1B935DD93BCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC5043E7-B7B2-45A1-8FCD-1B935DD93BCD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AC5043E7-B7B2-45A1-8FCD-1B935DD93BCD}.Debug|x86.Build.0 = Debug|Any CPU
+		{AC5043E7-B7B2-45A1-8FCD-1B935DD93BCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC5043E7-B7B2-45A1-8FCD-1B935DD93BCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC5043E7-B7B2-45A1-8FCD-1B935DD93BCD}.Release|x86.ActiveCfg = Release|Any CPU
+		{AC5043E7-B7B2-45A1-8FCD-1B935DD93BCD}.Release|x86.Build.0 = Release|Any CPU
+		{5B44A453-8C97-4024-8701-4C4AA5E7EB0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B44A453-8C97-4024-8701-4C4AA5E7EB0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B44A453-8C97-4024-8701-4C4AA5E7EB0D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5B44A453-8C97-4024-8701-4C4AA5E7EB0D}.Debug|x86.Build.0 = Debug|Any CPU
+		{5B44A453-8C97-4024-8701-4C4AA5E7EB0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B44A453-8C97-4024-8701-4C4AA5E7EB0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B44A453-8C97-4024-8701-4C4AA5E7EB0D}.Release|x86.ActiveCfg = Release|Any CPU
+		{5B44A453-8C97-4024-8701-4C4AA5E7EB0D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {406F6CF1-EBE8-4A32-86BA-26B4FEDF751B}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AC5043E7-B7B2-45A1-8FCD-1B935DD93BCD} = {2437D9F4-EC35-400C-9D98-AA510B1DAD3B}
+		{5B44A453-8C97-4024-8701-4C4AA5E7EB0D} = {D9AD1813-3D4C-4CD9-82F2-1A56BCA2B0E6}
 	EndGlobalSection
 EndGlobal
