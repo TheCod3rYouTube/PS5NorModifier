@@ -1,0 +1,79 @@
+name: Create Release
+
+on:
+  workflow_run:
+    workflows: ["Build"]
+    types:
+      - completed
+    branches:
+      - main
+
+env:
+  MAJOR_VERSION: "1"
+  MINOR_VERSION: "0"
+
+jobs:
+  release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: UART-CL-*
+          path: artifacts
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Calculate next version
+        id: version
+        run: |
+          # Get the base version
+          BASE_VERSION="${{ env.MAJOR_VERSION }}.${{ env.MINOR_VERSION }}"
+          
+          # Fetch all tags
+          git fetch --tags
+          
+          # Get count of existing tags that match our base version
+          TAG_COUNT=$(git tag -l "v${BASE_VERSION}.*" | wc -l)
+          
+          # Use tag count as patch version
+          PATCH_VERSION="$TAG_COUNT"
+          
+          # Set the full version
+          FULL_VERSION="v${BASE_VERSION}.${PATCH_VERSION}"
+          echo "new_tag=${FULL_VERSION}" >> $GITHUB_OUTPUT
+          
+          # Generate changelog
+          PREV_TAG=$(git tag -l "v${BASE_VERSION}.*" | sort -V | tail -n 1 || echo "")
+          if [ -z "$PREV_TAG" ]; then
+            # If no previous tag, use all commits
+            CHANGELOG=$(git log --pretty=format:"* %s" || echo "Initial release")
+          else
+            # Get commits since last tag
+            CHANGELOG=$(git log --pretty=format:"* %s" ${PREV_TAG}..HEAD || echo "No changes")
+          fi
+          # Escape newlines for GitHub Actions
+          CHANGELOG="${CHANGELOG//'%'/'%25'}"
+          CHANGELOG="${CHANGELOG//$'\n'/'%0A'}"
+          CHANGELOG="${CHANGELOG//$'\r'/'%0D'}"
+          echo "changelog=${CHANGELOG}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.new_tag }}
+          name: Release ${{ steps.version.outputs.new_tag }}
+          body: ${{ steps.version.outputs.changelog }}
+          files: |
+            artifacts/UART-CL-*/*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
