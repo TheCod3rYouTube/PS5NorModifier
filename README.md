@@ -4,6 +4,8 @@ News update: This project will continue soon. We've just aquired the domain "uar
 
 The PS5 NOR Modifier is a Windows GUI based application making it easier for people to modify the NOR file for their PlayStation 5 console. This is especially useful if you need to generate a NOR file for your console to replace a corrupt or faulty NOR.
 
+There is also a Linux version with a command-line interface.
+
 
 Download compiled versions under the releases section
 
@@ -43,7 +45,7 @@ UART Features:
 
 System Requirements:
 
-Operating system: Windows 7, 8, 10, 11
+Operating system: Windows 7, 8, 10, 11 or Linux
 
 Hard Drive: 5MB
 
