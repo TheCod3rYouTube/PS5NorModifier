@@ -1,0 +1,78 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          # UART-CL Project
+          - os: windows-x64
+            runtime: win-x64
+            runner: windows-latest
+            project: "UART-CL By TheCod3r/UART-CL By TheCod3r/UART-CL By TheCod3r.csproj"
+            app-name: "UART-CL"
+            display-name: "Windows - CLI"
+          - os: macos-arm64
+            runtime: osx-arm64
+            runner: macos-latest
+            project: "UART-CL By TheCod3r/UART-CL By TheCod3r/UART-CL By TheCod3r.csproj"
+            app-name: "UART-CL"
+            display-name: "macOS ARM - CLI"
+          - os: macos-x64
+            runtime: osx-x64
+            runner: macos-latest
+            project: "UART-CL By TheCod3r/UART-CL By TheCod3r/UART-CL By TheCod3r.csproj"
+            app-name: "UART-CL"
+            display-name: "macOS x64 - CLI"
+          - os: linux-x64
+            runtime: linux-x64
+            runner: ubuntu-latest
+            project: "UART-CL By TheCod3r/UART-CL By TheCod3r/UART-CL By TheCod3r.csproj"
+            app-name: "UART-CL"
+            display-name: "Linux - CLI"
+          # PS5 NOR Modifier Project (Windows only)
+          - os: windows-x64
+            runtime: win-x64
+            runner: windows-latest
+            project: "PS5 NOR Modifier/PS5 NOR Modifier.csproj"
+            app-name: "PS5-NOR-Modifier"
+            display-name: "Windows - App"
+
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.display-name }}
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore "${{ matrix.project }}" -r ${{ matrix.runtime }}
+
+    - name: Build
+      run: dotnet build "${{ matrix.project }}" --configuration Release --no-restore
+
+    - name: Publish
+      run: dotnet publish "${{ matrix.project }}" --configuration Release --runtime ${{ matrix.runtime }} --self-contained true -p:PublishSingleFile=true --no-restore -o "${{ github.workspace }}/artifact-staging/${{ matrix.runtime }}"
+
+    - name: Prepare unix artifacts for upload
+      if: runner.os == 'macOS' || runner.os == 'Linux'
+      run: |
+        cd ${{ github.workspace }}/artifact-staging/${{ matrix.runtime }}
+        tar -czf ${{ matrix.app-name }}-${{ matrix.runtime }}.tar.gz *
+        find . -not -name '${{ matrix.app-name }}-${{ matrix.runtime }}.tar.gz' -delete
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.app-name }}-${{ matrix.runtime }}
+        path: ${{ github.workspace }}/artifact-staging/${{ matrix.runtime }}/
