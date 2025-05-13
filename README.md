@@ -45,6 +45,6 @@ Operating system: Windows 10, 11, Linux, macOS
 
 CPU: Any X86- or X64-based CPU
 
-Software: Microsoft .NET 9.0 Desktop Runtime
+Software: Microsoft .NET 8.0 Desktop Runtime
 
 Internet connection when using online

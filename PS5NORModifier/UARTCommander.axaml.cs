@@ -123,7 +123,7 @@ public partial class UARTCommander : UserControl
             
             if (!result.success)
             {
-                mainWindow.ShowError(result.errors);
+                mainWindow.ShowError(string.Join(Environment.NewLine, result.errors));
                 mainWindow.SetStatus($"An error occurred while reading error codes from UART, at page {i}. Please try again.");
                 return;
             }

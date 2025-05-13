@@ -10,6 +10,7 @@ public class UART
     
     private readonly SerialPort _uartSerial = new();
     public bool UseOfflineDB { get; set; } = false;
+    public bool IsConnected => _uartSerial.IsOpen;
     
     public static string CalculateChecksum(string str)
     {
@@ -92,6 +93,9 @@ public class UART
     
     public void Connect(string portName, int baudRate = 115200)
     {
+        if (_uartSerial.IsOpen)
+            return;
+        
         _uartSerial.PortName = portName;
         _uartSerial.BaudRate = baudRate;
         _uartSerial.RtsEnable = true;
@@ -137,12 +141,17 @@ public class UART
         return true;
     }
     
-    public async Task<(bool success, string errors)> GetErrorLog(int page)
+    public async Task<(bool success, List<string> errors)> GetErrorLog(int page, bool hideDuplicates = false)
     {
         bool success = SendCommand($"errlog {page}", out var results);
 
         if (!success)
-            return (false, results[0]);
+            return (false, results);
+        
+        if (hideDuplicates)
+        {
+            results = results.Distinct().ToList();
+        }
         
         var errors = "";
         foreach (string[] split in results.Select(l => l.Split(' ')).Where(split => split.Length != 0))
@@ -153,7 +162,11 @@ public class UART
                     break;
                 case "OK":
                     string errorCode = split[2];
-                    string errorResult = UseOfflineDB
+                    string errorResult;
+                    if (errorCode.StartsWith("FFFFFF"))
+                        errorResult = $"No error displayed ({errorCode})";
+                    else
+                        errorResult = UseOfflineDB
                         ? ParseErrorsOffline(errorCode)
                         : await ParseErrorsOnline(errorCode);
                             

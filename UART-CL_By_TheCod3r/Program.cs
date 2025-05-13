@@ -20,6 +20,7 @@ internal class Program
     private const string AppTitle = "UART-CL by TheCod3r";
     private static bool _showMenu = false;
     private static NORData? _norData = null;
+    private static UART _uart = new();
     public static void Main(string[] args)
     {
         Console.Title = AppTitle;
@@ -54,6 +55,7 @@ internal class Program
         {
             _showMenu = MainMenu(AppTitle);
         }
+        _uart.Disconnect();
     }
 
     private static bool MainMenu(string appTitle)
@@ -73,6 +75,9 @@ internal class Program
         Console.WriteLine("6. Buy TheCod3r a coffee");
         Console.ResetColor();
         Console.WriteLine("7. Update error database");
+        Console.WriteLine(_uart.IsConnected
+            ? "8. Disconnect from COM port"
+            : "8. Connect to COM port");
         Console.WriteLine("X. Exit application");
         Console.ForegroundColor = ConsoleColor.Red;
         Console.Write("\nEnter your choice: ");
@@ -83,120 +88,36 @@ internal class Program
         {
             #region Get Error Codes From PS5
             case "1":
-                // Declare a variable to store the selected COM port
-                string selectedPort;
-                // Declare a string array for a list of available port names
-                string[] ports = SerialPort.GetPortNames();
-
-                // No COM ports found. Let the user know and go back to the main menu
-                if (ports.Length == 0)
-                {
-                    Console.WriteLine("No communication devices were found on this system.");
-                    Console.WriteLine("Please insert a UART compatible device and try again.");
-                    Console.WriteLine("Press Enter to continue...");
-                    Console.ReadLine();
-                    return true;
-                }
-
-                // Devices were found. Iterate through and present them in the form of a menu
-                Console.WriteLine("Available devices:");
-                for (int i = 0; i < ports.Length; i++)
-                {
-                    string friendlyName = GetFriendlyName(ports[i]);
-                    Console.WriteLine($"{i + 1}. {ports[i]} - {friendlyName}");
-                }
-
-                // Declare an integer for the index of the selected port
-                int selectedPortIndex;
-                // Add each port to the ports array
-                do
-                {
-                    Console.WriteLine("");
-                    Console.Write("Enter the number of the COM port you want to use: ");
-                } while (!int.TryParse(Console.ReadLine(), out selectedPortIndex) || selectedPortIndex < 1 || selectedPortIndex > ports.Length);
-
-                // Get the selected port and store it inside the selectedPort string
-                selectedPort = ports[selectedPortIndex - 1];
-
-                // Select and lock the chosen device
-                SerialPort serialPort = new(selectedPort);
-                // Configure settings for the selected device
-                serialPort.BaudRate = 115200; // The PS5 requires a BAUD rate of 115200
-                serialPort.RtsEnable = true; // We need to enable ready to send (RTS) mode
-                // Now we can get a list of error codes. We're going to wrap this in a try loop to prevent unexpected crashes
                 try
                 {
-                    // Open the selected port for use
-                    serialPort.Open();
-                    // Let's display the selected port (change the color to blue) so the user is aware of what device is in use
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine("Selected port: " + GetFriendlyName(selectedPort));
-                    // Reset the foreground color to default before proceeding
-                    Console.ResetColor();
-
-                    // Let's start grabbing error codes from the PS5
-                    int loopLimit = 10;
-                    // Create a list to store error codes in
-                    List<string> uartLines = [];
-
-                    // When grabbing error codes, we want to grab the first 10 errors from the system. Let's create a loop
-                    for (var i = 0; i <= loopLimit; i++)
+                    if (!_uart.IsConnected)
                     {
-                        // Create a command variable depending on what number we're at in the loop (where "i" is the current number)
-                        var command = $"errlog {i}";
-                        // Add the checksum to the command
-                        var checksum = UART.CalculateChecksum(command);
-                        // Send the current command to the UART device
-                        serialPort.WriteLine(checksum);
-
-                        // Read the UART response
-                        var line = serialPort.ReadLine();
-
-                        // Ensure we have a valid response, then add it to the errors list
-                        if (!string.Equals($"{command}:{checksum:X2}", line, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            if (!line.Contains("errlog"))
-                            {
-                                // Let's make sure we haven't already added the same error code to the error list
-                                // This way we only show each error code once and keep the output window clean
-                                if (!uartLines.Contains(line))
-                                {
-                                    uartLines.Add(line);
-                                }
-                            }
-                        }
+                        Console.WriteLine("You must connect to a UART device before proceeding. Please select a device and try again.");
+                        Console.WriteLine("Press Enter to continue...");
+                        Console.ReadLine();
+                        return true;
                     }
 
-                    // Now let's iterate through the lines and show them to the user
-                    foreach (var l in uartLines)
+                    // When grabbing error codes, we want to grab the first 11 errors from the system. Let's create a loop
+                    for (var i = 0; i <= 10; i++)
                     {
-                        var split = l.Split(' ');
-                        if (!split.Any()) continue;
-                        switch (split[0])
+                        var result = _uart.GetErrorLog(i).Result;
+                        if (!result.success)
                         {
-                            case "NG":
-                                break;
-                            case "OK":
-                                var errorCode = split[2];
-                                if (errorCode.StartsWith("FFFFFF"))
-                                {
-                                    // The returned code is blank
-                                    Console.ForegroundColor = ConsoleColor.Blue;
-                                    Console.WriteLine("No error displayed");
-                                    Console.ResetColor();
-                                }
-                                else
-                                {
-                                    // Now that the error code has been isolated from the rest of the junk sent by the system
-                                    // let's check it against the database. The error database will need to return XML results
-                                    Console.ForegroundColor = ConsoleColor.Green;
-                                    string errorResult = UART.ParseErrorsOffline(errorCode);
-                                    Console.WriteLine(errorResult);
-                                    Console.ResetColor();
-                                }
-                                break;
-                            default:
-                                break;
+                            Console.WriteLine("An error occurred while reading error codes from UART, at page " + i + ". Please try again.");
+                            Console.WriteLine(result.errors[0]);
+                            Console.WriteLine("Press Enter to continue...");
+                            Console.ReadLine();
+                            return true;
+                        }
+                        
+                        foreach (var l in result.errors)
+                        {
+                            Console.ForegroundColor = l.StartsWith("No error displayed")
+                                ? ConsoleColor.Blue
+                                : ConsoleColor.Green;
+                            Console.WriteLine(l);
+                            Console.ResetColor();
                         }
                     }
 
@@ -204,9 +125,6 @@ internal class Program
                     Console.WriteLine("");
                     Console.WriteLine("Press Enter to continue...");
                     Console.ReadLine();
-
-                    // Before exiting, close and free up the selected device
-                    serialPort.Close();
                 }
                 catch (Exception ex)
                 {
@@ -221,76 +139,26 @@ internal class Program
             #endregion
             #region Clear UART codes
             case "2":
-                // Declare a string array for a list of available port names
-                ports = SerialPort.GetPortNames();
-
-                // No COM ports found. Let the user know and go back to the main menu
-                if (ports.Length == 0)
-                {
-                    Console.WriteLine("No communication devices were found on this system.");
-                    Console.WriteLine("Please insert a UART compatible device and try again.");
-                    Console.WriteLine("Press Enter to continue...");
-                    Console.ReadLine();
-                    return true;
-                }
-
-                // Devices were found. Iterate through and present them in the form of a menu
-                Console.WriteLine("Available devices:");
-                for (int i = 0; i < ports.Length; i++)
-                {
-                    string friendlyName = GetFriendlyName(ports[i]);
-                    Console.WriteLine($"{i + 1}. {ports[i]} - {friendlyName}");
-                }
-
-                // Add each port to the ports array
-                do
-                {
-                    Console.WriteLine("");
-                    Console.Write("Enter the number of the COM port you want to use: ");
-                } while (!int.TryParse(Console.ReadLine(), out selectedPortIndex) || selectedPortIndex < 1 || selectedPortIndex > ports.Length);
-
-                // Get the selected port and store it inside the selectedPort string
-                selectedPort = ports[selectedPortIndex - 1];
-
-                // Select and lock the chosen device
-                serialPort = new SerialPort(selectedPort);
-                // Configure settings for the selected device
-                serialPort.BaudRate = 115200; // The PS5 requires a BAUD rate of 115200
-                serialPort.RtsEnable = true; // We need to enable ready to send (RTS) mode
-                // Now we can wipe the error codes. We're going to wrap this in a try loop to prevent unexpected crashes
                 try
                 {
-                    // Open the selected port for use
-                    serialPort.Open();
-                    // Let's display the selected port (change the color to blue) so the user is aware of what device is in use
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine("Selected port: " + GetFriendlyName(selectedPort));
-                    // Reset the foreground color to default before proceeding
-                    Console.ResetColor();
-
-                    var checksum = UART.CalculateChecksum("errlog clear");
-                    serialPort.WriteLine(checksum);
-
-                    List<string> UARTLines = [];
-
-                    do
+                    if (!_uart.IsConnected)
                     {
-                        var line = serialPort.ReadLine();
-                        UARTLines.Add(line);
-                    } while (serialPort.BytesToRead != 0);
-
-                    foreach (var l in UARTLines)
-                    {
-                        Console.WriteLine(l);
+                        Console.WriteLine("You must connect to a UART device before proceeding. Please select a device and try again.");
+                        Console.WriteLine("Press Enter to continue...");
+                        Console.ReadLine();
+                        return true;
                     }
 
+                    bool success = _uart.ClearErrorLog(out string result);
+                    
+                    Console.WriteLine(result);
+                    Console.WriteLine(success
+                        ? "Error codes cleared successfully."
+                        : "An error occurred while clearing error codes. Please try again.");
                     Console.WriteLine("Press Enter to continue...");
 
                     // Job done. Continue
                     Console.ReadLine();
-
-                    // Before exiting, close and free up the selected device
-                    serialPort.Close();
                 }
                 catch (Exception ex)
                 {
@@ -304,84 +172,40 @@ internal class Program
             #endregion
             #region Custom UART command
             case "3":
-                // Declare a string array for a list of available port names
-                ports = SerialPort.GetPortNames();
-
-                // No COM ports found. Let the user know and go back to the main menu
-                if (ports.Length == 0)
-                {
-                    Console.WriteLine("No communication devices were found on this system.");
-                    Console.WriteLine("Please insert a UART compatible device and try again.");
-                    Console.WriteLine("Press Enter to continue...");
-                    Console.ReadLine();
-                    return true;
-                }
-
-                // Devices were found. Iterate through and present them in the form of a menu
-                Console.WriteLine("Available devices:");
-                for (int i = 0; i < ports.Length; i++)
-                {
-                    string friendlyName = GetFriendlyName(ports[i]);
-                    Console.WriteLine($"{i + 1}. {ports[i]} - {friendlyName}");
-                }
-
-                // Add each port to the ports array
-                do
-                {
-                    Console.WriteLine("");
-                    Console.Write("Enter the number of the COM port you want to use: ");
-                } while (!int.TryParse(Console.ReadLine(), out selectedPortIndex) || selectedPortIndex < 1 || selectedPortIndex > ports.Length);
-
-                // Get the selected port and store it inside the selectedPort string
-                selectedPort = ports[selectedPortIndex - 1];
-
-                // Select and lock the chosen device
-                serialPort = new SerialPort(selectedPort);
-                // Configure settings for the selected device
-                serialPort.BaudRate = 115200; // The PS5 requires a BAUD rate of 115200
-                serialPort.RtsEnable = true; // We need to enable ready to send (RTS) mode
-
-                // Now we can run the custom command. We're going to wrap this in a try loop to prevent unexpected crashes
                 try
                 {
-                    // Open the selected port for use
-                    serialPort.Open();
-                    // Let's display the selected port (change the color to blue) so the user is aware of what device is in use
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine("Selected port: " + GetFriendlyName(selectedPort));
-                    // Reset the foreground color to default before proceeding
-                    Console.ResetColor();
-
+                    if (!_uart.IsConnected)
+                    {
+                        Console.WriteLine("You must connect to a UART device before proceeding. Please select a device and try again.");
+                        Console.WriteLine("Press Enter to continue...");
+                        Console.ReadLine();
+                        return true;
+                    }
+                    
                     while (true) // Loop until user provides a valid command or 'exit'
                     {
                         // Ask the user for their custom UART command
                         Console.Write("Please enter a custom command to send (type exit to quit): ");
                         // Get the command which the user entered
-                        string UARTCommand = Console.ReadLine();
+                        string uartCommand = Console.ReadLine();
 
                         // If the user types exit, we want to return to the main menu
-                        if (UARTCommand == "exit")
+                        if (uartCommand == "exit")
                         {
                             break; // Exit the while loop and return to the main menu
                         }
-                        else if (!string.IsNullOrEmpty(UARTCommand)) // If the command is not empty or null
+
+                        if (!string.IsNullOrEmpty(uartCommand)) // If the command is not empty or null
                         {
-                            var checksum = UART.CalculateChecksum(UARTCommand);
-                            serialPort.WriteLine(checksum);
+                            bool success = _uart.SendArbitraryCommand(uartCommand, out string result);
 
-                            List<string> UARTLines = [];
+                            Console.ForegroundColor = success
+                                ? ConsoleColor.White
+                                : ConsoleColor.Red;
+                            
+                            Console.WriteLine(result);
 
-                            do
-                            {
-                                var line = serialPort.ReadLine();
-                                UARTLines.Add(line);
-                            } while (serialPort.BytesToRead != 0);
-
-                            foreach (var l in UARTLines)
-                            {
-                                Console.WriteLine(l);
-                            }
-
+                            Console.ResetColor();
                             Console.WriteLine("Press Enter to continue...");
                             Console.ReadLine();
                         }
@@ -391,9 +215,6 @@ internal class Program
                             Console.WriteLine("Please enter a valid command.");
                         }
                     }
-
-                    // Before exiting, close and free up the selected device
-                    serialPort.Close();
                 }
                 catch (Exception ex)
                 {
@@ -485,16 +306,73 @@ internal class Program
                 Console.WriteLine("Press Enter to continue...");
                 Console.ReadLine();
                 return true;
+            case "8":
+                if (_uart.IsConnected)
+                {
+                    _uart.Disconnect();
+                    Console.WriteLine("Disconnected from COM port.");
+                }
+                else
+                {
+                    // Declare a variable to store the selected COM port
+                    string selectedPort;
+                    // Declare a string array for a list of available port names
+                    string[] ports = SerialPort.GetPortNames();
+
+                    // No COM ports found. Let the user know and go back to the main menu
+                    if (ports.Length == 0)
+                    {
+                        Console.WriteLine("No communication devices were found on this system.");
+                        Console.WriteLine("Please insert a UART compatible device and try again.");
+                        Console.WriteLine("Press Enter to continue...");
+                        Console.ReadLine();
+                        return true;
+                    }
+
+                    // Devices were found. Iterate through and present them in the form of a menu
+                    Console.WriteLine("Available devices:");
+                    for (int i = 0; i < ports.Length; i++)
+                    {
+                        string friendlyName = GetFriendlyName(ports[i]);
+                        Console.WriteLine($"{i + 1}. {ports[i]} - {friendlyName}");
+                    }
+
+                    // Declare an integer for the index of the selected port
+                    int selectedPortIndex;
+                    // Add each port to the ports array
+                    do
+                    {
+                        Console.WriteLine("");
+                        Console.Write("Enter the number of the COM port you want to use: ");
+                    } while (!int.TryParse(Console.ReadLine(), out selectedPortIndex) || selectedPortIndex < 1 || selectedPortIndex > ports.Length);
+
+                    // Get the selected port and store it inside the selectedPort string
+                    selectedPort = ports[selectedPortIndex - 1];
+
+                    try
+                    {
+                        _uart.Connect(selectedPort);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("An error occurred while connecting to your selected device.");
+                        Console.WriteLine("Error details:");
+                        Console.WriteLine(e);
+                        Console.WriteLine("Press Enter to continue...");
+                        Console.ReadLine();
+                    }
+                }
+                return true;
+            case "X":
+            case "x":
+                Environment.Exit(0);
+                return true;
             default:
                 Console.WriteLine("Invalid choice. Please try again.");
                 Console.WriteLine("Press Enter to continue...");
                 Console.ReadLine();
                 return true;
             #endregion
-            case "X":
-            case "x":
-                Environment.Exit(0);
-                return true;
         }
         #endregion
     }
