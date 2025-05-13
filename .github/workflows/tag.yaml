@@ -17,21 +17,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: "[Setup] Go"
-        uses: actions/setup-go@v5
-        with:
-          go-version: stable
-
-      - name: "[Setup] ghcr login"
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.TOKEN }}
-
       - name: "[CD] GoReleaser"
         uses: goreleaser/goreleaser-action@v6
         with:
           args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

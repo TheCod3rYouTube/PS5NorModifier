@@ -17,6 +17,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           args: check
+          
   validate-title:
     name: Validate title
     runs-on: ubuntu-latest
