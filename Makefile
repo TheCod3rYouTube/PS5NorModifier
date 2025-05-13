@@ -23,7 +23,7 @@ restore:
 	@dotnet restore "UART-CL By TheCod3r/UART-CL By TheCod3r/UART-CL By TheCod3r.csproj" -r ${ARCH}
 	
 ## Build for all platforms
-build: build-windows-ui build-windows-x86 build-macos-x64 build-macos-arm64 build-linux-x64
+build: build-windows-ui build-windows-x86 build-macos-x64 build-macos-arm64 build-linux-x64 build-linux-arm64
 
 uart-cl:
 	@echo "${BLUE}Building UART-CL for ${ARCH}...${RESET}"
@@ -52,26 +52,27 @@ build-windows-ui:
 	@mv PS5NorModifier-${VERSION}.zip ./build/
 	@echo "PS5 NOR Modifier archive created: ./build/PS5NorModifier-${VERSION}.zip"
 
-## Build UART-CL for Windows
+## Build UART-CL for Windows (x86)
 build-windows-x86:
 	@make restore PROJ=${UART_PROJ} ARCH=win-x86
 	@make uart-cl PROJ=${UART_PROJ} ARCH=win-x86
 
-## Build UART-CL for macOS
+## Build UART-CL for macOS (x64)
 build-macos-x64:
 	@make restore PROJ=${UART_ROOT} ARCH=osx-x64
 	@make uart-cl PROJ=${UART_ROOT} ARCH=osx-x64
 
-## Build UART-CL for Linux
+## Build UART-CL for Linux (arm64)
 build-macos-arm64:
 	@make restore PROJ=${UART_ROOT} ARCH=osx-arm64
 	@make uart-cl PROJ=${UART_ROOT} ARCH=osx-arm64
 
-## Build UART-CL for Linux
-build-linux-x64:
+## Build UART-CL for Linux (x64)
+build-linux-x64: 
 	@make restore PROJ=${UART_ROOT} ARCH=linux-x64
 	@make uart-cl PROJ=${UART_ROOT} ARCH=linux-x64
 
+## Build UART-CL for Linux (arm64)
 build-linux-arm64:
 	@make restore PROJ=${UART_ROOT} ARCH=linux-arm64
 	@make uart-cl PROJ=${UART_ROOT} ARCH=linux-arm64
