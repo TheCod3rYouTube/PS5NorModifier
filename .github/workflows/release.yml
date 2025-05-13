@@ -1,0 +1,109 @@
+name: Create Release
+
+on:
+  workflow_run:
+    workflows: ["Build"]
+    types:
+      - completed
+    branches:
+      - main
+
+env:
+  MAJOR_VERSION: "1"
+  MINOR_VERSION: "3"
+
+jobs:
+  release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "*"
+          path: artifacts
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare app artifacts
+        run: |
+          cd artifacts
+          # Create zip for Windows app
+          cd PS5-NOR-Modifier-win-x64
+          zip -r PS5-NOR-Modifier-win-x64.zip .
+
+      - name: Calculate next version
+        id: version
+        run: |
+          # Get the base version
+          BASE_VERSION="${{ env.MAJOR_VERSION }}.${{ env.MINOR_VERSION }}"
+          
+          # Fetch all tags
+          git fetch --tags
+          
+          # Get count of existing tags that match our base version
+          TAG_COUNT=$(git tag -l "v${BASE_VERSION}.*" | wc -l)
+          
+          # Use tag count as patch version
+          PATCH_VERSION="$TAG_COUNT"
+          
+          # Set the full version
+          FULL_VERSION="v${BASE_VERSION}.${PATCH_VERSION}"
+          echo "new_tag=${FULL_VERSION}" >> $GITHUB_OUTPUT
+          
+          # Generate changelog
+          # Get all version tags and sort them, excluding the current version and anything newer
+          PREV_TAG=$(git tag -l "v*.*.*" | sort -V | while read tag; do
+            # Only keep tags that are strictly less than our new version
+            if [ "$(echo -e "${FULL_VERSION}\n${tag}" | sort -V | head -n1)" = "${tag}" ] && [ "${tag}" != "${FULL_VERSION}" ]; then
+              echo "$tag"
+            fi
+          done | tail -n1 || echo "")
+          
+          if [ -z "$PREV_TAG" ]; then
+            # If no previous tag, use all commits
+            CHANGELOG=$(git log --pretty=format:"* %s" || echo "Initial release")
+          else
+            # Get commits since last tag
+            CHANGELOG=$(git log --pretty=format:"* %s" ${PREV_TAG}..HEAD || echo "No changes")
+          fi
+          {
+            echo "changelog<<EOF"
+            echo "## What's Changed"
+            echo "${CHANGELOG}"
+            echo "## How to use"
+            echo "This section is still a WIP, I will update it once I am able to better test out the execution of the files we are generating."
+            echo "### Windows"
+            echo "After downloading the windows binary, you should just be able to run the executable and after allowing it to run, you should be able to use it."
+            echo "### MacOS"
+            echo "After downloading the macos binary, unblock the executable, see image bellow for how to find it. Just hit `Open Anyways` and follow prompts"
+            echo ""
+            echo "![MacOS Security Settings](docs/allow_macos.jpg)"
+            echo ""
+            echo "### Linux"
+            echo "Theoretically this works on all x86_64 linux distros, if you have any issues please let me know."
+            echo ""
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.new_tag }}
+          name: Release ${{ steps.version.outputs.new_tag }}
+          body: ${{ steps.version.outputs.changelog }}
+          files: |
+            artifacts/**/*.tar.gz
+            artifacts/**/*.zip
+            artifacts/UART-CL-win-x64/UART-CL By TheCod3r.exe
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
