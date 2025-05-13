@@ -7,14 +7,21 @@ on:
       - completed
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      workflow_run_id:
+        description: 'Workflow Run ID to use for artifacts'
+        required: true
+        type: string
 
 env:
   MAJOR_VERSION: "1"
   MINOR_VERSION: "3"
+  CURRENT_RELEASE: "1.2"
 
 jobs:
   release:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -29,7 +36,7 @@ jobs:
         with:
           pattern: "*"
           path: artifacts
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ github.event.workflow_run.id || inputs.workflow_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Prepare app artifacts
@@ -93,6 +100,13 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
+      - name: Calculate version status
+        id: version_status
+        run: |
+          BASE_VERSION="${{ env.MAJOR_VERSION }}.${{ env.MINOR_VERSION }}"
+          IS_PRERELEASE=$([ "$BASE_VERSION" != "${{ env.CURRENT_RELEASE }}" ] && echo "true" || echo "false")
+          echo "is_prerelease=${IS_PRERELEASE}" >> $GITHUB_OUTPUT
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -103,7 +117,7 @@ jobs:
             artifacts/**/*.tar.gz
             artifacts/**/*.zip
             artifacts/UART-CL-win-x64/UART-CL By TheCod3r.exe
-          draft: false
-          prerelease: false
+          draft: ${{ steps.version_status.outputs.is_prerelease == 'false' }}
+          prerelease: ${{ steps.version_status.outputs.is_prerelease == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
