@@ -385,7 +385,7 @@ internal class Program
         while (subMenuRunning)
         {
             // Check to see if we are working with a file. If so, add it to the app title so the user is aware...
-            if(!string.IsNullOrEmpty(pathToDump))
+            if(_norData != null)
             {
                 Console.Title = appTitle + " - Working with file: " + pathToDump;
             }
@@ -438,7 +438,7 @@ internal class Program
                         {
                             Console.WriteLine("The file path you entered does not exist. Please enter the path to a valid .bin file.");
                         }
-                        else if (Path.GetExtension(userInput) != ".bin")
+                        else if (!Path.GetExtension(userInput).Equals(".bin", StringComparison.CurrentCultureIgnoreCase))
                         {
                             Console.WriteLine("The file you provided is not a .bin file. Please enter a valid .bin file path.");
                         }
@@ -448,6 +448,7 @@ internal class Program
                             pathToDump = userInput;
                             long length = new FileInfo(pathToDump).Length;
                             Console.WriteLine("Selected file: " + pathToDump + " - File Size: " + length + " bytes (" + length / 1024 / 1024 + " MiB)");
+                            _norData = new(pathToDump);
                             Thread.Sleep(1000);
                             break; // Exit the loop
                         }
@@ -456,12 +457,10 @@ internal class Program
                 #endregion
                 #region View BIOS information
                 case "2":
-                    if(!string.IsNullOrEmpty(pathToDump))
+                    if(_norData != null)
                     {
-                        long lengthBytes = new FileInfo(pathToDump).Length;
+                        long lengthBytes = new FileInfo(_norData.Path).Length;
                         long lengthMiB = lengthBytes / 1024 / 1024;
-
-                        _norData = new(pathToDump);
                     
                         // Start showing the data we've found to the user
                         Console.WriteLine("File size: " + lengthBytes + " bytes (" + lengthMiB + " MiB)"); // The file size of the .bin file
@@ -490,7 +489,7 @@ internal class Program
                 #region Convert to "Digital" edition
                 case "3":
                     // First check to confirm that we've selected a file to work with
-                    if (!string.IsNullOrEmpty(pathToDump)) // If the pathToDump string isn't empty or null, we can try and work with it
+                    if (_norData != null)
                     {
                         bool confirmed = false;
                         while (!confirmed)
@@ -561,7 +560,7 @@ internal class Program
                 #region Convert to "Disc" edition
                 case "4":
                     // First check to confirm that we've selected a file to work with
-                    if (!string.IsNullOrEmpty(pathToDump)) // If the pathToDump string isn't empty or null, we can try and work with it
+                    if (_norData != null)
                     {
                         bool confirmed = false;
                         while (!confirmed)
@@ -630,7 +629,7 @@ internal class Program
                 #region Convert to "Slim" edition
                 case "5":
                     // First check to confirm that we've selected a file to work with
-                    if (!string.IsNullOrEmpty(pathToDump)) // If the pathToDump string isn't empty or null, we can try and work with it
+                    if (_norData != null)
                     {
                         bool confirmed = false;
                         while (!confirmed)
@@ -699,7 +698,7 @@ internal class Program
                 #endregion
                 #region Change serial number
                 case "6":
-                    if (!string.IsNullOrEmpty(pathToDump)) // If the pathToDump string isn't empty or null, we can try and work with it
+                    if (_norData != null)
                     {
                         // Create a true false to allow us to loop until the user changes the serial or cancels the operation
                         bool jobDone = false;
@@ -766,7 +765,7 @@ internal class Program
                 #endregion
                 #region Change motherboard serial number
                 case "7":
-                    if (!string.IsNullOrEmpty(pathToDump)) // If the pathToDump string isn't empty or null, we can try and work with it
+                    if (_norData != null)
                     {
                         // Create a loop to prevent the app from returning to the main menu
                         bool isDone = false;
@@ -836,7 +835,7 @@ internal class Program
                 #endregion
                 #region Change console model
                 case "8":
-                    if (!string.IsNullOrEmpty(pathToDump)) // If the pathToDump string isn't empty or null, we can try and work with it
+                    if (_norData != null)
                     {
                         // Create a loop to prevent the app from returning to the main menu
                         bool isDone = false;
@@ -949,21 +948,6 @@ internal class Program
         {
             // Catch any errors and let the user know
             Console.WriteLine($"Error opening URL: {ex.Message}");
-        }
-    }
-
-    private static async Task<bool> DownloadDatabase(string url, string savePath)
-    {
-        using HttpClient client = new();
-        try
-        {
-            string db = await client.GetStringAsync(url);
-            await File.WriteAllTextAsync(savePath, db);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            return false;
         }
     }
 
