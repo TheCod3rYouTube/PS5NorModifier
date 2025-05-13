@@ -72,6 +72,10 @@ build-linux-x64:
 	@make restore PROJ=${UART_ROOT} ARCH=linux-x64
 	@make uart-cl PROJ=${UART_ROOT} ARCH=linux-x64
 
+build-linux-arm64:
+	@make restore PROJ=${UART_ROOT} ARCH=linux-arm64
+	@make uart-cl PROJ=${UART_ROOT} ARCH=linux-arm64
+
 ## Clean build artifacts
 clean:
 	@echo "${YELLOW}Cleaning build artifacts...${RESET}"
