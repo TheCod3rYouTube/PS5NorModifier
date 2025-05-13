@@ -1,0 +1,32 @@
+name: Main
+on:
+  push:
+    branches:
+      - main
+permissions:
+  contents: write
+  id-token: write
+  packages: write
+jobs:
+  tag:
+    name: Tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: "[Setup] repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "[Setup] Go"
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: "[Setup] svu"
+        run: go install github.com/caarlos0/svu@latest
+      - name: "[CD] release"
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git fetch --tags --force
+          [ $(svu current) == $(svu next) ] || gh release create $(svu next)
+        env:
+          GH_TOKEN: ${{ secrets.TOKEN }}
+  
