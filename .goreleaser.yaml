@@ -1,5 +1,5 @@
 version: 2
-project_name: PS5NorModifier
+project_name: UART-CL By TheCod3r
 builds:
   - skip: true
 before:
@@ -7,4 +7,4 @@ before:
     - make build VERSION={{.Version}}
 release:
   extra_files:
-    - glob: ./{{.ProjectName}}-{{.Version}}.zip
+    - glob: ./build/*.zip
