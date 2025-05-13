@@ -1,9 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="System.IO.Ports">
+        <HintPath>..\PS5NORModifier\bin\Debug\net9.0\runtimes\win\lib\net8.0\System.IO.Ports.dll</HintPath>
+      </Reference>
+    </ItemGroup>
 
 </Project>

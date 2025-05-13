@@ -26,21 +26,21 @@ internal class Program
 
         #region Check if error database exists
         
-        if (!File.Exists("errorDB.xml"))
+        if (!File.Exists(UART.DatabaseFileName))
         {
             ShowHeader();
             Console.WriteLine("Downloading latest database file. Please wait...");
 
-            bool success = DownloadDatabase("http://uartcodes.com/xml.php", "errorDB.xml").Result;
-
-            if (success)
+            try
             {
+                UART.DownloadErrorDB();
                 Console.WriteLine("Database downloaded successfully...");
                 _showMenu = true;
             }
-            else
+            catch
             {
                 Console.WriteLine("Could not download the latest database file. Please ensure you're connected to the internet!");
+                Console.ReadKey();
                 Environment.Exit(0);
             }
         }
@@ -119,7 +119,7 @@ internal class Program
                 selectedPort = ports[selectedPortIndex - 1];
 
                 // Select and lock the chosen device
-                SerialPort serialPort = new SerialPort(selectedPort);
+                SerialPort serialPort = new(selectedPort);
                 // Configure settings for the selected device
                 serialPort.BaudRate = 115200; // The PS5 requires a BAUD rate of 115200
                 serialPort.RtsEnable = true; // We need to enable ready to send (RTS) mode
@@ -137,7 +137,7 @@ internal class Program
                     // Let's start grabbing error codes from the PS5
                     int loopLimit = 10;
                     // Create a list to store error codes in
-                    List<string> UARTLines = new();
+                    List<string> uartLines = [];
 
                     // When grabbing error codes, we want to grab the first 10 errors from the system. Let's create a loop
                     for (var i = 0; i <= loopLimit; i++)
@@ -159,16 +159,16 @@ internal class Program
                             {
                                 // Let's make sure we haven't already added the same error code to the error list
                                 // This way we only show each error code once and keep the output window clean
-                                if (!UARTLines.Contains(line))
+                                if (!uartLines.Contains(line))
                                 {
-                                    UARTLines.Add(line);
+                                    uartLines.Add(line);
                                 }
                             }
                         }
                     }
 
                     // Now let's iterate through the lines and show them to the user
-                    foreach (var l in UARTLines)
+                    foreach (var l in uartLines)
                     {
                         var split = l.Split(' ');
                         if (!split.Any()) continue;
@@ -271,7 +271,7 @@ internal class Program
                     var checksum = UART.CalculateChecksum("errlog clear");
                     serialPort.WriteLine(checksum);
 
-                    List<string> UARTLines = new();
+                    List<string> UARTLines = [];
 
                     do
                     {
@@ -369,7 +369,7 @@ internal class Program
                             var checksum = UART.CalculateChecksum(UARTCommand);
                             serialPort.WriteLine(checksum);
 
-                            List<string> UARTLines = new();
+                            List<string> UARTLines = [];
 
                             do
                             {
@@ -473,18 +473,16 @@ internal class Program
             case "7":
                 Console.WriteLine("Downloading latest database file. Please wait...");
 
-                bool success = DownloadDatabase("http://uartcodes.com/xml.php", "errorDB.xml").Result;
-
-                if (success)
+                try
                 {
-                    Console.WriteLine("Database downloaded successfully...");
-                    Console.WriteLine("Press Enter to continue...");
+                    UART.DownloadErrorDB();
+                    Console.WriteLine("Database downloaded successfully.");
                 }
-                else
+                catch (Exception ex)
                 {
-                    Console.WriteLine("Could not download the latest database file. Please ensure you're connected to the internet!");
-                    Console.WriteLine("Press Enter to continue...");
+                    Console.WriteLine("Could not download the latest database file. Please ensure you're connected to the internet! " + ex);
                 }
+                Console.WriteLine("Press Enter to continue...");
                 Console.ReadLine();
                 return true;
             default:
@@ -493,16 +491,10 @@ internal class Program
                 Console.ReadLine();
                 return true;
             #endregion
-            #region Exit Application
             case "X":
-                // Run the exit environment command to close the application
-                Environment.Exit(0);
-                return true;
             case "x":
-                // Run the exit environment command to close the application
                 Environment.Exit(0);
                 return true;
-            #endregion
         }
         #endregion
     }
@@ -1128,7 +1120,7 @@ internal class Program
                 }
             }
         }
-        // Catch errors. This would probably only happen on Linux systems
+        // Catch errors. This would probably only happen on Linux and macOS systems
         catch(Exception ex)
         {
             // If there is an error, we'll just declare that we don't know the name of the port

@@ -12,16 +12,16 @@ namespace PS5NORModifier;
 
 public partial class UARTCommander : UserControl
 {
+    private readonly UART _uart;
     public UARTCommander()
     {
         InitializeComponent();
+        _uart = new();
     }
-    
-    private readonly SerialPort _uartSerial = new();
     
     internal void RefreshComPorts()
     {
-        MainWindow mainWindow = MainWindow.Instance;
+        var mainWindow = MainWindow.Instance;
         string[] ports = SerialPort.GetPortNames();
         if (ports == null || ports.Length == 0)
         {
@@ -51,219 +51,117 @@ public partial class UARTCommander : UserControl
 
     private void SendCustomCommandButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        MainWindow mainWindow = MainWindow.Instance;
+        var mainWindow = MainWindow.Instance;
         if (string.IsNullOrEmpty(CustomCommand.Text))
         {
             mainWindow.ShowError("Please enter a command to send via UART.");
             return;
         }
 
-        if (!_uartSerial.IsOpen)
-        {
-            mainWindow.ShowError("Please connect to UART before attempting to send commands.");
-            return;
-        }
+        bool success = _uart.SendArbitraryCommand(CustomCommand.Text, out string result);
         
-        try
+        if (success)
         {
-            List<string> uartLines = [];
-
-            string checksum = UART.CalculateChecksum(CustomCommand.Text);
-            _uartSerial.WriteLine(checksum);
-            do
-            {
-                string? line = _uartSerial.ReadLine();
-                if (!string.Equals($"{CustomCommand.Text}:{checksum}", line, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    uartLines.Add(line);
-                }
-            } while (_uartSerial.BytesToRead != 0);
-
-            foreach (string l in uartLines)
-            {
-                string[] split = l.Split(' ');
-                if (split.Length == 0) continue;
-                
-                OutputText.Text = split[0] switch
-                {
-                    "NG" => "ERROR: " + l,
-                    "OK" => "SUCCESS: " + l,
-                    _ => OutputText.Text
-                };
-            }
+            OutputText.Text += result + Environment.NewLine;
         }
-        catch (Exception ex)
+        else
         {
-            mainWindow.ShowError(ex.ToString());
-            mainWindow.StatusLabel.Content = "An error occurred while reading error codes from UART. Please try again...";
+            mainWindow.ShowError(result);
+            mainWindow.SetStatus("An error occurred while sending the command. Please try again.");
         }
     }
 
     private void ConnectComButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        MainWindow mainWindow = MainWindow.Instance;
+        var mainWindow = MainWindow.Instance;
         var selectedPort = (string?)ComPorts.SelectedItem;
         if (string.IsNullOrEmpty(selectedPort))
         {
             mainWindow.ShowError("Please select a COM port from the ports list to establish a connection.");
-            mainWindow.StatusLabel.Content = "Could not connect to UART. Please try again!";
+            mainWindow.SetStatus("Could not connect to UART. Please try again!");
             return;
         }
 
         try
         {
-            _uartSerial.PortName = selectedPort;
-            _uartSerial.BaudRate = 115200;
-            _uartSerial.RtsEnable = true;
-            _uartSerial.Open();
+            _uart.Connect(selectedPort);
             
             DisconnectComButton.IsEnabled = true;
             ConnectComButton.IsEnabled = false;
-            mainWindow.StatusLabel.Content = $"Connected to UART via COM port {selectedPort} at a BAUD rate of 115200.";
+            mainWindow.SetStatus($"Connected to UART via COM port {selectedPort} at a BAUD rate of 115200.");
         }
         catch (Exception ex)
         {
             mainWindow.ShowError(ex.ToString());
-            mainWindow.StatusLabel.Content = "Could not connect to UART. Please try again!";
+            mainWindow.SetStatus("Could not connect to UART. Please try again!");
         }
     }
 
     private void DisconnectComButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        MainWindow mainWindow = MainWindow.Instance;
+        var mainWindow = MainWindow.Instance;
         try
         {
-            if (!_uartSerial.IsOpen)
-                return;
+            _uart.Disconnect();
             
-            _uartSerial.Close();
             ConnectComButton.IsEnabled = true;
             DisconnectComButton.IsEnabled = false;
-            mainWindow.StatusLabel.Content = "Disconnected from UART.";
+            mainWindow.SetStatus("Disconnected from UART.");
         }
         catch(Exception ex)
         {
             mainWindow.ShowError(ex.ToString());
-            mainWindow.StatusLabel.Content = "An error occurred while disconnecting from UART. Please try again.";
+            mainWindow.SetStatus("An error occurred while disconnecting from UART. Please try again.");
         }
     }
     private async void GetErrorCodesButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        MainWindow mainWindow = MainWindow.Instance;
-        if (_uartSerial.IsOpen != true)
+        var mainWindow = MainWindow.Instance;
+        for (int i = 0; i <= 10; i++)
         {
-            mainWindow.ShowError("Please connect to UART before attempting to read the error codes.");
-            return;
-        }
-        
-        try
-        {
-            List<string> uartLines = [];
-
-            for (var i = 0; i <= 10; i++)
+            var result = await _uart.GetErrorLog(i);
+            
+            if (!result.success)
             {
-                var command = $"errlog {i}";
-                string checksum = UART.CalculateChecksum(command);
-                _uartSerial.WriteLine(checksum);
-                do
-                {
-                    string? line = _uartSerial.ReadLine();
-                    if (!string.Equals($"{command}:{checksum}", line, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        uartLines.Add(line);
-                    }
-                } while (_uartSerial.BytesToRead != 0);
-
-                foreach (string[] split in uartLines.Select(l => l.Split(' ')).Where(split => split.Length != 0))
-                {
-                    switch (split[0])
-                    {
-                        case "NG":
-                            break;
-                        case "OK":
-                            string errorCode = split[2];
-                            string errorResult = UseOfflineDB.IsChecked == true
-                                ? UART.ParseErrorsOffline(errorCode)
-                                : await UART.ParseErrorsOnline(errorCode);
-                            
-                            OutputText.Text += errorResult + Environment.NewLine;
-                            break;
-                    }
-                }
+                mainWindow.ShowError(result.errors);
+                mainWindow.SetStatus($"An error occurred while reading error codes from UART, at page {i}. Please try again.");
+                return;
             }
-        }
-        catch (Exception ex)
-        {
-            mainWindow.ShowError(ex.ToString());
-            mainWindow.StatusLabel.Content = "An error occurred while reading error codes from UART. Please try again.";
+            
+            OutputText.Text += result.errors + Environment.NewLine;
         }
     }
 
     private async void ClearErrorCodesButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        MainWindow mainWindow = MainWindow.Instance;
+        var mainWindow = MainWindow.Instance;
         DialogHost dialog = mainWindow.Dialog;
-        var result = (string?)await DialogHost.Show(new DialogContents(dialog, 
+        var response = (string?)await DialogHost.Show(new DialogContents(dialog, 
             "This will clear error codes from the console by sending the \"errlog clear\" command." +
             "Are you sure you would like to proceed? This action cannot be undone!",
             "Are you sure?", 
             "No", "Yes"),
             dialog);
         
-        if (result != "Yes")
+        if (response != "Yes")
             return;
 
-        if (!_uartSerial.IsOpen)
+        bool success = _uart.ClearErrorLog(out string result);
+        if (success)
         {
-            mainWindow.ShowError("Please connect to UART before attempting to send commands.");
-            return;
+            OutputText.Text += result + Environment.NewLine;
+            mainWindow.SetStatus("Error codes cleared successfully.");
         }
-
-        try
+        else
         {
-            List<string> uartLines = [];
-
-            const string command = "errlog clear";
-            
-            string checksum = UART.CalculateChecksum(command);
-            
-            _uartSerial.WriteLine(checksum);
-            do
-            {
-                string? line = _uartSerial.ReadLine();
-                if (!string.Equals($"{command}:{checksum}", line, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    uartLines.Add(line);
-                }
-            } while (_uartSerial.BytesToRead != 0);
-
-            foreach (string[] split in uartLines.Select(l => l.Split(' ')).Where(split => split.Length != 0))
-            {
-                switch (split[0])
-                {
-                    case "NG":
-                        OutputText.Text += "Response: FAIL" + Environment.NewLine +
-                                           "Information: An error occurred while clearing the error logs from the system. Please try again...";
-                        
-                        break;
-                    case "OK":
-                        OutputText.Text += "Response: SUCCESS" + Environment.NewLine +
-                                           "Information: All error codes cleared successfully";
-
-                        break;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            mainWindow.ShowError(ex.ToString());
-            mainWindow.StatusLabel.Content = "An error occurred while attempting to send a UART command. Please try again.";
+            mainWindow.ShowError(result);
+            mainWindow.SetStatus("An error occurred while clearing error codes. Please try again.");
         }
     }
 
     private async void DownloadErrorDBButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        MainWindow mainWindow = MainWindow.Instance;
+        var mainWindow = MainWindow.Instance;
         DialogHost dialog = mainWindow.Dialog;
         var result = (string?)await DialogHost.Show(new DialogContents(dialog, 
                 "Downloading the error database will overwrite any existing offline database you currently have. Are you sure you would like to do this?",
@@ -274,20 +172,9 @@ public partial class UARTCommander : UserControl
         if (result != "Yes")
             return;
         
-        const string url = "https://uartcodes.com/xml.php";
-
         try
         {
-            string xmlData;
-            using (HttpClient client = new())
-            {
-                xmlData = await client.GetStringAsync(url);
-            }
-            
-            XmlDocument xmlDoc = new();
-            xmlDoc.LoadXml(xmlData);
-
-            xmlDoc.Save("errorDB.xml");
+            await UART.DownloadErrorDB();
 
             await DialogHost.Show(new DialogContents(dialog,
                 "The offline database has been updated successfully.", 
@@ -297,7 +184,7 @@ public partial class UARTCommander : UserControl
         catch (Exception ex)
         {
             mainWindow.ShowError(ex.ToString());
-            mainWindow.StatusLabel.Content = "An error occurred while downloading the offline database. Please try again.";
+            mainWindow.SetStatus("An error occurred while downloading the offline database. Please try again.");
         }
     }
 }

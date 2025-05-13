@@ -56,4 +56,9 @@ public partial class MainWindow : Window
     {
         DialogHost.Show(new DialogContents(Dialog, error, "An error occurred.", "OK"), Dialog);
     }
+
+    internal void SetStatus(string status)
+    {
+        StatusLabel.Content = status;
+    }
 }

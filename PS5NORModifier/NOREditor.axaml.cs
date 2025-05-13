@@ -52,7 +52,7 @@ public partial class NOREditor : UserControl
     
     private async void BrowseButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        MainWindow mainWindow = MainWindow.Instance;
+        var mainWindow = MainWindow.Instance;
         var files = await mainWindow.StorageProvider.OpenFilePickerAsync(new()
         {
             Title = "Open NOR BIN File",
@@ -83,7 +83,7 @@ public partial class NOREditor : UserControl
             return;
         }
 
-        mainWindow.StatusLabel.Content = "Status: Selected file " + norPath;
+        mainWindow.SetStatus("Status: Selected file " + norPath);
         NORDumpPath.Text = norPath;
 
         long length = new FileInfo(norPath).Length;
@@ -115,7 +115,7 @@ public partial class NOREditor : UserControl
 
     private async void SaveButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        MainWindow mainWindow = MainWindow.Instance;
+        var mainWindow = MainWindow.Instance;
         if (!File.Exists(_norData?.Path))
         {
             mainWindow.ShowError("Please select a valid BIOS file first.");
