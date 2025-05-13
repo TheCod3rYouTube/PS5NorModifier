@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using PS5NORModifier;
-using UARTLib;
+using PS5Lib;
 
 #region Reminders (remove before publishing)
 // Add check inside sub menu to confirm that the selected .bin file is a valid PS5 dump

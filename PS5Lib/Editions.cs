@@ -1,4 +1,4 @@
-namespace UARTLib;
+namespace PS5Lib;
 
 public enum Editions
 {

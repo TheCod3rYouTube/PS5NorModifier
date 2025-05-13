@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
-using UARTLib;
+using PS5Lib;
 
 namespace PS5NORModifier;
 

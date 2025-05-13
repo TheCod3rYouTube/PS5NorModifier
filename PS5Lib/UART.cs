@@ -1,7 +1,7 @@
 ﻿using System.IO.Ports;
 using System.Xml;
 
-namespace UARTLib;
+namespace PS5Lib;
 
 public class UART
 {
@@ -153,7 +153,7 @@ public class UART
             results = results.Distinct().ToList();
         }
         
-        var errors = "";
+        List<string> errors = [];
         foreach (string[] split in results.Select(l => l.Split(' ')).Where(split => split.Length != 0))
         {
             switch (split[0])
@@ -170,7 +170,7 @@ public class UART
                         ? ParseErrorsOffline(errorCode)
                         : await ParseErrorsOnline(errorCode);
                             
-                    errors += errorResult + Environment.NewLine;
+                    errors.Add(errorResult + Environment.NewLine);
                     break;
             }
         }

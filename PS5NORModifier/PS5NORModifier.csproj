@@ -60,7 +60,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UARTLib\UARTLib.csproj" />
+    <ProjectReference Include="..\PS5Lib\PS5Lib.csproj" />
   </ItemGroup>
 
 </Project>

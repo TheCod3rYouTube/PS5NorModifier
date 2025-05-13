@@ -6,7 +6,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using DialogHostAvalonia;
-using UARTLib;
+using PS5Lib;
 
 namespace PS5NORModifier;
 
