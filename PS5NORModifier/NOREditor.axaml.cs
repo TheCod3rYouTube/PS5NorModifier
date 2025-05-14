@@ -145,6 +145,7 @@ public partial class NOREditor : UserControl
         LANMACAddressIn.Text = lanMac;
         
         MotherboardSerialOut.Content = _norData.MoboSerial;
+        MotherboardSerialIn.Text = _norData.MoboSerial;
         
         BoardVariantOut.Content = _norData.Variant;
         BoardVariantIn.SelectedValue = _norData.VariantCode;
@@ -173,6 +174,11 @@ public partial class NOREditor : UserControl
             mainWindow.ShowError("Please enter a valid serial number before saving new BIOS information!");
             return;
         }
+        if (string.IsNullOrEmpty(MotherboardSerialIn.Text))
+        {
+            mainWindow.ShowError("Please enter a valid motherboard serial number before saving new BIOS information!");
+            return;
+        }
 
         IStorageFile? file = await mainWindow.StorageProvider.SaveFilePickerAsync(new()
         {
@@ -196,6 +202,7 @@ public partial class NOREditor : UserControl
         _norData.Edition = (Editions)PS5ModelIn.SelectedIndex;
         _norData.VariantCode = BoardVariantIn.SelectedValue.ToString() ?? null;
         _norData.Serial = SerialNumberIn.Text;
+        _norData.MoboSerial = MotherboardSerialIn.Text;
         
         _norData.Save(filePath);
     }

@@ -44,6 +44,7 @@
         <StackPanel Grid.Column="2" Grid.Row="1">
             <Label FontWeight="Bold">Modify Values</Label>
             <Label>Serial Number:</Label>
+            <Label>Motherboard Serial:</Label>
             <Label>Board Variant:</Label>
             <Label>PS5 Model:</Label>
             <Label>WiFi MAC Address:</Label>
@@ -56,6 +57,7 @@
         </StackPanel>
         <StackPanel Grid.Column="3" Grid.Row="1" Margin="0 27 0 0">
             <TextBox Name="SerialNumberIn" />
+            <TextBox Name="MotherboardSerialIn" />
             <ComboBox Name="BoardVariantIn" />
             <ComboBox Name="PS5ModelIn" />
             <TextBox Name="WiFiMACAddressIn" IsEnabled="False" />
