@@ -25,7 +25,7 @@ public partial class MainWindow : Window
     {
         Instance = this;
         InitializeComponent();
-        UartCommander.RefreshComPorts();
+        UartCommunication.RefreshComPorts();
     }
 
     private void SponsorLink_OnClick(object? sender, RoutedEventArgs e)

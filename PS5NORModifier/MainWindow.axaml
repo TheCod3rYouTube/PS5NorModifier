@@ -29,10 +29,10 @@
             </TextBlock>
             <TabControl Grid.Row="2" Background="#20000000" Padding="0">
                 <TabItem Header="NOR Modifier">
-                    <local:NOREditor Name="NorEditor" />
+                    <local:NORModifier Name="NorModifier" />
                 </TabItem>
                 <TabItem Header="UART Communication">
-                    <local:UARTCommander Name="UartCommander" />
+                    <local:UARTCommunication Name="UartCommunication" />
                 </TabItem>
             </TabControl>
             <Grid Grid.Row="3" RowDefinitions="*" ColumnDefinitions="Auto *" Margin="0 3">
