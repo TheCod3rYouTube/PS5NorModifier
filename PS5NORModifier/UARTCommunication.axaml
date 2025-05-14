@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="PS5NORModifier.UARTCommander">
+             x:Class="PS5NORModifier.UARTCommunication">
     <Grid RowDefinitions="36 36 * 36" ColumnDefinitions="Auto 2* *" Margin="4">
         <Label Grid.Row="0" Grid.Column="0">Com Port:</Label>
         <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="* Auto Auto Auto" Margin="0 6">

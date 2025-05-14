@@ -8,7 +8,7 @@ using PS5Lib;
 
 namespace PS5NORModifier;
 
-public partial class NOREditor : UserControl
+public partial class NORModifier : UserControl
 {
     private NORData? _norData;
     
@@ -80,7 +80,7 @@ public partial class NOREditor : UserControl
         "DFI-T1000AA", // TestKit
         "DFI-D1000AA" // DevKit
     ];
-    public NOREditor()
+    public NORModifier()
     {
         InitializeComponent();
         BoardVariantIn.ItemsSource = _boardVariants;

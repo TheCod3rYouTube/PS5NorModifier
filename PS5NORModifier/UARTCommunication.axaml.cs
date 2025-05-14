@@ -10,10 +10,10 @@ using PS5Lib;
 
 namespace PS5NORModifier;
 
-public partial class UARTCommander : UserControl
+public partial class UARTCommunication : UserControl
 {
     private readonly UART _uart;
-    public UARTCommander()
+    public UARTCommunication()
     {
         InitializeComponent();
         _uart = new();
