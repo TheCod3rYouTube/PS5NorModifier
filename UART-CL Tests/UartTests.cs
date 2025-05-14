@@ -1,26 +1,66 @@
 ﻿using System.Globalization;
 using System.Text;
 using UART_CL_By_TheCod3r;
+using UART_CL_By_TheCod3r.Data;
 
 namespace UART_CL_Tests;
 
 public class UartTests
 {
 	[Fact]
+	public void ParseErrorCode_Test()
+	{
+		// Arrange
+		var rawError = "OK 00000000 80C00140 0000008D FFFF0005 00000100 2157 0016 46E4 1A80:27";
+
+		// Act
+		var errorCode = new ErrorCode(rawError);
+		var checksumValid = errorCode.ChecksumValid;
+
+		// Assert
+		Assert.Equal("00000000", errorCode.FirstPart);
+		Assert.Equal("80C00140", errorCode.SecondPart);
+		Assert.Equal("0000008D", errorCode.ThirdPart);
+		Assert.Equal("FFFF0005", errorCode.FourthPart);
+		Assert.Equal("00000100", errorCode.FifthPart);
+		Assert.Equal("2157", errorCode.SixthPart);
+		Assert.Equal("0016", errorCode.SeventhPart);
+		Assert.Equal("46E4", errorCode.EighthPart);
+		Assert.Equal("1A80", errorCode.NinthPart);
+		Assert.Equal("27", errorCode.Checksum);
+		Assert.True(checksumValid);
+	}
+
+	[Fact]
 	public void CalculateChecksum_Test()
+	{
+		// Arrange
+		var str = "OK 00000000 80C00140 0000008D FFFF0005 00000100 2157 0016 46E4 1A80";
+		var checksum = "27";
+
+		// Act
+		var calculatedChecksum = Uart.CalculateChecksum(str);
+
+		// Assert
+		Assert.Equal(checksum, calculatedChecksum);
+	}
+
+	[Fact]
+	public void CreateTransmittableCommand_Test()
 	{
 		// Arrange
 		var str = "Hello World";
 
 		// Act
 		var oldChecksum = OldCalculateChecksum(str);
-		var newChecksum = Uart.CalculateChecksum(str);
+		var newChecksum = Uart.CreateTransmittableCommand(str);
 
 		// Assert
 		Assert.Equal(oldChecksum, newChecksum);
 	}
 
 	[Fact]
+	[Obsolete("The methods tested by this test are no longer used.")]
 	public void ConvertHexStringToString_Test()
 	{
 		// Arrange
@@ -35,6 +75,7 @@ public class UartTests
 	}
 
 	[Fact]
+	[Obsolete("The methods tested by this test are no longer used.")]
 	public void ConvertHexStringToByteArray_Test()
 	{
 		// Arrange
@@ -49,6 +90,7 @@ public class UartTests
 	}
 
 	[Fact]
+	[Obsolete("The methods tested by this test are no longer used.")]
 	public void PatternAt_Test()
 	{
 		// Arrange
@@ -69,31 +111,11 @@ public class UartTests
 		Assert.Equal(oldPattern, newPattern);
 	}
 
-	[Fact]
-	public async Task ParseErrors_Test()
-	{
-		// Arrange
-		var errors = new Dictionary<string, string>
-		{
-			{ "80000001", "APU Overheat or Initialization Error" },
-			{ "80000009", "Unexpected Power Loss or Shutdown Failure" }
-		};
-
-		var database = new CodeDatabase();
-
-		// Act
-		var firstError = await database.ParseErrors("80000001");
-		var secondError = await database.ParseErrors("80000009");
-
-		// Assert
-		Assert.Equal(errors["80000001"], firstError);
-		Assert.Equal(errors["80000009"], secondError);
-	}
-
-
+	//
+	// Old methods to verify new implementations behave the same
+	//
 	public static string OldCalculateChecksum(string str)
 	{
-		// Math stuff. I don't understand it either!
 		int sum = 0;
 		foreach (char c in str)
 		{
@@ -102,6 +124,7 @@ public class UartTests
 		return str + ":" + (sum & 0xFF).ToString("X2");
 	}
 
+	[Obsolete("Use Encoding.ASCII.GetString instead.")]
 	static string OldHexStringToString(string hexString)
 	{
 		if (hexString == null || (hexString.Length & 1) == 1)
@@ -117,6 +140,7 @@ public class UartTests
 		return sb.ToString();
 	}
 
+	[Obsolete("Use known offsets instead.")]
 	static IEnumerable<int> OldPatternAt(byte[] source, byte[] pattern)
 	{
 		for (int i = 0; i < source.Length; i++)
@@ -128,6 +152,7 @@ public class UartTests
 		}
 	}
 
+	[Obsolete("Use Convert.FromHexString instead.")]
 	static byte[] OldConvertHexStringToByteArray(string hexString)
 	{
 		if (hexString.Length % 2 != 0)

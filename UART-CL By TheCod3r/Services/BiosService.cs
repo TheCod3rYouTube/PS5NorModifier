@@ -1,0 +1,444 @@
+﻿using System.Text;
+using Microsoft.Extensions.Logging;
+using UART_CL_By_TheCod3r.Data;
+using UART_CL_By_TheCod3r.Enumerators;
+
+namespace UART_CL_By_TheCod3r.Services;
+
+public class BiosService(ILogger<BiosService> logger)
+{
+	private const long _editionOffsetOne = 0x1c7010;
+	private const long _editionOffsetTwo = 0x1c7030;
+	private const long _serialOffset = 0x1c7210;
+	private const long _modelOffset = 0x1c7230;
+	private const long _moboSerialOffset = 0x1C7200;
+	private const long _wifiMacOffset = 0x1C73C0;
+	private const long _lanMacOffset = 0x1C4020;
+
+	/// <summary>
+	/// Reads the BIOS file and extracts properties such as edition, region, console serial number, motherboard serial number, model, WiFi MAC address, and LAN MAC address.
+	/// </summary>
+	/// <param name="filePath">The path to the BIOS bin file</param>
+	/// <returns>A BiosInfo containing the BIOS properties</returns>
+	public BiosInfo ReadBios(string filePath)
+	{
+		if (!File.Exists(filePath))
+		{
+			logger.LogError("BIOS file does not exist at provided path.");
+			throw new FileNotFoundException("BIOS file does not exist at provided path.", filePath);
+		}
+
+		BinaryReader reader;
+		try
+		{
+			reader = new BinaryReader(new FileStream(filePath, FileMode.Open));
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "BIOS file could not be opened.");
+
+			throw;
+		}
+
+		// Get the edition from the BIOS
+		string editionOne;
+		string editionTwo;
+		try
+		{
+			reader.BaseStream.Position = _editionOffsetOne;
+			var bytes = reader.ReadBytes(12);
+			editionOne = Convert.ToHexString(bytes);
+
+			reader.BaseStream.Position = _editionOffsetTwo;
+			bytes = reader.ReadBytes(12);
+			editionTwo = Convert.ToHexString(bytes);
+
+			logger.LogInformation("BIOS edition data: {EditionOne}-{EditionTwo}", editionOne, editionTwo);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "BIOS edition extraction failed.");
+
+			reader.Close();
+			reader.Dispose();
+
+			throw;
+		}
+
+		Edition edition;
+		try
+		{
+			edition = (editionOne, editionTwo) switch
+			{
+				var versions when versions.editionOne.Contains("22020101") => Edition.Disc,
+				var versions when versions.editionTwo.Contains("22030101") => Edition.Digital,
+				var versions when versions.editionOne.Contains("22010101") || versions.editionTwo.Contains("22010101") => Edition.Slim,
+				(_, _) => throw new InvalidDataException($"BIOS edition offsets did not match any known edition data. Offset One: {editionOne}. Offset Two: {editionTwo}")
+			};
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "BIOS edition parsing failed.");
+
+			reader.Close();
+			reader.Dispose();
+
+			throw;
+		}
+
+		logger.LogInformation("Detected edition: {Edition}", edition);
+
+		string model;
+		try
+		{
+			reader.BaseStream.Position = _modelOffset;
+			var bytes = reader.ReadBytes(9);
+			model = Encoding.ASCII.GetString(bytes);
+
+			logger.LogInformation("BIOS variant data: {Variant}", model);
+		}
+		catch (Exception ex)
+		{
+			logger.LogTrace(ex, "BIOS model extraction failed.");
+
+			reader.Close();
+			reader.Dispose();
+
+			throw;
+		}
+
+		var region = model[^3..] switch
+		{
+			"00A" => "Japan",
+			"00B" => "Japan",
+			"01A" => "US, Canada, (North America)",
+			"01B" => "US, Canada, (North America)",
+			"15A" => "US, Canada, (North America)",
+			"15B" => "US, Canada, (North America)",
+			"02A" => "Australia / New Zealand, (Oceania)",
+			"02B" => "Australia / New Zealand, (Oceania)",
+			"03A" => "United Kingdom / Ireland",
+			"03B" => "United Kingdom / Ireland",
+			"04A" => "Europe / Middle East / Africa",
+			"04B" => "Europe / Middle East / Africa",
+			"05A" => "South Korea",
+			"05B" => "South Korea",
+			"06A" => "Southeast Asia / Hong Kong",
+			"06B" => "Southeast Asia / Hong Kong",
+			"07A" => "Taiwan",
+			"07B" => "Taiwan",
+			"08A" => "Russia, Ukraine, India, Central Asia",
+			"08B" => "Russia, Ukraine, India, Central Asia",
+			"09A" => "Mainland China",
+			"09B" => "Mainland China",
+			"11A" => "Mexico, Central America, South America",
+			"11B" => "Mexico, Central America, South America",
+			"14A" => "Mexico, Central America, South America",
+			"14B" => "Mexico, Central America, South America",
+			"16A" => "Europe / Middle East / Africa",
+			"16B" => "Europe / Middle East / Africa",
+			"18A" => "Singapore, Korea, Asia",
+			"18B" => "Singapore, Korea, Asia",
+			_ => "Unknown Region"
+		};
+
+		logger.LogInformation("Detected region: {Region}", region);
+
+		string serial;
+		try
+		{
+			reader.BaseStream.Position = _serialOffset;
+			var bytes = reader.ReadBytes(17);
+			serial = Encoding.ASCII.GetString(bytes).TrimEnd('\0');
+
+			logger.LogInformation("Console serial number: {Serial}", serial);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "BIOS console serial number extraction failed.");
+
+			reader.Close();
+			reader.Dispose();
+
+			throw;
+		}
+
+		string motherboardSerial;
+		try
+		{
+			reader.BaseStream.Position = _moboSerialOffset;
+			var bytes = reader.ReadBytes(16);
+			motherboardSerial = Encoding.ASCII.GetString(bytes).TrimEnd('\0');
+
+			logger.LogInformation("Motherboard serial number: {Serial}", motherboardSerial);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "BIOS motherboard serial number extraction failed.");
+
+			reader.Close();
+			reader.Dispose();
+
+			throw;
+		}
+
+		string wifiMac;
+		try
+		{
+			reader.BaseStream.Position = _wifiMacOffset;
+			var bytes = reader.ReadBytes(6);
+			wifiMac = BitConverter.ToString(bytes);
+
+			logger.LogInformation("WiFi MAC address: {Mac}", wifiMac);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "BIOS WiFi MAC address extraction failed.");
+
+			reader.Close();
+			reader.Dispose();
+
+			throw;
+		}
+
+		string lanMac;
+		try
+		{
+			reader.BaseStream.Position = _lanMacOffset;
+			var bytes = reader.ReadBytes(6);
+			lanMac = BitConverter.ToString(reader.ReadBytes(6));
+
+			logger.LogInformation("LAN MAC address: {Mac}", lanMac);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "BIOS LAN MAC address extraction failed.");
+
+			reader.Close();
+			reader.Dispose();
+
+			throw;
+		}
+
+		reader.Close();
+		reader.Dispose();
+
+		return new()
+		{
+			Path = filePath,
+			Edition = edition,
+			Region = region,
+			ConsoleSerialNumber = serial,
+			MotherboardSerialNumber = motherboardSerial,
+			Model = model,
+			WiFiMac = wifiMac,
+			LanMac = lanMac
+		};
+	}
+
+	/// <summary>
+	/// Sets the console edition in the BIOS file.
+	/// </summary>
+	/// <param name="bios">The BiosInfo object for the BIOS file.</param>
+	/// <param name="edition">The edition to set in the BIOS file.</param>
+	public void SetEdition(BiosInfo bios, Edition edition)
+	{
+		var editionBytes = edition.GetBytes();
+
+		BinaryWriter writer;
+		try
+		{
+			writer = new BinaryWriter(new FileStream(bios.Path, FileMode.Open));
+		}
+		catch (Exception ex)
+		{
+			logger.LogError("BIOS file could not be opened.");
+			logger.LogTrace(ex, "BIOS file opening failed.");
+
+			throw;
+		}
+
+		try
+		{
+			writer.BaseStream.Position = _editionOffsetOne;
+			writer.Write(editionBytes);
+			writer.BaseStream.Position = _editionOffsetTwo;
+			writer.Write(editionBytes);
+
+			logger.LogInformation("Wrote console edition: {Edition}", edition);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError("Failed to write console edition at the provided offsets.");
+			logger.LogTrace(ex, "Console edition update failed.");
+
+			throw;
+		}
+		finally
+		{
+			writer.Flush();
+			writer.Close();
+			writer.Dispose();
+		}
+	}
+
+	/// <summary>
+	/// Sets the console serial number in the BIOS file.
+	/// </summary>
+	/// <param name="bios">The BiosInfo object for the BIOS file.</param>
+	/// <param name="serial">The serial to set in the BIOS file.</param>
+	public void SetConsoleSerial(BiosInfo bios, string serial)
+	{
+		var bytes = Encoding.ASCII.GetBytes(serial);
+		var paddedBytes = new byte[17];
+
+		if (bytes.Length > 17)
+		{
+			logger.LogError("Serial number is too long. Maximum length is 17 bytes.");
+			throw new ArgumentException("Serial number is too long. Maximum length is 17 bytes.", nameof(serial));
+		}
+
+		Array.Copy(bytes, paddedBytes, bytes.Length);
+
+		BinaryWriter writer;
+		try
+		{
+			writer = new BinaryWriter(new FileStream(bios.Path, FileMode.Open));
+		}
+		catch (Exception ex)
+		{
+			logger.LogError("BIOS file could not be opened.");
+			logger.LogTrace(ex, "BIOS file opening failed.");
+
+			throw;
+		}
+
+		try
+		{
+			writer.BaseStream.Position = _serialOffset;
+			writer.Write(paddedBytes);
+
+			logger.LogInformation("Wrote console serial number: {Serial}", paddedBytes);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError("Failed to write console serial number at the provided offset.");
+			logger.LogTrace(ex, "Console serial number update failed.");
+
+			throw;
+		}
+		finally
+		{
+			writer.Flush();
+			writer.Close();
+			writer.Dispose();
+		}
+	}
+
+	/// <summary>
+	/// Sets the motherboard serial number in the BIOS file.
+	/// </summary>
+	/// <param name="bios"></param>
+	/// <param name="serial"></param>
+	/// <exception cref="ArgumentException"></exception>
+	public void SetMotherboardSerial(BiosInfo bios, string serial)
+	{
+		var bytes = Encoding.ASCII.GetBytes(serial);
+		var paddedBytes = new byte[16];
+
+		if (bytes.Length > 16)
+		{
+			logger.LogError("Motherboard serial number is too long. Maximum length is 16 bytes.");
+			throw new ArgumentException("Motherboard serial number is too long. Maximum length is 16 bytes.", nameof(serial));
+		}
+
+		Array.Copy(bytes, paddedBytes, bytes.Length);
+
+		BinaryWriter writer;
+		try
+		{
+			writer = new BinaryWriter(new FileStream(bios.Path, FileMode.Open));
+		}
+		catch (Exception ex)
+		{
+			logger.LogError("BIOS file could not be opened.");
+			logger.LogTrace(ex, "BIOS file opening failed.");
+
+			throw;
+		}
+
+		try
+		{
+			writer.BaseStream.Position = _moboSerialOffset;
+			writer.Write(paddedBytes);
+
+			logger.LogInformation("Wrote motherboard serial number: {Serial}", paddedBytes);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError("Failed to write motherboard serial number at the provided offset.");
+			logger.LogTrace(ex, "Motherboard serial number update failed.");
+
+			throw;
+		}
+		finally
+		{
+			writer.Flush();
+			writer.Close();
+			writer.Dispose();
+		}
+	}
+
+	/// <summary>
+	/// Sets the model in the BIOS file.
+	/// </summary>
+	/// <param name="bios">The BiosInfo object for the BIOS file.</param>
+	/// <param name="serial">The model to set in the BIOS file.</param>
+	public void SetModel(BiosInfo bios, string model)
+	{
+		var bytes = Encoding.ASCII.GetBytes(model);
+		var paddedBytes = new byte[9];
+
+		if (bytes.Length > 9)
+		{
+			logger.LogError("Model number is too long. Maximum length is 9 bytes.");
+			throw new ArgumentException("Model number is too long. Maximum length is 9 bytes.", nameof(model));
+		}
+
+		Array.Copy(bytes, paddedBytes, bytes.Length);
+
+		BinaryWriter writer;
+		try
+		{
+			writer = new BinaryWriter(new FileStream(bios.Path, FileMode.Open));
+		}
+		catch (Exception ex)
+		{
+			logger.LogError("BIOS file could not be opened.");
+			logger.LogTrace(ex, "BIOS file opening failed.");
+
+			throw;
+		}
+
+		try
+		{
+			writer.BaseStream.Position = _modelOffset;
+			writer.Write(paddedBytes);
+
+			logger.LogInformation("Wrote model number: {Model}", paddedBytes);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError("Failed to write model number at the provided offset.");
+			logger.LogTrace(ex, "Model number update failed.");
+
+			throw;
+		}
+		finally
+		{
+			writer.Flush();
+			writer.Close();
+			writer.Dispose();
+		}
+	}
+}
