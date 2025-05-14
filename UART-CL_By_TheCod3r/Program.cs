@@ -419,11 +419,10 @@ internal class Program
                     Console.WriteLine("You will need to know the full file path of your .bin file in order to continue.");
                     Console.WriteLine();
 
-                    string userInput;
-                    do
+                    while (true)
                     {
                         Console.Write("Enter the full file path (type 'exit' to quit): ");
-                        userInput = Console.ReadLine().Trim(); // Trim to remove any leading/trailing whitespace
+                        string userInput = Console.ReadLine().Trim();
 
                         if (string.IsNullOrWhiteSpace(userInput))
                         {
@@ -452,7 +451,7 @@ internal class Program
                             Thread.Sleep(1000);
                             break; // Exit the loop
                         }
-                    } while (true);
+                    }
                     break;
                 #endregion
                 #region View BIOS information
@@ -491,8 +490,7 @@ internal class Program
                     // First check to confirm that we've selected a file to work with
                     if (_norData != null)
                     {
-                        bool confirmed = false;
-                        while (!confirmed)
+                        while (true)
                         {
                             Console.ForegroundColor = ConsoleColor.Blue;
                             Console.WriteLine("Are you sure you want to set the console as \"Digital\" edition?");
@@ -562,8 +560,7 @@ internal class Program
                     // First check to confirm that we've selected a file to work with
                     if (_norData != null)
                     {
-                        bool confirmed = false;
-                        while (!confirmed)
+                        while (true)
                         {
                             Console.ForegroundColor = ConsoleColor.Blue;
                             Console.WriteLine("Are you sure you want to set the console as \"Disc\" edition?");
@@ -631,8 +628,7 @@ internal class Program
                     // First check to confirm that we've selected a file to work with
                     if (_norData != null)
                     {
-                        bool confirmed = false;
-                        while (!confirmed)
+                        while (true)
                         {
                             Console.ForegroundColor = ConsoleColor.Blue;
                             Console.WriteLine("Are you sure you want to set the console as \"Slim\" edition?");
@@ -707,8 +703,7 @@ internal class Program
                         {
                             string oldSerial = _norData.Serial;
 
-                            bool newSerialValid = false;
-                            while (!newSerialValid)
+                            while (true)
                             {
                                 Console.ForegroundColor = ConsoleColor.Blue;
                                 Console.WriteLine("Enter the new serial number you would like to save (type 'exit' to exit): ");
@@ -768,8 +763,7 @@ internal class Program
                     if (_norData != null)
                     {
                         // Create a loop to prevent the app from returning to the main menu
-                        bool isDone = false;
-                        while (!isDone)
+                        while (true)
                         {
                             // Show the current motherboard serial to the user
                             Console.ForegroundColor = ConsoleColor.Blue;
@@ -794,7 +788,6 @@ internal class Program
                             else if (newSerial == "exit")
                             {
                                 // The user wants to exit this menu
-                                isDone = true;
                                 break;
                             }
                             else
@@ -807,7 +800,6 @@ internal class Program
                                     Console.WriteLine("The new motherboard serial number you entered been saved successfully.");
                                     Console.WriteLine("Press Enter to continue...");
                                     Console.ReadLine();
-                                    isDone = true;
                                     break;
                                 }
                                 catch (ArgumentException ex)
@@ -815,7 +807,6 @@ internal class Program
                                     Console.WriteLine("An error occurred while writing to the BIOS dump. Please try again..." + ex.Message);
                                     Console.WriteLine("Press Enter to continue...");
                                     Console.ReadLine();
-                                    isDone = true;
                                     break;
                                 }
                             }
@@ -838,8 +829,7 @@ internal class Program
                     if (_norData != null)
                     {
                         // Create a loop to prevent the app from returning to the main menu
-                        bool isDone = false;
-                        while (!isDone)
+                        while (true)
                         {
                             // Show the current model to the user
                             Console.ForegroundColor = ConsoleColor.Blue;
@@ -863,7 +853,7 @@ internal class Program
                                 Console.WriteLine(
                                     "The new model you entered is invalid. The model should be 9 characters long starting with 'CFI-', followed by 4 numbers and a letter.");
                             }
-                            else if (!newModel.StartsWith("CFI-"))
+                            else if (!newModel.StartsWith("CFI-") || !newModel.StartsWith("DFI-"))
                             {
                                 Console.WriteLine(
                                     "The new model you entered is invalid. The model should be 9 characters long starting with 'CFI-', followed by 4 numbers and a letter.");
@@ -871,7 +861,6 @@ internal class Program
                             else if (newModel == "exit")
                             {
                                 // The user wants to exit this menu
-                                isDone = true;
                                 break;
                             }
                             else
@@ -885,7 +874,6 @@ internal class Program
                                         "The new console model you chose has been saved successfully.");
                                     Console.WriteLine("Press Enter to continue...");
                                     Console.ReadLine();
-                                    isDone = true;
                                     break;
 
                                 }
@@ -896,7 +884,6 @@ internal class Program
                                         ex);
                                     Console.WriteLine("Press Enter to continue...");
                                     Console.ReadLine();
-                                    isDone = true;
                                     break;
                                 }
                             }

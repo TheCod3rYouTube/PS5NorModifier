@@ -24,22 +24,22 @@ public class NORData(string path)
         { "18", "Singapore, Korea, Asia" }
     };
 
-    public enum DataFormat
+    private enum DataFormat
     {
         String,
         Hex
     }
 
-    private byte[] _data = File.ReadAllBytes(path);
-    // TODO: These two need better names
-    private string? NOR_Format_ModelCode => GetData(Offsets.Model, 4, DataFormat.Hex);
-
+    private readonly byte[] _data = File.ReadAllBytes(path);
     public string Path => path;
+    
+    private string? NORFormatModelCode => GetData(Offsets.Model, 4, DataFormat.Hex);
+
     public Editions Edition
     {
         get
         {
-            return NOR_Format_ModelCode switch
+            return NORFormatModelCode switch
             {
                 "22010101" => Editions.Slim,
                 "22020101" => Editions.Disc,
