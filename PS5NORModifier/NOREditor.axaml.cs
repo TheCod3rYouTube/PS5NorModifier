@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -16,9 +17,22 @@ public partial class NOREditor : UserControl
         "Disc Edition",
         "Digital Edition"
     ];
-    
+
+
+    // TODO: I'd like to create a custom class for this that contains all the SKUs and their model-specific data. I'll do that later...
+    // Sourced from https://www.psdevwiki.com/ps5/SKU_Models
     private readonly List<string> _boardVariants =
     [
+        // General Schema:
+        // `${Audience}-${IsNonRetail ? {NonRetailFlavor} : ""}${Chassis}${Revision}${ModelSpecifier}`
+
+        // Audience: CFI = Consumer, DFI = DevKit or TestKit
+        // NonRetailFlavor: D = DevKit, T = TestKit
+        // Chassis: 1 = PS5 Fat, 2 = PS5 Slim, 7 = PS5 Pro
+        // Revision: 0 = First Revision, 1 = Second Revision, 2 = Third Revision, 3 = Fourth Revision, ... 
+        // ModelSpecifier: Model specific identifier. Not entirely consistent, and the schema changes with the PS5 Pro. Usually ends with "A", "B", "AB"... 
+
+        // PS5 FAT (Rev0)
         "CFI-1000A",
         "CFI-1000A01",
         "CFI-1000B",
@@ -27,21 +41,44 @@ public partial class NOREditor : UserControl
         "CFI-1014A",
         "CFI-1015A",
         "CFI-1015B",
-        "CFI-1016A",
+        "CFI-1016A", // Ratchet & Clank: Rift Apart Limited Edition
         "CFI-1018A",
+
+        // PS5 FAT (Rev1)
         "CFI-1100A01",
         "CFI-1102A",
         "CFI-1108A",
         "CFI-1109A",
         "CFI-1114A",
         "CFI-1115A",
-        "CFI-1116A",
+        "CFI-1116A", // Horizon Forbidden West Limited Edition
         "CFI-1118A",
+
+        // PS5 FAT (Rev2)
         "CFI-1208A",
         "CFI-1215A",
-        "CFI-1216A",
-        "DFI-T1000AA",
-        "DFI-D1000AA"
+        "CFI-1216A", // Call of Duty Modern Warfare II Limited Edition
+
+        // PS5 Slim (Rev0)
+        "CFI-2000AB",
+        "CFI-2002A",
+        "CFI-2002B",
+        "CFI-2015AB",
+        "CFI-2016",
+        "CFI-2018AB",
+
+        // PS5 Pro (Rev0)
+        "CFI-7000 B01",
+        "CFI-7002 B01",
+        "CFI-7014 B01",
+        "CFI-7019 B01",
+        "CFI-7020 B01",
+        "CFI-7021 B01",
+        "CFI-7022 B01",
+
+        // Non-Retail Models! 
+        "DFI-T1000AA", // TestKit
+        "DFI-D1000AA" // DevKit
     ];
     public NOREditor()
     {

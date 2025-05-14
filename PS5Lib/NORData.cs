@@ -23,17 +23,23 @@ public class NORData(string path)
         { "16", "Europe / Middle East / Africa" },
         { "18", "Singapore, Korea, Asia" }
     };
-    
+
+    public enum DataFormat
+    {
+        String,
+        Hex
+    }
+
     private byte[] _data = File.ReadAllBytes(path);
     // TODO: These two need better names
-    private string? One => GetData(Offsets.One, 4, false);
+    private string? NOR_Format_ModelCode => GetData(Offsets.Model, 4, DataFormat.Hex);
 
     public string Path => path;
     public Editions Edition
     {
         get
         {
-            return One switch
+            return NOR_Format_ModelCode switch
             {
                 "22010101" => Editions.Slim,
                 "22020101" => Editions.Disc,
@@ -48,14 +54,14 @@ public class NORData(string path)
 
             byte[] replace = [0x22, (byte)(value == Editions.Disc ? 0x02 : 0x03), 0x01, 0x01];
             
-            Array.Copy(replace, 0, _data, Offsets.One, replace.Length);
+            Array.Copy(replace, 0, _data, Offsets.Model, replace.Length);
         }
     }
     public string WiFiMAC
     {
         get
         {
-            string? val = GetData(Offsets.WiFiMAC, 6, false);
+            string? val = GetData(Offsets.WiFiMAC, 6, DataFormat.Hex);
             return val == null
                 ? "Unknown"
                 : string.Join("", val.Select((c, i) => i % 2 == 0 ? $"{c}" : $"{c}-"))[..^1];
@@ -65,7 +71,7 @@ public class NORData(string path)
     {
         get
         {
-            string? val = GetData(Offsets.LANMAC, 6, false);
+            string? val = GetData(Offsets.LANMAC, 6, DataFormat.Hex);
             return val == null
                 ? "Unknown"
                 : string.Join("", val.Select((c, i) => i % 2 == 0 ? $"{c}" : $"{c}-"))[..^1];
@@ -74,7 +80,7 @@ public class NORData(string path)
 
     public string Serial
     {
-        get => GetData(Offsets.Serial, 16, true) ?? "Unknown";
+        get => GetData(Offsets.Serial, 16, DataFormat.String) ?? "Unknown";
         set
         {
             byte[] bytes = Encoding.UTF8.GetBytes(value);
@@ -121,7 +127,7 @@ public class NORData(string path)
     }
     public string MoboSerial
     {
-        get => GetData(Offsets.MoboSerial, 16, true) ?? "Unknown";
+        get => GetData(Offsets.MoboSerial, 16, DataFormat.String) ?? "Unknown";
         set
         {
             byte[] bytes = Encoding.UTF8.GetBytes(value);
@@ -131,12 +137,13 @@ public class NORData(string path)
         }
     }
 
-    private string? GetData(int offset, int length, bool useString)
+
+    private string? GetData(int offset, int length, DataFormat format)
     {
         try
         {
             byte[] bytes = _data[offset..(offset + length)];
-            return useString
+            return format == DataFormat.String
                 ? Encoding.UTF8.GetString(bytes)
                 : BitConverter.ToString(bytes).Replace("-", null);
         }
