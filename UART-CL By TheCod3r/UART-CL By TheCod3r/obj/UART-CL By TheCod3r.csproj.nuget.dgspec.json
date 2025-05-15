@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\TheCod3r\\source\\repos\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj": {}
+    "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj": {}
   },
   "projects": {
-    "C:\\Users\\TheCod3r\\source\\repos\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj": {
+    "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\TheCod3r\\source\\repos\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj",
+        "projectUniqueName": "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj",
         "projectName": "UART-CL By TheCod3r",
-        "projectPath": "C:\\Users\\TheCod3r\\source\\repos\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj",
-        "packagesPath": "C:\\Users\\TheCod3r\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\TheCod3r\\source\\repos\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\obj\\",
+        "projectPath": "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj",
+        "packagesPath": "C:\\Users\\Rory B\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\TheCod3r\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Rory B\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [

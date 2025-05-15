@@ -1,0 +1,26 @@
+# Ignore build results
+bin/
+obj/
+
+# Ignore Visual Studio folder
+.vs/
+
+# Ignore user-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignore Rider IDE files
+.idea/
+
+# Ignore Visual Studio Code settings
+.vscode/
+
+# Ignore temporary files
+*.log
+*.tmp
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
