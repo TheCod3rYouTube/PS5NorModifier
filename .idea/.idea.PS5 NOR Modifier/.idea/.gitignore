@@ -1,0 +1,83 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/contentModel.xml
+/.idea.PS5 NOR Modifier.iml
+/modules.xml
+/projectSettingsUpdater.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+# Visual Studio 2022
+.vs/
+*.vcxproj.user
+*.vcxproj.filters
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+bin/
+obj/
+out/
+
+# Rider
+.idea/
+
+# VS Code settings folder
+.vscode/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+# The packages folder can be ignored because of PackageReference
+**/packages/*
+
+# Visual Studio cache files
+*.cache
+*.dbmdl
+*.bak
+*.log
+
+# Others
+*.pdb
+*.dll
+*.exe
+
+# Resharper
+_ReSharper*/
+*.DotSettings.user
+
+# DotCover
+*.dotCover
+
+# TeamCity
+_TeamCity*
+
+# User-specific files
+*.rsuser
+*.sln.docstates
+
+# ASP.NET temporary files
+App_Data/
+
+# Publish output
+*.publish.xml
+*.azurePubxml
+
+# VS Code workspace settings
+*.code-workspace
+
+# Rider project files
+*.sln.iml
+
+# MacOS
+.DS_Store
+
+# Windows thumbnail cache
+Thumbs.db
+ehthumbs.db

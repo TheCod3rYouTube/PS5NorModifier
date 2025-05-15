@@ -12,8 +12,8 @@
       }
     ],
     "additionalProbingPaths": [
-      "C:\\Users\\TheCod3r\\.dotnet\\store\\|arch|\\|tfm|",
-      "C:\\Users\\TheCod3r\\.nuget\\packages",
+      "C:\\Users\\Captivea\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\Captivea\\.nuget\\packages",
       "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
     ],
     "configProperties": {
