@@ -2,18 +2,16 @@ Help contribute to the project with a donation: https://www.streamelements.com/t
 
 News update: This project will continue soon. We've just aquired the domain "uart.codes" and I'm in the process of building a team and a roadmap to really take this project places it's never seen!
 
-The PS5 NOR Modifier is a Windows GUI based application making it easier for people to modify the NOR file for their PlayStation 5 console. This is especially useful if you need to generate a NOR file for your console to replace a corrupt or faulty NOR.
+The PS5 NOR Modifier is a GUI based application that makes it easier for one to modify the NOR file for their PlayStation 5 console. This is especially useful if you need to generate a NOR file for your console to replace a corrupt or faulty NOR.
 
 
-Download compiled versions under the releases section
+Download compiled versions under the releases section.
 
 ![PS5 NOR Modifier](https://raw.githubusercontent.com/thecod3ryoutube/PS5NorModifier/main/Screenshot1.png)
 
 ![PS5 NOR Modifier](https://raw.githubusercontent.com/thecod3ryoutube/PS5NorModifier/main/Screenshot2.png)
 
 ![PS5 NOR Modifier](https://raw.githubusercontent.com/thecod3ryoutube/PS5NorModifier/main/Screenshot3.png)
-
-If you just want to use the software, download the standalone ZIP
 
 Some symptoms that your NOR is corrupt or faulty:
 1. No power at all. The console draws 8ma of current or 0ma of current when connecting to a bench power supply
@@ -29,7 +27,7 @@ Features:
 3. Change serial number on NOR file
 4. Change version flags (disc edition or digital edition)
 5. Read motherboard serial
-6. Read WiFi MAC address
+6. Read Wi-Fi MAC address
 7. Read LAN MAC address
 
 UART Features:
@@ -43,14 +41,10 @@ UART Features:
 
 System Requirements:
 
-Operating system: Windows 7, 8, 10, 11
+Operating system: Windows 10, 11, Linux, macOS
 
-Hard Drive: 5MB
+CPU: Any X86- or X64-based CPU
 
-Memory: 128MB
-
-CPU: Any X86 or X64 based CPU
-
-Software: Microsoft .NET 6.0 Desktop Runtime (v6.0.29)
+Software: Microsoft .NET 8.0 Desktop Runtime
 
 Internet connection when using online
