@@ -19,8 +19,8 @@
             <Label>Board Variant:</Label>
             <Label>PS5 Model:</Label>
             <Label>File Size:</Label>
-            <Label>WiFi MAC Address:</Label>
-            <Label>LAN MAC Address:</Label>
+            <Label>Wi-Fi MAC Address:</Label>
+            <Label>Ethernet 1 MAC Address:</Label>
             <StackPanel.Styles>
                 <Style Selector="Label">
                     <Setter Property="Padding" Value="3 5 15 5" />
@@ -47,8 +47,8 @@
             <Label>Motherboard Serial:</Label>
             <Label>Board Variant:</Label>
             <Label>PS5 Model:</Label>
-            <Label>WiFi MAC Address:</Label>
-            <Label>LAN MAC Address:</Label>
+            <Label>Wi-Fi MAC Address:</Label>
+            <Label>Ethernet 1 MAC Address:</Label>
             <StackPanel.Styles>
                 <Style Selector="Label">
                     <Setter Property="Padding" Value="3 5 15 5" />

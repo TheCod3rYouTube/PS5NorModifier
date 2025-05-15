@@ -1,5 +1,4 @@
 using PS5Lib;
-using PS5NORModifier;
 
 namespace UART_CL;
 
@@ -75,7 +74,7 @@ public class BIOSMenu : Menu
         while (true)
         {
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine($"Current model: {_norData.VariantCode}");
+            Console.WriteLine($"Current model: {_norData.SKUModel}");
             Console.ResetColor();
 
             Console.WriteLine(
@@ -105,7 +104,7 @@ public class BIOSMenu : Menu
             {
                 try
                 {
-                    _norData.VariantCode = newModel;
+                    _norData.SKUModel = newModel;
                     Console.WriteLine("The new console model you chose has been saved successfully.");                    break;
                 }
                 catch (Exception ex)
@@ -254,11 +253,11 @@ public class BIOSMenu : Menu
                     
         Console.WriteLine("File size: " + lengthBytes + " bytes (" + lengthMiB + " MiB)");
         Console.WriteLine("PS5 Version: " + _norData.Edition); // Show the version info (disc/digital/slim)
-        Console.WriteLine("Console Model: " + _norData.VariantCode); // Show the console variant (CFI-XXXX)
+        Console.WriteLine("Console Model: " + _norData.SKUModel); // Show the console variant (CFI-XXXX)
         Console.WriteLine("Console Serial Number: " + _norData.Serial); // Show the serial number. This serial is the one the disc drive would use
         Console.WriteLine("Motherboard Serial Number: " + _norData.MoboSerial); // Show the serial number to the motherboard. This is different to the console serial
         Console.WriteLine("WiFi Mac Address: " + _norData.WiFiMAC);
-        Console.WriteLine("LAN Mac Address: " + _norData.LANMAC);
+        Console.WriteLine("Ethernet 1 Mac Address: " + _norData.Ethernet1MAC);
         
         return true;
     }

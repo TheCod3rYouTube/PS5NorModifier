@@ -140,15 +140,15 @@ public partial class NORModifier : UserControl
         WiFiMACAddressOut.Content = wifiMac;
         WiFiMACAddressIn.Text = wifiMac;
 
-        string lanMac = _norData.LANMAC;
+        string lanMac = _norData.Ethernet1MAC;
         LANMACAddressOut.Content = lanMac;
         LANMACAddressIn.Text = lanMac;
         
         MotherboardSerialOut.Content = _norData.MoboSerial;
         MotherboardSerialIn.Text = _norData.MoboSerial;
         
-        BoardVariantOut.Content = _norData.Variant;
-        BoardVariantIn.SelectedValue = _norData.VariantCode;
+        BoardVariantOut.Content = _norData.SKUInfo;
+        BoardVariantIn.SelectedValue = _norData.SKUModel;
     }
 
     private async void SaveButton_OnClick(object? sender, RoutedEventArgs e)
@@ -200,7 +200,7 @@ public partial class NORModifier : UserControl
         string filePath = Uri.UnescapeDataString(file.Path.AbsolutePath);
 
         _norData.Edition = (Editions)PS5ModelIn.SelectedIndex;
-        _norData.VariantCode = BoardVariantIn.SelectedValue.ToString() ?? null;
+        _norData.SKUModel = BoardVariantIn.SelectedValue.ToString() ?? null;
         _norData.Serial = SerialNumberIn.Text;
         _norData.MoboSerial = MotherboardSerialIn.Text;
         

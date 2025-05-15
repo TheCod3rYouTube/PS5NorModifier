@@ -6,6 +6,13 @@ public abstract class Menu
     public string Title { get; init; }
     public string Description { get; init; }
 
+    /// <summary>
+    /// Displays the menu, allowing the user to select its options until they choose to exit.
+    /// </summary>
+    /// <param name="asSubMenu">
+    /// Whether the menu was opened from another menu.
+    /// If true, the exit option will be "Return to previous menu" instead of "Exit application".
+    /// </param>
     public void Open(bool asSubMenu = false)
     {
         int selection = 1;

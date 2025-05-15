@@ -50,6 +50,9 @@
     <Compile Update="App.cs">
       <DependentUpon>App.axaml</DependentUpon>
     </Compile>
+    <Compile Update="NORModifier.axaml.cs">
+      <DependentUpon>NORModifier.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

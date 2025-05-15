@@ -18,7 +18,7 @@
             <Button Name="GetErrorCodesButton" Click="GetErrorCodesButton_OnClick">Get Error Codes</Button>
             <Button Name="ClearErrorCodesButton" Click="ClearErrorCodesButton_OnClick">Clear Error Codes</Button>
             <Button Name="DownloadErrorDBButton" Click="DownloadErrorDBButton_OnClick">Download Error Database</Button>
-            <CheckBox Name="UseOfflineDB" Margin="2 0 0 0">Use offline database</CheckBox>
+            <CheckBox Name="UseOfflineDB" Margin="2 0 0 0" IsCheckedChanged="UseOfflineDB_OnIsCheckedChanged">Use offline database</CheckBox>
         </StackPanel>
 
         <Label Grid.Row="2" Grid.Column="0" Margin="0 6">Output:</Label>

@@ -9,15 +9,20 @@ public class UART
     private const string DatabaseUrl = "https://uartcodes.com/xml.php";
     
     private readonly SerialPort _uartSerial = new();
-    public bool UseOfflineDB { get; set; } = false;
+    public bool UseOfflineDB { get; set; }
     public bool IsConnected => _uartSerial.IsOpen;
-    
-    public static string CalculateChecksum(string str)
+
+    private static string CalculateChecksum(string str)
     {
         int sum = str.Aggregate(0, (current, c) => current + c);
         return str + ":" + (sum & 0xFF).ToString("X2");
     }
     
+    /// <summary>
+    /// Gets the description of an error code from the <see cref="DatabaseFileName"/> XML file.
+    /// </summary>
+    /// <param name="errorCode">The error code to look up.</param>
+    /// <returns>The description of the error code, or an error message if the file is not found or invalid.</returns>
     public static string ParseErrorsOffline(string errorCode)
     {
         try
@@ -45,6 +50,11 @@ public class UART
         }
     }
     
+    /// <summary>
+    /// Gets the description of an error code from the online database at <see cref="DatabaseUrl"/>.
+    /// </summary>
+    /// <param name="error">The error code to look up.</param>
+    /// <returns>The description of the error code, or an error message if an error occurred.</returns>
     public static async Task<string> ParseErrorsOnline(string error)
     {
         string url = $"{DatabaseUrl}?errorCode={error}";
@@ -77,6 +87,9 @@ public class UART
         }
     }
     
+    /// <summary>
+    /// Downloads the error database from <see cref="DatabaseUrl"/> and saves it to the local file system.
+    /// </summary>
     public static async Task DownloadErrorDB()
     {
         string xmlData;
@@ -108,6 +121,11 @@ public class UART
             _uartSerial.Close();
     }
     
+    /// <summary>
+    /// Sends <c>errlog clear</c> to the UART device and returns the result.
+    /// </summary>
+    /// <param name="result">The result of the command, or an error message if an error occurred.</param>
+    /// <returns>True if the command was sent successfully, false otherwise.</returns>
     public bool ClearErrorLog(out string result)
     {
         bool success = SendCommand("errlog clear", out var results);
@@ -141,6 +159,12 @@ public class UART
         return true;
     }
     
+    /// <summary>
+    /// Gets the error log from the UART device.
+    /// </summary>
+    /// <param name="page">The page number to retrieve.</param>
+    /// <param name="hideDuplicates">Whether to filter out duplicate errors.</param>
+    /// <returns>A tuple containing a success flag and a list of error messages.</returns>
     public async Task<(bool success, List<string> errors)> GetErrorLog(int page, bool hideDuplicates = false)
     {
         bool success = SendCommand($"errlog {page}", out var results);

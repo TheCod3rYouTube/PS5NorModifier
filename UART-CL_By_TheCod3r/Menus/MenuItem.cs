@@ -6,6 +6,11 @@ public class MenuItem
     public ConsoleColor Color { private get; set; } = ConsoleColor.White;
     public required Func<bool> Action { private get; set; }
 
+    /// <summary>
+    /// Prints the menu item to the console.
+    /// </summary>
+    /// <param name="index">The number to display before the menu item.</param>
+    /// <param name="selected">Whether the menu item should be highlighted.</param>
     public void Write(int index, bool selected)
     {
         if (selected)
@@ -21,6 +26,10 @@ public class MenuItem
         Console.ResetColor();
     }
 
+    /// <summary>
+    /// Prints the menu item to the console without an index.
+    /// </summary>
+    /// <param name="selected">Whether the menu item should be highlighted.</param>
     public void Write(bool selected)
     {
         if (selected)

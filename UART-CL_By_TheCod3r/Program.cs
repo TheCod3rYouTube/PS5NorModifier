@@ -6,7 +6,6 @@ using System.Xml;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Globalization;
-using PS5NORModifier;
 using PS5Lib;
 
 #region Reminders (remove before publishing)

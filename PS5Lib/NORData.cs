@@ -1,7 +1,6 @@
 using System.Text;
-using PS5Lib;
 
-namespace PS5NORModifier;
+namespace PS5Lib;
 
 public class NORData(string path)
 {
@@ -35,6 +34,9 @@ public class NORData(string path)
     
     private string? NORFormatModelCode => GetData(Offsets.Model, 4, DataFormat.Hex);
 
+    /// <summary>
+    /// Gets or sets the edition of the PS5.
+    /// </summary>
     public Editions Edition
     {
         get
@@ -57,6 +59,10 @@ public class NORData(string path)
             Array.Copy(replace, 0, _data, Offsets.Model, replace.Length);
         }
     }
+    
+    /// <summary>
+    /// Gets the Wi-Fi MAC address of the PS5.
+    /// </summary>
     public string WiFiMAC
     {
         get
@@ -67,17 +73,39 @@ public class NORData(string path)
                 : string.Join("", val.Select((c, i) => i % 2 == 0 ? $"{c}" : $"{c}-"))[..^1];
         }
     }
-    public string LANMAC 
+    
+    /// <summary>
+    /// Gets the MAC address of the PS5's first Ethernet port.
+    /// </summary>
+    public string Ethernet1MAC 
     {
         get
         {
-            string? val = GetData(Offsets.LANMAC, 6, DataFormat.Hex);
+            string? val = GetData(Offsets.Ethernet1MAC, 6, DataFormat.Hex);
+            return val == null
+                ? "Unknown"
+                : string.Join("", val.Select((c, i) => i % 2 == 0 ? $"{c}" : $"{c}-"))[..^1];
+        }
+    }
+    
+    /// <summary>
+    /// Gets the MAC address of the PS5's second Ethernet port, if present. Otherwise, FF-FF-FF-FF-FF-FF.
+    /// This should be Ethernet1Mac + 1.
+    /// </summary>
+    public string Ethernet2MAC 
+    {
+        get
+        {
+            string? val = GetData(Offsets.Ethernet2MAC, 6, DataFormat.Hex);
             return val == null
                 ? "Unknown"
                 : string.Join("", val.Select((c, i) => i % 2 == 0 ? $"{c}" : $"{c}-"))[..^1];
         }
     }
 
+    /// <summary>
+    /// Gets or sets the product serial number of the PS5.
+    /// </summary>
     public string Serial
     {
         get => GetData(Offsets.Serial, 16, DataFormat.String) ?? "Unknown";
@@ -89,13 +117,17 @@ public class NORData(string path)
             Array.Copy(bytes, 0, _data, Offsets.Serial, bytes.Length);
         }
     }
-    public string? VariantCode
+    
+    /// <summary>
+    /// Gets or sets the SKU identifier of the PS5.
+    /// </summary>
+    public string? SKUModel
     {
         get 
         {
             try
             {
-                byte[] variantBytes = _data[Offsets.Variant..(Offsets.Variant + 19)].Where(b => b != 0xFF).ToArray();
+                byte[] variantBytes = _data[Offsets.SKUModel..(Offsets.SKUModel + 19)].Where(b => b != 0xFF).ToArray();
                 return Encoding.UTF8.GetString(variantBytes).Split(' ')[0];
             }
             catch
@@ -112,19 +144,27 @@ public class NORData(string path)
             // code did (or, more accurately, what it *would have* done, had it actually *worked*), and i don't know how
             // to make it right, so i'm leaving it as is for now.
             byte[] bytes = Encoding.UTF8.GetBytes(value);
-            Array.Copy(bytes, 0, _data, Offsets.Variant + 10, bytes.Length);
+            Array.Copy(bytes, 0, _data, Offsets.SKUModel + 10, bytes.Length);
         }
     }
-    public string? Variant
+    
+    /// <summary>
+    /// Gets the SKU of the PS5, plus the region, e.g. "CFI-1015A - US, Canada, (North America)".
+    /// </summary>
+    public string? SKUInfo
     {
         get 
         {
-            string? variant = VariantCode;
+            string? variant = SKUModel;
             return variant == null
                 ? null
                 : $"{variant} - {Regions.GetValueOrDefault(variant[^3..^1], "Unknown Region")}";
         }
     }
+    
+    /// <summary>
+    /// Gets or sets the serial number of the PS5's motherboard.
+    /// </summary>
     public string MoboSerial
     {
         get => GetData(Offsets.MoboSerial, 16, DataFormat.String) ?? "Unknown";
@@ -136,8 +176,7 @@ public class NORData(string path)
             Array.Copy(bytes, 0, _data, Offsets.MoboSerial, bytes.Length);
         }
     }
-
-
+    
     private string? GetData(int offset, int length, DataFormat format)
     {
         try

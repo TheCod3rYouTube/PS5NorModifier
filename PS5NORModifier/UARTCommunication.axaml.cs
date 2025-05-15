@@ -187,4 +187,9 @@ public partial class UARTCommunication : UserControl
             mainWindow.SetStatus("An error occurred while downloading the offline database. Please try again.");
         }
     }
+
+    private void UseOfflineDB_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        _uart.UseOfflineDB = UseOfflineDB.IsChecked == true;
+    }
 }
