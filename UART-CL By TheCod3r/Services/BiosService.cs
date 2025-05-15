@@ -99,7 +99,7 @@ public class BiosService(ILogger<BiosService> logger)
 		}
 		catch (Exception ex)
 		{
-			logger.LogTrace(ex, "BIOS model extraction failed.");
+			logger.LogError(ex, "BIOS model extraction failed.");
 
 			reader.Close();
 			reader.Dispose();
@@ -252,9 +252,7 @@ public class BiosService(ILogger<BiosService> logger)
 		}
 		catch (Exception ex)
 		{
-			logger.LogError("BIOS file could not be opened.");
-			logger.LogTrace(ex, "BIOS file opening failed.");
-
+			logger.LogError(ex, "BIOS file could not be opened.");
 			throw;
 		}
 
@@ -269,9 +267,7 @@ public class BiosService(ILogger<BiosService> logger)
 		}
 		catch (Exception ex)
 		{
-			logger.LogError("Failed to write console edition at the provided offsets.");
-			logger.LogTrace(ex, "Console edition update failed.");
-
+			logger.LogError(ex, "Failed to write console edition at the provided offsets.");
 			throw;
 		}
 		finally
@@ -307,9 +303,7 @@ public class BiosService(ILogger<BiosService> logger)
 		}
 		catch (Exception ex)
 		{
-			logger.LogError("BIOS file could not be opened.");
-			logger.LogTrace(ex, "BIOS file opening failed.");
-
+			logger.LogError(ex, "BIOS file could not be opened.");
 			throw;
 		}
 
@@ -322,9 +316,7 @@ public class BiosService(ILogger<BiosService> logger)
 		}
 		catch (Exception ex)
 		{
-			logger.LogError("Failed to write console serial number at the provided offset.");
-			logger.LogTrace(ex, "Console serial number update failed.");
-
+			logger.LogError(ex, "Failed to write console serial number at the provided offset.");
 			throw;
 		}
 		finally
@@ -361,9 +353,7 @@ public class BiosService(ILogger<BiosService> logger)
 		}
 		catch (Exception ex)
 		{
-			logger.LogError("BIOS file could not be opened.");
-			logger.LogTrace(ex, "BIOS file opening failed.");
-
+			logger.LogError(ex, "BIOS file could not be opened.");
 			throw;
 		}
 
@@ -376,9 +366,7 @@ public class BiosService(ILogger<BiosService> logger)
 		}
 		catch (Exception ex)
 		{
-			logger.LogError("Failed to write motherboard serial number at the provided offset.");
-			logger.LogTrace(ex, "Motherboard serial number update failed.");
-
+			logger.LogError(ex, "Failed to write motherboard serial number at the provided offset.");
 			throw;
 		}
 		finally
@@ -414,9 +402,7 @@ public class BiosService(ILogger<BiosService> logger)
 		}
 		catch (Exception ex)
 		{
-			logger.LogError("BIOS file could not be opened.");
-			logger.LogTrace(ex, "BIOS file opening failed.");
-
+			logger.LogError(ex, "BIOS file could not be opened.");
 			throw;
 		}
 
@@ -429,9 +415,7 @@ public class BiosService(ILogger<BiosService> logger)
 		}
 		catch (Exception ex)
 		{
-			logger.LogError("Failed to write model number at the provided offset.");
-			logger.LogTrace(ex, "Model number update failed.");
-
+			logger.LogError(ex, "Failed to write model number at the provided offset.");
 			throw;
 		}
 		finally
