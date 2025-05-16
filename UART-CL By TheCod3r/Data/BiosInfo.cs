@@ -12,4 +12,5 @@ public class BiosInfo
 	public string Model { get; set; } = string.Empty;
 	public string WiFiMac { get; set; } = string.Empty;
 	public string LanMac { get; set; } = string.Empty;
+	public IEnumerable<BiosError> Errors { get; set; } = [];
 }

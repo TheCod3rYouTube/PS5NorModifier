@@ -14,6 +14,9 @@ public class BiosService(ILogger<BiosService> logger)
 	private const long _moboSerialOffset = 0x1C7200;
 	private const long _wifiMacOffset = 0x1C73C0;
 	private const long _lanMacOffset = 0x1C4020;
+	private const long _logStartOffset = 0x1CE100;
+	private const long _logEndOffset = 0x1CEC70;
+	private const int _logEntrySize = 32 * 8; // uint32 * 8
 
 	/// <summary>
 	/// Reads the BIOS file and extracts properties such as edition, region, console serial number, motherboard serial number, model, WiFi MAC address, and LAN MAC address.
@@ -206,7 +209,7 @@ public class BiosService(ILogger<BiosService> logger)
 		{
 			reader.BaseStream.Position = _lanMacOffset;
 			var bytes = reader.ReadBytes(6);
-			lanMac = BitConverter.ToString(reader.ReadBytes(6));
+			lanMac = BitConverter.ToString(bytes);
 
 			logger.LogInformation("LAN MAC address: {Mac}", lanMac);
 		}
@@ -220,19 +223,50 @@ public class BiosService(ILogger<BiosService> logger)
 			throw;
 		}
 
+		var errors = new List<BiosError>();
+		try
+		{
+			reader.BaseStream.Position = _logStartOffset;
+
+			for (int i = 0; reader.BaseStream.Position <= _logEndOffset - _logEntrySize; i++)
+			{
+				var bytes = reader.ReadBytes(_logEntrySize);
+
+				if (BitConverter.ToUInt32(bytes.AsSpan()[0..8]) == 0xFFFFFFFF)
+				{
+					logger.LogInformation("BIOS log entry {i} is empty, ending log read.", i);
+					break;
+				}
+
+				errors.Add(new BiosError(bytes));
+
+				logger.LogInformation("Log entry {i}: {Log}", i, bytes);
+			}		
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "BIOS log extraction failed.");
+
+			reader.Close();
+			reader.Dispose();
+
+			throw;
+		}
+
 		reader.Close();
 		reader.Dispose();
 
 		return new()
 		{
-			Path = filePath,
-			Edition = edition,
-			Region = region,
-			ConsoleSerialNumber = serial,
-			MotherboardSerialNumber = motherboardSerial,
-			Model = model,
-			WiFiMac = wifiMac,
-			LanMac = lanMac
+			Path = filePath, 
+			Edition = edition, 
+			Region = region, 
+			ConsoleSerialNumber = serial, 
+			MotherboardSerialNumber = motherboardSerial, 
+			Model = model, 
+			WiFiMac = wifiMac, 
+			LanMac = lanMac, 
+			Errors = errors, 
 		};
 	}
 

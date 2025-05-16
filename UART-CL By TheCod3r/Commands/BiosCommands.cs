@@ -35,6 +35,7 @@ public class BiosCommands(ILogger<BiosCommands> logger, BiosService biosService)
 
 	public override int Execute(CommandContext context, Settings settings)
 	{
+		AnsiConsole.WriteLine();
 		logger.LogInformation("Executing BIOS command with settings: {Settings}", settings);
 
 		BiosInfo biosInfo;
@@ -53,6 +54,9 @@ public class BiosCommands(ILogger<BiosCommands> logger, BiosService biosService)
 		{
 			Title = new TableTitle("BIOS Properties"),
 		};
+		var redStyle = new Style(Color.Red);
+		var blueStyle = new Style(Color.Blue);
+		var greenStyle = new Style(Color.Green);
 
 		// No properties are going to be changed, so just display the current BIOS properties
 		if (settings.Edition is null &&
@@ -66,31 +70,84 @@ public class BiosCommands(ILogger<BiosCommands> logger, BiosService biosService)
 			table.AddColumn(new TableColumn("Value").Centered());
 
 			table.AddRow(new Text[] { 
-				new("PS5 Version", new Style(Color.Red)), 
-				new(biosInfo.Edition.ToString(), new Style(Color.Blue)), 
+				new("PS5 Version", redStyle), 
+				new(biosInfo.Edition.ToString(), blueStyle), 
 			});
 			table.AddRow(new Text[] { 
-				new("Model", new Style(Color.Red)), 
-				new(biosInfo.Model, new Style(Color.Blue)), 
+				new("Model", redStyle), 
+				new(biosInfo.Model, blueStyle), 
 			});
 			table.AddRow(new Text[] { 
-				new("Serial", new Style(Color.Red)), 
-				new(biosInfo.ConsoleSerialNumber, new Style(Color.Blue)), 
+				new("Serial", redStyle), 
+				new(biosInfo.ConsoleSerialNumber, blueStyle), 
 			});
 			table.AddRow(new Text[] { 
-				new("Motherboard Serial", new Style(Color.Red)), 
-				new(biosInfo.MotherboardSerialNumber, new Style(Color.Blue)), 
+				new("Motherboard Serial", redStyle), 
+				new(biosInfo.MotherboardSerialNumber, blueStyle), 
 			});
 			table.AddRow(new Text[] { 
-				new("WiFi MAC Addr", new Style(Color.Red)), 
-				new(biosInfo.WiFiMac, new Style(Color.Blue)), 
+				new("WiFi MAC Addr", redStyle), 
+				new(biosInfo.WiFiMac, blueStyle), 
 			});
 			table.AddRow(new Text[] { 
-				new("LAN MAC Addr", new Style(Color.Red)), 
-				new(biosInfo.LanMac, new Style(Color.Blue)), 
+				new("LAN MAC Addr", redStyle), 
+				new(biosInfo.LanMac, blueStyle), 
 			});
 
 			AnsiConsole.Write(table);
+			AnsiConsole.WriteLine();
+
+			// Display top 5 log entries
+			var logTable = new Table()
+			{
+				Title = new TableTitle("Error Log"),
+			};
+
+			logTable.AddColumn(new TableColumn("Error").Centered());
+			logTable.AddColumn(new TableColumn("RTC").Centered());
+			logTable.AddColumn(new TableColumn("Power State").Centered());
+			logTable.AddColumn(new TableColumn("Boot Cause").Centered());
+			logTable.AddColumn(new TableColumn("Device Power").Centered());
+			logTable.AddColumn(new TableColumn("Sequence Number").Centered());
+			logTable.AddColumn(new TableColumn("Env Temp").Centered());
+			logTable.AddColumn(new TableColumn("SoC Temp").Centered());
+
+			var errors = biosInfo.Errors.Take(5);
+
+			if (!errors.Any())
+			{
+				logTable.AddRow(new Text("No Errors", greenStyle));
+			}
+
+			foreach (var error in errors)
+			{
+				logTable.AddRow([new Text($"{error.RawCode:X8}", blueStyle).Centered(),
+					new Text($"{error.Rtc:X8}", blueStyle).Centered(),
+					new Text($"{error.RawPowerState:X8}", blueStyle).Centered(),
+					new Text($"{error.RawBootCause:X8}", blueStyle).Centered(),
+					new Text($"{error.RawDevicePowerManagement:X4}", blueStyle).Centered(),
+					new Text($"{error.RawSequenceNumber:X4}", blueStyle).Centered(),
+					new Text($"{error.RawEnvironmentTemperature:X4}", blueStyle).Centered(),
+					new Text($"{error.RawChipTemperature:X4}", blueStyle).Centered(),
+				]);
+				logTable.AddRow([
+					new Text(error.Code, greenStyle), 
+					new Text(string.Empty),
+					new Text($"{error.PowerStateA}-{error.PowerStateB}", greenStyle), 
+					new Text(error.BootCause, greenStyle), 
+					new Markup($"[{(error.HdmiPower ? """green""" : """red""")}]HDMI[/] " + 
+						$"[{(error.BddPower ? """green""" : """red""")}]BDD[/] " + 
+						$"[{(error.HdmiCecPower ? """green""" : """red""")}]HDMI-CEC[/] " + 
+						$"[{(error.UsbPower ? """green""" : """red""")}]USB[/] " + 
+						$"[{(error.WifiPower ? """green""" : """red""")}]WiFi[/]"),
+					new Text(error.SequenceNumber.Replace(", ", Environment.NewLine), greenStyle),
+					new Text(error.EnvironmentTemperature, greenStyle),
+					new Text(error.ChipTemperature, greenStyle),
+				]);
+				logTable.AddEmptyRow();
+			}
+
+			AnsiConsole.Write(logTable);
 
 			return 0;
 		}
@@ -184,34 +241,34 @@ public class BiosCommands(ILogger<BiosCommands> logger, BiosService biosService)
 		table.AddColumn(new TableColumn("Modified Value").Centered());
 
 		table.AddRow(new Text[] {
-				new("PS5 Version", new Style(Color.Red)), 
-				new(biosInfo.Edition.ToString(), new Style(Color.Blue)), 
-				new(modifiedBiosInfo.Edition.ToString(), new Style(Color.Green)), 
+				new("PS5 Version", redStyle), 
+				new(biosInfo.Edition.ToString(), blueStyle), 
+				new(modifiedBiosInfo.Edition.ToString(), greenStyle), 
 			});
 		table.AddRow(new Text[] {
-				new("Model", new Style(Color.Red)), 
-				new(biosInfo.Model, new Style(Color.Blue)),
-				new(modifiedBiosInfo.Model, new Style(Color.Green)), 
+				new("Model", redStyle), 
+				new(biosInfo.Model, blueStyle),
+				new(modifiedBiosInfo.Model, greenStyle), 
 			});
 		table.AddRow(new Text[] {
-				new("Serial", new Style(Color.Red)),
-				new(biosInfo.ConsoleSerialNumber, new Style(Color.Blue)), 
-				new(modifiedBiosInfo.ConsoleSerialNumber, new Style(Color.Green)), 
+				new("Serial", redStyle),
+				new(biosInfo.ConsoleSerialNumber, blueStyle), 
+				new(modifiedBiosInfo.ConsoleSerialNumber, greenStyle), 
 			});
 		table.AddRow(new Text[] {
-				new("Motherboard Serial", new Style(Color.Red)), 
-				new(biosInfo.MotherboardSerialNumber, new Style(Color.Blue)),
-				new(modifiedBiosInfo.MotherboardSerialNumber, new Style(Color.Green)), 
+				new("Motherboard Serial", redStyle), 
+				new(biosInfo.MotherboardSerialNumber, blueStyle),
+				new(modifiedBiosInfo.MotherboardSerialNumber, greenStyle), 
 			});
 		table.AddRow(new Text[] {
-				new("WiFi MAC Addr", new Style(Color.Red)), 
-				new(biosInfo.WiFiMac, new Style(Color.Blue)),
-				new(modifiedBiosInfo.WiFiMac, new Style(Color.Green)), 
+				new("WiFi MAC Addr", redStyle), 
+				new(biosInfo.WiFiMac, blueStyle),
+				new(modifiedBiosInfo.WiFiMac, greenStyle), 
 			});
 		table.AddRow(new Text[] {
-				new("LAN MAC Addr", new Style(Color.Red)), 
-				new(biosInfo.LanMac, new Style(Color.Blue)),
-				new(modifiedBiosInfo.LanMac, new Style(Color.Green)), 
+				new("LAN MAC Addr", redStyle), 
+				new(biosInfo.LanMac, blueStyle),
+				new(modifiedBiosInfo.LanMac, greenStyle), 
 			});
 
 		AnsiConsole.Write(table);
