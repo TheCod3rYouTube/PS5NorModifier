@@ -277,14 +277,14 @@ namespace PS5_NOR_Modifier.UserControls.UART
 
         private void btnDisconnectCom_Click(object sender, EventArgs e)
         {
+            SetConnectedUIState(false);
+
             // Let's close the COM port
             try
             {
                 if (_UARTSerial.IsOpen == true)
                 {
                     _UARTSerial.Close();
-
-                    SetConnectedUIState(false);
 
                     UpdateStatus("Disconnected from UART...");
                 }
@@ -301,9 +301,13 @@ namespace PS5_NOR_Modifier.UserControls.UART
         {
             // When the "refresh ports" button is pressed, we need to refresh the list of available COM ports for UART
             string[] ports = SerialPort.GetPortNames();
-            comboComPorts.Items.Clear();
-            comboComPorts.Items.AddRange(ports);
-            comboComPorts.SelectedIndex = 0;
+
+            if (ports.Length > 0)
+            {
+                comboComPorts.Items.Clear();
+                comboComPorts.Items.AddRange(ports);
+                comboComPorts.SelectedIndex = 0;
+            }
         }
 
         /// <summary>
@@ -339,7 +343,7 @@ namespace PS5_NOR_Modifier.UserControls.UART
 
                             if (String.Compare(uartResponse, checksum, true) != 0)
                             {
-                                uartCodeDetails = uartResponse; 
+                                uartCodeDetails = uartResponse;
                             }
                         } while (_UARTSerial.BytesToRead != 0);
 
@@ -579,9 +583,9 @@ namespace PS5_NOR_Modifier.UserControls.UART
 
             // Upon first launch, we need to get a list of COM ports available for UART
             comboComPorts.Items.Clear();
-            
+
             string[] ports = SerialPort.GetPortNames();
-            
+
             if (ports.Length > 0)
             {
                 comboComPorts.Items.AddRange(ports);
@@ -626,7 +630,7 @@ namespace PS5_NOR_Modifier.UserControls.UART
             btnConnectCom.Enabled = !connected;
             btnDisconnectCom.Enabled = connected;
             btnRefreshPorts.Enabled = !connected;
-            btnGet10LastErrors.Enabled= connected;
+            btnGet10LastErrors.Enabled = connected;
             btnClearErrorCodes.Enabled = connected;
             txtUARTOutput.Enabled = connected;
             btnClearOutput.Enabled = connected;
