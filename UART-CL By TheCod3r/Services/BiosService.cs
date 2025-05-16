@@ -1,12 +1,18 @@
-﻿using System.Text;
+﻿using System.IO.Hashing;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using UART_CL_By_TheCod3r.Data;
 using UART_CL_By_TheCod3r.Enumerators;
 
 namespace UART_CL_By_TheCod3r.Services;
 
+/// <summary>
+/// Service for reading and modifying BIOS files.
+/// </summary>
+/// <param name="logger">ILogger interface to receive log data</param>
 public class BiosService(ILogger<BiosService> logger)
 {
+	private const uint _knownHeaderChecksum = 0xdbff5c9d;
 	private const long _editionOffsetOne = 0x1c7010;
 	private const long _editionOffsetTwo = 0x1c7030;
 	private const long _serialOffset = 0x1c7210;
@@ -41,6 +47,36 @@ public class BiosService(ILogger<BiosService> logger)
 			logger.LogError(ex, "BIOS file could not be opened.");
 
 			throw;
+		}
+
+		// Read the header and validate that this is a BIOS file\
+		uint headerChecksum = 0x0;
+		try
+		{
+			reader.BaseStream.Position = 0;
+			var bytes = reader.ReadBytes(32);
+			headerChecksum = Crc32.HashToUInt32(bytes);
+
+			logger.LogInformation("BIOS header data: {Header}:{Checksum}", bytes, headerChecksum);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "BIOS header extraction failed.");
+
+			reader.Close();
+			reader.Dispose();
+
+			throw;
+		}
+
+		if (_knownHeaderChecksum != headerChecksum)
+		{
+			logger.LogError("BIOS header checksum does not match expected value. Expected: {Expected}, Actual: {Actual}", _knownHeaderChecksum, headerChecksum);
+
+			reader.Close();
+			reader.Dispose();
+
+			throw new InvalidDataException($"BIOS header checksum does not match expected value. Expected: {_knownHeaderChecksum}, Actual: {headerChecksum}");
 		}
 
 		// Get the edition from the BIOS

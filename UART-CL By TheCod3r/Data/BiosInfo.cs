@@ -1,6 +1,10 @@
 ﻿using UART_CL_By_TheCod3r.Enumerators;
 
 namespace UART_CL_By_TheCod3r.Data;
+
+/// <summary>
+/// Represents the properties extracted from a BIOS file.
+/// </summary>
 public class BiosInfo
 {
 	public string Path { get; set; } = string.Empty;

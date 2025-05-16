@@ -1,5 +1,9 @@
 ﻿namespace UART_CL_By_TheCod3r.Data;
 
+/// <summary>
+/// Represents a BIOS error.
+/// </summary>
+/// <param name="errorBytes">The raw bytes of the error as read from the device.</param>
 public class BiosError(byte[] errorBytes)
 {
 	/// <summary>

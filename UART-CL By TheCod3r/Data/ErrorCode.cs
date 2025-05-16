@@ -1,6 +1,10 @@
 ﻿namespace UART_CL_By_TheCod3r.Data
 {
-    public class ErrorCode(string errorCode)
+	/// <summary>
+	/// Represents the properties of an error code.
+	/// </summary>
+	/// <param name="errorCode">The raw string of the error as read from the device.</param>
+	public class ErrorCode(string errorCode)
     {
 		//OK 00000000 80C00140 0000008D FFFF0005 00000100 2157 0016 46E4 1A80:27
 		public string FirstPart => errorCode[3..11];
@@ -14,6 +18,9 @@
 		public string NinthPart => errorCode[63..67];
 		public string Checksum => errorCode[^2..];
 
+		/// <summary>
+		/// Validates the checksum of the error code as retrieved from the device against the calculated checksum.
+		/// </summary>
 		public bool ChecksumValid => Checksum == Uart.CalculateChecksum(errorCode[..^3]);
 	}
 }

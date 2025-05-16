@@ -1,7 +1,17 @@
 ﻿namespace UART_CL_By_TheCod3r.Enumerators;
 
+/// <summary>
+/// Extenion methods for the <see cref="Edition"/> enumeration.
+/// </summary>
 public static class EnumExtensions
 {
+	/// <summary>
+	/// Converts the <see cref="Edition"/> enumeration to a byte array.
+	/// </summary>
+	/// <param name="edition">The Edition to convert to a byte array.</param>
+	/// <returns></returns>
+	/// <exception cref="ArgumentOutOfRangeException">Thrown if the Edition provided does not have matching bytes.</exception>
+	/// <exception cref="InvalidOperationException"></exception>
 	public static byte[] GetBytes(this Edition edition)
 	{
 		byte[] retVal = edition switch

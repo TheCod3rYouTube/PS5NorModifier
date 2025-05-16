@@ -5,6 +5,10 @@ using Spectre.Console;
 
 namespace UART_CL_By_TheCod3r.Help;
 
+/// <summary>
+/// Custom help provider for the application that generates the footer
+/// </summary>
+/// <param name="settings"></param>
 public class CustomHelpProvider(ICommandAppSettings settings) : HelpProvider(settings)
 {
 	public override IEnumerable<IRenderable> GetFooter(ICommandModel model, ICommandInfo? command)
