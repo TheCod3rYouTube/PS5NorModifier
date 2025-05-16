@@ -90,6 +90,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             boardVariantSelectionBox.SelectedIndex = -1;
             boardModelSelectionBox.Enabled = false;
             boardModelSelectionBox.SelectedIndex = -1;
+            convertToDigitalEditionButton.Enabled = false;
             UpdateStatus( "Status: Waiting for input");
         }
 
@@ -299,6 +300,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
                             serialNumberTextbox.Enabled = true;
                             boardVariantSelectionBox.Enabled = true;
                             boardModelSelectionBox.Enabled = true;
+                            convertToDigitalEditionButton.Enabled = true;
                         }
 
                         //Calculate MD5 File hash
