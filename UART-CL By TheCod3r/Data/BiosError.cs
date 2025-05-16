@@ -1,34 +1,82 @@
-﻿using System.Buffers.Binary;
-
-namespace UART_CL_By_TheCod3r.Data;
+﻿namespace UART_CL_By_TheCod3r.Data;
 
 public class BiosError(byte[] errorBytes)
 {
+	/// <summary>
+	/// The error code description.
+	/// </summary>
 	public string Code => GetErrorCodeDescription(RawCode);
+	/// <summary>
+	/// The raw error code value.
+	/// </summary>
 	public readonly uint RawCode = BitConverter.ToUInt32(errorBytes.AsSpan()[0..4]);
 
+	/// <summary>
+	/// Unknown, labled as RTC in documentation.
+	/// </summary>
 	public readonly uint Rtc = BitConverter.ToUInt32(errorBytes.AsSpan()[4..8]);
 
+	// There are two 'halves' of the power state.
+	// 0x00AA00BB - where AA is the first half and BB is the second half.
+	// To split these into uint16, we need to mask the first half with 0x00FF0000 and shift it right by 16 bits.
+	// For the second half, we can simply mask everything but the least significant byte.
+	// 
+	// We do this instead of having two separate uint16 so that the RawPowerState can be used elsewhere
+
+	/// <summary>
+	/// The description for the first half of the power state.
+	/// </summary>
 	public string PowerStateA => GetPowerStateDescriptionA((RawPowerState & 0x00FF0000) >> 16);
+	
+	/// <summary>
+	/// The description for the second half of the power state.
+	/// </summary>
 	public string PowerStateB => _powerStateDescriptionsB.TryGetValue(RawPowerState & 0x000000FF, out var description) ? description : "Unknown Power State";
 	public readonly uint RawPowerState = BitConverter.ToUInt32(errorBytes.AsSpan()[8..12]);
 
+	/// <summary>
+	/// The description for the boot cause.
+	/// </summary>
 	public string BootCause => _bootCauseDescriptions.TryGetValue(RawBootCause, out var description) ? description : "Unknown Boot Cause";
 	public readonly uint RawBootCause = BitConverter.ToUInt32(errorBytes.AsSpan()[12..16]);
 
+	/// <summary>
+	/// The description for the sequence number.
+	/// </summary>
 	public string SequenceNumber => _sequenceDescriptions.TryGetValue(RawSequenceNumber, out var description) ? description : "Unknown Sequence Number";
 	public readonly ushort RawSequenceNumber = BitConverter.ToUInt16(errorBytes.AsSpan()[16..18]);
 
+	/// <summary>
+	/// The HDMI power state at the time the error was logged.
+	/// </summary>
 	public bool HdmiPower => (RawDevicePowerManagement & 0x10) != 0;
+	/// <summary>
+	/// The BluRay disk drive power state at the time the error was logged.
+	/// </summary>
 	public bool BddPower => (RawDevicePowerManagement & 0x08) != 0;
+	/// <summary>
+	/// The HDMI-CEC power state at the time the error was logged.
+	/// </summary>
 	public bool HdmiCecPower => (RawDevicePowerManagement & 0x04) != 0;
+	/// <summary>
+	/// The USB power state at the time the error was logged.
+	/// </summary>
 	public bool UsbPower => (RawDevicePowerManagement & 0x02) != 0;
+	/// <summary>
+	/// The WiFi power state at the time the error was logged.
+	/// </summary>
 	public bool WifiPower => (RawDevicePowerManagement & 0x01) != 0;
 	public readonly ushort RawDevicePowerManagement = BitConverter.ToUInt16(errorBytes.AsSpan()[18..20]);
 
+	/// <summary>
+	/// The SoC temperature at the time the error was logged.
+	/// </summary>
 	public string ChipTemperature => $"{RawChipTemperature / 256.0f:F2}°C";
 	public readonly ushort RawChipTemperature = BitConverter.ToUInt16(errorBytes.AsSpan()[20..22]);
 
+	/// <summary>
+	/// The environment temperature at the time the error was logged.
+	/// </summary>
 	public string EnvironmentTemperature => $"{RawEnvironmentTemperature / 256.0f:F2}°C";
 	public readonly ushort RawEnvironmentTemperature = BitConverter.ToUInt16(errorBytes.AsSpan()[22..24]);
 
@@ -44,13 +92,20 @@ public class BiosError(byte[] errorBytes)
 			.Aggregate((current, next) => current + " " + next);
 	}
 
+	/// <summary>
+	/// Retrieves the description of the error code from the dictionary.
+	/// </summary>
+	/// <param name="errorCode">The raw error code</param>
+	/// <returns>Description for the error code if it is known</returns>
 	private static string GetErrorCodeDescription(uint errorCode)
 	{
+		// Check if the error code is in the dictionary
 		if (_errorCodeDescriptions.TryGetValue(errorCode, out var description))
 		{
 			return description;
 		}
 
+		// Truncate 2 of the least significant bytes and check the second dictionary
 		if (_secondaryErrorCodeDescriptions.TryGetValue(errorCode >> 16, out var secondaryDescription))
 		{
 			return secondaryDescription;
@@ -59,6 +114,9 @@ public class BiosError(byte[] errorBytes)
 		return "Unknown Error Code";
 	}
 
+	/// <summary>
+	/// Lookup for when the entire error code is known
+	/// </summary>
 	private static readonly Dictionary<ulong, string> _errorCodeDescriptions = new()
 	{
 		{ 0x80000001, "Thermal Sensor Fail - NaN SOC" },
@@ -150,6 +208,9 @@ public class BiosError(byte[] errorBytes)
 		// { 0xFFFFFFFF, "No Error" },
 	};
 
+	/// <summary>
+	/// More 'generic' error codes, where the two least significant bytes are not relevant.
+	/// </summary>
 	private static readonly Dictionary<uint, string> _secondaryErrorCodeDescriptions = new()
 	{
 		{ 0x8005, "VRM CPU (2) (?)" }, 
@@ -180,14 +241,21 @@ public class BiosError(byte[] errorBytes)
 		{ 0xC0FE, "Dummy" }, 
 	};
 
-	private static string GetPowerStateDescriptionA(uint errorCode)
+	/// <summary>
+	/// Retrieves the descirption for the first half of the power state from the dictionary.
+	/// </summary>
+	/// <param name="powerState">The raw power state</param>
+	/// <returns>Description for the power state if it is known</returns>
+	private static string GetPowerStateDescriptionA(uint powerState)
 	{
-		if (_powerStateDescriptionsA.TryGetValue(errorCode, out var description))
+		// Check if the power state is in the dictionary
+		if (_powerStateDescriptionsA.TryGetValue(powerState, out var description))
 		{
 			return description;
 		}
 
-		if (_powerStateDesciprtionsSecondaryA.TryGetValue(errorCode & 0xF0, out var secondaryDescription))
+		// Mask the least significant nibble and check the secondary lookup
+		if (_powerStateDesciprtionsSecondaryA.TryGetValue(powerState & 0xF0, out var secondaryDescription))
 		{
 			return secondaryDescription;
 		}
@@ -195,6 +263,9 @@ public class BiosError(byte[] errorBytes)
 		return "Unknown Power State";
 	}
 
+	/// <summary>
+	/// Lookup for the power state
+	/// </summary>
 	private static readonly Dictionary<uint, string> _powerStateDescriptionsA = new() {
 		{ 0x00, "SysReady" }, 
 		{ 0x01, "MaOnStby" }, 
@@ -204,6 +275,10 @@ public class BiosError(byte[] errorBytes)
 		{ 0xFF, "HstOsOFF" }, 
 	};
 
+	/// <summary>
+	/// Certain ranges of power states are not well defined, so we use a secondary lookup to get the description.
+	/// The least significant nibble is masked out, and the remaining bits are used.
+	/// </summary>
 	private static readonly Dictionary<uint, string> _powerStateDesciprtionsSecondaryA = new() {
 		//0x10-1F - PSP
 		{ 0x10, "PSP" }, 
@@ -224,6 +299,9 @@ public class BiosError(byte[] errorBytes)
 		{ 0xF0, "IntPrcss" },
 	};
 
+	/// <summary>
+	/// Lookup for the second half of the power state
+	/// </summary>
 	private static readonly Dictionary<uint, string> _powerStateDescriptionsB = new() {
 		{ 0x00, "ACIN_L Before Standby" },
 		{ 0x01, "STANDBY" },
@@ -238,6 +316,9 @@ public class BiosError(byte[] errorBytes)
 		{ 0x0A, "FORCE_OFF BT Firmware Download" }
 	};
 
+	/// <summary>
+	/// Lookup for the boot cause
+	/// </summary>
 	private static readonly Dictionary<uint, string> _bootCauseDescriptions = new()
 	{
 		{ 0x40000000, "DEV UART" },
@@ -251,6 +332,9 @@ public class BiosError(byte[] errorBytes)
 		{ 0x00000001, "Boot-Up at power-on" }
 	};
 
+	/// <summary>
+	/// Lookup for the sequence number
+	/// </summary>
 	private static readonly Dictionary<uint, string> _sequenceDescriptions = new() {
 		{ 0x2002, "EmcBootup" },
 		{ 0x2067, "EmcBootup" },
@@ -505,14 +589,5 @@ public class BiosError(byte[] errorBytes)
 		{ 0x2117, "Dev HDMI 5V Power On" },
 		{ 0x2134, "Dev VBURN ON" },
 		// { 0xFFFF, "Unknown SeqNo" }
-	};
-
-	private static readonly Dictionary<uint, string> _devicePowerManagementDescriptions = new()
-	{
-		{ 0x04, "HDMI(5V)" },
-		{ 0x03, "BD DRIVE" },
-		{ 0x02, "HDMI(CEC)" },
-		{ 0x01, "USB" },
-		{ 0x00, "WLAN" }
 	};
 }
