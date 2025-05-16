@@ -230,7 +230,6 @@ namespace PS5_NOR_Modifier.UserControls.UART
         private void btnConnectCom_Click(object sender, EventArgs e)
         {
             // Let's try and connect to the UART reader
-            btnConnectCom.Enabled = false;
 
             if (comboComPorts.Text != String.Empty)
             {
@@ -244,15 +243,16 @@ namespace PS5_NOR_Modifier.UserControls.UART
                     _UARTSerial.RtsEnable = true;
                     // Open the COM port
                     _UARTSerial.Open();
-                    btnDisconnectCom.Enabled = true;
+
+                    SetConnectedUIState(true);
 
                     UpdateStatus("Connected to UART via COM port " + comboComPorts.Text + " at a BAUD rate of 115200.");
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "An error occurred...", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    btnConnectCom.Enabled = true;
-                    btnDisconnectCom.Enabled = false;
+
+                    SetConnectedUIState(false);
 
                     UpdateStatus("Could not connect to UART. Please try again!");
                 }
@@ -260,8 +260,8 @@ namespace PS5_NOR_Modifier.UserControls.UART
             else
             {
                 MessageBox.Show("Please select a COM port from the ports list to establish a connection.", "An error occurred...", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                btnConnectCom.Enabled = true;
-                btnDisconnectCom.Enabled = false;
+
+                SetConnectedUIState(false);
 
                 UpdateStatus("Could not connect to UART. Please try again!");
             }
@@ -283,8 +283,8 @@ namespace PS5_NOR_Modifier.UserControls.UART
                 if (_UARTSerial.IsOpen == true)
                 {
                     _UARTSerial.Close();
-                    btnConnectCom.Enabled = true;
-                    btnDisconnectCom.Enabled = false;
+
+                    SetConnectedUIState(false);
 
                     UpdateStatus("Disconnected from UART...");
                 }
@@ -304,8 +304,6 @@ namespace PS5_NOR_Modifier.UserControls.UART
             comboComPorts.Items.Clear();
             comboComPorts.Items.AddRange(ports);
             comboComPorts.SelectedIndex = 0;
-            btnConnectCom.Enabled = true;
-            btnDisconnectCom.Enabled = false;
         }
 
         /// <summary>
@@ -577,6 +575,8 @@ namespace PS5_NOR_Modifier.UserControls.UART
 
         private void UartUserControl_Load(object sender, EventArgs e)
         {
+            SetConnectedUIState(false);
+
             // Upon first launch, we need to get a list of COM ports available for UART
             comboComPorts.Items.Clear();
             
@@ -586,8 +586,6 @@ namespace PS5_NOR_Modifier.UserControls.UART
             {
                 comboComPorts.Items.AddRange(ports);
                 comboComPorts.SelectedIndex = 0;
-                btnConnectCom.Enabled = true;
-                btnDisconnectCom.Enabled = false;
             }
         }
 
@@ -620,6 +618,26 @@ namespace PS5_NOR_Modifier.UserControls.UART
                     Browser.OpenUrl(url);
                 }
             }
+        }
+
+        private void SetConnectedUIState(bool connected)
+        {
+            comboComPorts.Enabled = !connected;
+            btnConnectCom.Enabled = !connected;
+            btnDisconnectCom.Enabled = connected;
+            btnRefreshPorts.Enabled = !connected;
+            btnGet10LastErrors.Enabled= connected;
+            btnClearErrorCodes.Enabled = connected;
+            txtUARTOutput.Enabled = connected;
+            btnClearOutput.Enabled = connected;
+            txtCustomCommand.Enabled = connected;
+            btnSendCommand.Enabled = connected;
+
+            txtUARTOutput.Text = String.Empty;
+
+            BindingSource bsErrorCodes = new BindingSource();
+            bsErrorCodes.DataSource = new List<ErrorCodeInfo>();
+            gvErrorCodes.DataSource = bsErrorCodes;
         }
     }
 }

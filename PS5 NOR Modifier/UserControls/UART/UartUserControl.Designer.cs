@@ -29,7 +29,7 @@ namespace PS5_NOR_Modifier.UserControls.UART
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UartUserControl));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label25 = new System.Windows.Forms.Label();
             this.btnSendCommand = new System.Windows.Forms.Button();
             this.txtCustomCommand = new System.Windows.Forms.TextBox();
@@ -37,22 +37,22 @@ namespace PS5_NOR_Modifier.UserControls.UART
             this.chkUseOffline = new System.Windows.Forms.CheckBox();
             this.btnDownloadDatabase = new System.Windows.Forms.Button();
             this.btnRefreshPorts = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.btnClearOutput = new System.Windows.Forms.Button();
             this.txtUARTOutput = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
             this.btnClearErrorCodes = new System.Windows.Forms.Button();
             this.label21 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnGet10LastErrors = new System.Windows.Forms.Button();
             this.comboComPorts = new System.Windows.Forms.ComboBox();
             this.btnDisconnectCom = new System.Windows.Forms.Button();
             this.btnConnectCom = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.gvErrorCodes = new System.Windows.Forms.DataGridView();
-            this.lblLastErrorCodes = new System.Windows.Forms.Label();
             this.cErrorCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cDetails = new System.Windows.Forms.DataGridViewLinkColumn();
             this.cCodeDetailsLink = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.lblLastErrorCodes = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.gvErrorCodes)).BeginInit();
             this.SuspendLayout();
             // 
@@ -102,8 +102,9 @@ namespace PS5_NOR_Modifier.UserControls.UART
             // 
             // chkUseOffline
             // 
+            this.chkUseOffline.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkUseOffline.AutoSize = true;
-            this.chkUseOffline.Location = new System.Drawing.Point(879, 75);
+            this.chkUseOffline.Location = new System.Drawing.Point(1629, 19);
             this.chkUseOffline.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.chkUseOffline.Name = "chkUseOffline";
             this.chkUseOffline.Size = new System.Drawing.Size(228, 34);
@@ -113,7 +114,8 @@ namespace PS5_NOR_Modifier.UserControls.UART
             // 
             // btnDownloadDatabase
             // 
-            this.btnDownloadDatabase.Location = new System.Drawing.Point(601, 71);
+            this.btnDownloadDatabase.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDownloadDatabase.Location = new System.Drawing.Point(1351, 15);
             this.btnDownloadDatabase.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.btnDownloadDatabase.Name = "btnDownloadDatabase";
             this.btnDownloadDatabase.Size = new System.Drawing.Size(268, 46);
@@ -133,17 +135,17 @@ namespace PS5_NOR_Modifier.UserControls.UART
             this.btnRefreshPorts.UseVisualStyleBackColor = true;
             this.btnRefreshPorts.Click += new System.EventHandler(this.btnRefreshPorts_Click);
             // 
-            // button3
+            // btnClearOutput
             // 
-            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(1238, 377);
-            this.button3.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(267, 46);
-            this.button3.TabIndex = 12;
-            this.button3.Text = "Clear Output Window";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.btnClearOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearOutput.Location = new System.Drawing.Point(1238, 377);
+            this.btnClearOutput.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.btnClearOutput.Name = "btnClearOutput";
+            this.btnClearOutput.Size = new System.Drawing.Size(267, 46);
+            this.btnClearOutput.TabIndex = 12;
+            this.btnClearOutput.Text = "Clear Output Window";
+            this.btnClearOutput.UseVisualStyleBackColor = true;
+            this.btnClearOutput.Click += new System.EventHandler(this.button3_Click);
             // 
             // txtUARTOutput
             // 
@@ -188,16 +190,16 @@ namespace PS5_NOR_Modifier.UserControls.UART
             this.label21.TabIndex = 5;
             this.label21.Text = "Options:";
             // 
-            // button1
+            // btnGet10LastErrors
             // 
-            this.button1.Location = new System.Drawing.Point(121, 71);
-            this.button1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(258, 46);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "Get 10 Last Error Codes";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnGet10LastErrors.Location = new System.Drawing.Point(121, 71);
+            this.btnGet10LastErrors.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.btnGet10LastErrors.Name = "btnGet10LastErrors";
+            this.btnGet10LastErrors.Size = new System.Drawing.Size(258, 46);
+            this.btnGet10LastErrors.TabIndex = 6;
+            this.btnGet10LastErrors.Text = "Get 10 Last Error Codes";
+            this.btnGet10LastErrors.UseVisualStyleBackColor = true;
+            this.btnGet10LastErrors.Click += new System.EventHandler(this.button1_Click);
             // 
             // comboComPorts
             // 
@@ -245,8 +247,8 @@ namespace PS5_NOR_Modifier.UserControls.UART
             this.gvErrorCodes.AllowUserToAddRows = false;
             this.gvErrorCodes.AllowUserToDeleteRows = false;
             this.gvErrorCodes.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.AliceBlue;
-            this.gvErrorCodes.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.AliceBlue;
+            this.gvErrorCodes.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle2;
             this.gvErrorCodes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -270,16 +272,6 @@ namespace PS5_NOR_Modifier.UserControls.UART
             this.gvErrorCodes.TabIndex = 14;
             this.gvErrorCodes.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.gvErrorCodes_CellContentClick);
             this.gvErrorCodes.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.gvErrorCodes_RowPostPaint);
-            // 
-            // lblLastErrorCodes
-            // 
-            this.lblLastErrorCodes.AutoSize = true;
-            this.lblLastErrorCodes.Location = new System.Drawing.Point(6, 432);
-            this.lblLastErrorCodes.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.lblLastErrorCodes.Name = "lblLastErrorCodes";
-            this.lblLastErrorCodes.Size = new System.Drawing.Size(75, 30);
-            this.lblLastErrorCodes.TabIndex = 13;
-            this.lblLastErrorCodes.Text = "Codes:";
             // 
             // cErrorCode
             // 
@@ -324,6 +316,16 @@ namespace PS5_NOR_Modifier.UserControls.UART
             this.cCodeDetailsLink.Visible = false;
             this.cCodeDetailsLink.Width = 175;
             // 
+            // lblLastErrorCodes
+            // 
+            this.lblLastErrorCodes.AutoSize = true;
+            this.lblLastErrorCodes.Location = new System.Drawing.Point(6, 432);
+            this.lblLastErrorCodes.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.lblLastErrorCodes.Name = "lblLastErrorCodes";
+            this.lblLastErrorCodes.Size = new System.Drawing.Size(75, 30);
+            this.lblLastErrorCodes.TabIndex = 13;
+            this.lblLastErrorCodes.Text = "Codes:";
+            // 
             // UartUserControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 30F);
@@ -337,12 +339,12 @@ namespace PS5_NOR_Modifier.UserControls.UART
             this.Controls.Add(this.chkUseOffline);
             this.Controls.Add(this.btnDownloadDatabase);
             this.Controls.Add(this.btnRefreshPorts);
-            this.Controls.Add(this.button3);
+            this.Controls.Add(this.btnClearOutput);
             this.Controls.Add(this.txtUARTOutput);
             this.Controls.Add(this.label22);
             this.Controls.Add(this.btnClearErrorCodes);
             this.Controls.Add(this.label21);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnGet10LastErrors);
             this.Controls.Add(this.comboComPorts);
             this.Controls.Add(this.btnDisconnectCom);
             this.Controls.Add(this.btnConnectCom);
@@ -365,12 +367,12 @@ namespace PS5_NOR_Modifier.UserControls.UART
         private CheckBox chkUseOffline;
         private Button btnDownloadDatabase;
         private Button btnRefreshPorts;
-        private Button button3;
+        private Button btnClearOutput;
         private TextBox txtUARTOutput;
         private Label label22;
         private Button btnClearErrorCodes;
         private Label label21;
-        private Button button1;
+        private Button btnGet10LastErrors;
         private ComboBox comboComPorts;
         private Button btnDisconnectCom;
         private Button btnConnectCom;
