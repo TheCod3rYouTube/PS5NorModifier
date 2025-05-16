@@ -66,7 +66,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             modelInfo.Text = "...";
             fileSizeInfo.Text = "...";
             serialNumberTextbox.Text = "";
-            UpdateStatus( "Status: Waiting for input");
+            UpdateStatus("Status: Waiting for input");
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
                 }
                 else
                 {
-                    if (!fileDialogBox.SafeFileName.EndsWith(".bin"))
+                    if (!fileDialogBox.SafeFileName.ToLower().EndsWith(".bin"))
                     {
                         throwError("The file you selected is not a valid. Please ensure the file you are choosing is a correct BIN file and try again.");
                     }
