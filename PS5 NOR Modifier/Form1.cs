@@ -1,6 +1,4 @@
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-
+using PS5_NOR_Modifier.Common.Helpers;
 using PS5_NOR_Modifier.UserControls.Events;
 
 namespace PS5_NOR_Modifier
@@ -35,38 +33,6 @@ namespace PS5_NOR_Modifier
             toolStripStatusLabel1.Text = e.Text;
         }
 
-        /// <summary>
-        /// Lauinches a URL in a new window using the default browser...
-        /// </summary>
-        /// <param name="url">The URL you want to launch</param>
-        private void OpenUrl(string url)
-        {
-            try
-            {
-                Process.Start(url);
-            }
-            catch
-            {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    url = url.Replace("&", "^&");
-                    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    Process.Start("xdg-open", url);
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    Process.Start("open", url);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
-
         #region Donations
 
         /// <summary>
@@ -76,12 +42,12 @@ namespace PS5_NOR_Modifier
         /// <param name="e"></param>
         private void label4_Click(object sender, EventArgs e)
         {
-            OpenUrl("https://www.streamelements.com/thecod3r/tip");
+            Browser.OpenUrl("https://www.streamelements.com/thecod3r/tip");
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            OpenUrl("https://www.streamelements.com/thecod3r/tip");
+            Browser.OpenUrl("https://www.streamelements.com/thecod3r/tip");
         }
 
 
@@ -89,7 +55,7 @@ namespace PS5_NOR_Modifier
 
         private void label15_Click(object sender, EventArgs e)
         {
-            OpenUrl("https://www.consolefix.shop");
+            Browser.OpenUrl("https://www.consolefix.shop");
         }
     }
 }

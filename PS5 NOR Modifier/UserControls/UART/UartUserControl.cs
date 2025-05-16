@@ -1,12 +1,16 @@
 using System;
 using System.IO.Ports;
 using System.Xml;
+using PS5_NOR_Modifier.Common.Helpers;
 using PS5_NOR_Modifier.UserControls.Events;
+using PS5_NOR_Modifier.UserControls.UART.Data;
 
 namespace PS5_NOR_Modifier.UserControls.UART
 {
     public partial class UartUserControl : UserControl
     {
+        private const string WIKI_LINK = "https://uart.codes/";
+
         public event EventHandler<StatusUpdateEventArgs>? statusUpdateEvent;
 
         private SerialPort _UARTSerial;
@@ -203,20 +207,13 @@ namespace PS5_NOR_Modifier.UserControls.UART
                                 string description = errorCodeNode.SelectSingleNode("Description")?.InnerText ?? "";
 
                                 // Output the results
-                                results = "Error code: "
-                                    + errorCode
-                                    + Environment.NewLine
-                                    + "Description: "
-                                    + description;
+                                results = description;
                             }
                         }
                     }
                     else
                     {
-                        results = "Error code: "
-                                    + ErrorCode
-                                    + Environment.NewLine
-                                    + "An error occurred while fetching a result for this error. Please try again!";
+                        results = "An error occurred while fetching a result for this error. Please try again!";
                     }
                 }
                 catch (Exception ex)
@@ -316,6 +313,11 @@ namespace PS5_NOR_Modifier.UserControls.UART
         /// </summary>
         private async void button1_Click(object sender, EventArgs e)
         {
+            List<ErrorCodeInfo> errorCodes = new List<ErrorCodeInfo>();
+            BindingSource bsErrorCodes = new BindingSource();
+            bsErrorCodes.DataSource = errorCodes;
+            gvErrorCodes.DataSource = bsErrorCodes;
+
             // Let's read the error codes from UART
             txtUARTOutput.Text = "";
 
@@ -323,41 +325,63 @@ namespace PS5_NOR_Modifier.UserControls.UART
             {
                 try
                 {
-
-                    List<string> UARTLines = new();
-
-                    for (var i = 0; i <= 10; i++)
+                    for (var i = 0; i < 10; i++)
                     {
                         var command = $"errlog {i}";
-                        var checksum = CalculateChecksum(command);
+
+                        string checksum = CalculateChecksum(command);
+
                         _UARTSerial.WriteLine(checksum);
+
+                        string uartCodeDetails = String.Empty;
+
                         do
                         {
-                            var line = _UARTSerial.ReadLine();
-                            if (!string.Equals($"{command}:{checksum:X2}", line, StringComparison.InvariantCultureIgnoreCase))
+                            string uartResponse = _UARTSerial.ReadLine();
+
+                            if (String.Compare(uartResponse, checksum, true) != 0)
                             {
-                                UARTLines.Add(line);
+                                uartCodeDetails = uartResponse; 
                             }
                         } while (_UARTSerial.BytesToRead != 0);
 
-                        foreach (var l in UARTLines)
+                        if (!String.IsNullOrEmpty(uartCodeDetails))
                         {
-                            var split = l.Split(' ');
-                            if (!split.Any()) continue;
-                            switch (split[0])
+                            string[] split = uartCodeDetails.Split(' ');
+
+                            if (split.Length > 2)
                             {
-                                case "NG":
-                                    break;
-                                case "OK":
-                                    var errorCode = split[2];
-                                    // Now that the error code has been isolated from the rest of the junk sent by the system
-                                    // let's check it against the database. The error server will need to return XML results
-                                    string errorResult = await ParseErrorsAsync(errorCode);
-                                    if (!txtUARTOutput.Text.Contains(errorResult))
-                                    {
-                                        txtUARTOutput.AppendText(errorResult + Environment.NewLine);
-                                    }
-                                    break;
+                                switch (split[0])
+                                {
+                                    case "NG":
+                                        break;
+                                    case "OK":
+                                        var errorCode = split[2];
+                                        // Now that the error code has been isolated from the rest of the junk sent by the system
+                                        // let's check it against the database. The error server will need to return XML results
+                                        string errorCodeDescription = await ParseErrorsAsync(errorCode);
+
+                                        ErrorCodeInfo codeInfo = new ErrorCodeInfo();
+                                        codeInfo.ErrorCode = errorCode;
+                                        codeInfo.Description = errorCodeDescription;
+                                        codeInfo.DetailsLink = WIKI_LINK + "errorDetails.php?errorCode=" + errorCode;
+                                        errorCodes.Add(codeInfo);
+
+                                        bsErrorCodes.ResetBindings(false);
+
+                                        if (!txtUARTOutput.Text.Contains(errorCodeDescription))
+                                        {
+                                            string fullErrorMessage = "Error code: "
+                                                + errorCode
+                                                + Environment.NewLine
+                                                + "Description: "
+                                                + errorCodeDescription;
+
+                                            txtUARTOutput.AppendText(fullErrorMessage + Environment.NewLine);
+                                        }
+
+                                        break;
+                                }
                             }
                         }
                     }
@@ -393,7 +417,6 @@ namespace PS5_NOR_Modifier.UserControls.UART
                 {
                     try
                     {
-
                         List<string> UARTLines = new();
 
                         var command = "errlog clear";
@@ -424,6 +447,10 @@ namespace PS5_NOR_Modifier.UserControls.UART
                                     if (!txtUARTOutput.Text.Contains("SUCCESS"))
                                     {
                                         txtUARTOutput.AppendText("Response: SUCCESS" + Environment.NewLine + "Information: All error codes cleared successfully");
+
+                                        BindingSource bsErrorCodes = new BindingSource();
+                                        bsErrorCodes.DataSource = new List<ErrorCodeInfo>();
+                                        gvErrorCodes.DataSource = bsErrorCodes;
                                     }
                                     break;
                             }
@@ -561,6 +588,37 @@ namespace PS5_NOR_Modifier.UserControls.UART
                 comboComPorts.SelectedIndex = 0;
                 btnConnectCom.Enabled = true;
                 btnDisconnectCom.Enabled = false;
+            }
+        }
+
+        //Add row numbers
+        private void gvErrorCodes_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            var grid = sender as DataGridView;
+            var rowIdx = (e.RowIndex + 1).ToString();
+
+            var centerFormat = new StringFormat()
+            {
+                Alignment = StringAlignment.Center,
+                LineAlignment = StringAlignment.Center
+            };
+
+            var headerBounds = new Rectangle(e.RowBounds.Left, e.RowBounds.Top, grid.RowHeadersWidth, e.RowBounds.Height);
+
+            e.Graphics.DrawString(rowIdx, this.Font, SystemBrushes.ControlText, headerBounds, centerFormat);
+        }
+
+        //Make the Details link be browsable
+        private void gvErrorCodes_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 2 && e.RowIndex >= 0) // Hyperlink column
+            {
+                string url = gvErrorCodes.Rows[e.RowIndex].Cells[3].Value.ToString();
+
+                if (!String.IsNullOrEmpty(url))
+                {
+                    Browser.OpenUrl(url);
+                }
             }
         }
     }
