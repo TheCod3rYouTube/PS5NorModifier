@@ -259,7 +259,7 @@ public class PS5UARTUtilities_Tests
 
     [Test]
     public void DownloadDatabase_WithFileUrl_ShouldReturnTrue()
-    {: Create a test source file
+    {
         var sourceFile = Path.GetTempFileName();
         File.WriteAllText(sourceFile, "test content");
 
