@@ -5,9 +5,9 @@ using PS5_NOR_Modifier.UserControls.Events;
 
 namespace PS5_NOR_Modifier
 {
-    public partial class Form1 : Form
+    public partial class fMainForm : Form
     {
-        public Form1()
+        public fMainForm()
         {
             InitializeComponent();
 

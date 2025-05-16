@@ -50,8 +50,9 @@ namespace PS5_NOR_Modifier.UserControls.UART
             // 
             // label25
             // 
+            this.label25.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(1042, 285);
+            this.label25.Location = new System.Drawing.Point(1037, 285);
             this.label25.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(347, 210);
@@ -60,6 +61,7 @@ namespace PS5_NOR_Modifier.UserControls.UART
             // 
             // btnSendCommand
             // 
+            this.btnSendCommand.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSendCommand.Location = new System.Drawing.Point(1251, 233);
             this.btnSendCommand.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.btnSendCommand.Name = "btnSendCommand";
@@ -71,6 +73,7 @@ namespace PS5_NOR_Modifier.UserControls.UART
             // 
             // txtCustomCommand
             // 
+            this.txtCustomCommand.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.txtCustomCommand.Location = new System.Drawing.Point(1042, 175);
             this.txtCustomCommand.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.txtCustomCommand.Name = "txtCustomCommand";
@@ -80,6 +83,7 @@ namespace PS5_NOR_Modifier.UserControls.UART
             // 
             // label24
             // 
+            this.label24.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label24.AutoSize = true;
             this.label24.Location = new System.Drawing.Point(1042, 139);
             this.label24.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
@@ -123,6 +127,7 @@ namespace PS5_NOR_Modifier.UserControls.UART
             // 
             // button3
             // 
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button3.Location = new System.Drawing.Point(764, 491);
             this.button3.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.button3.Name = "button3";
@@ -134,6 +139,9 @@ namespace PS5_NOR_Modifier.UserControls.UART
             // 
             // txtUARTOutput
             // 
+            this.txtUARTOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtUARTOutput.Location = new System.Drawing.Point(121, 139);
             this.txtUARTOutput.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.txtUARTOutput.Multiline = true;

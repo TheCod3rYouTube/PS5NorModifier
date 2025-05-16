@@ -1,6 +1,6 @@
 ﻿namespace PS5_NOR_Modifier
 {
-    partial class Form1
+    partial class fMainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(fMainForm));
             this.label1 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -54,7 +54,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(14, 168);
+            this.label1.Location = new System.Drawing.Point(18, 195);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(1352, 90);
             this.label1.TabIndex = 0;
@@ -83,8 +83,9 @@
             // 
             // pictureBox2
             // 
+            this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.pictureBox2.Image = global::PS5_NOR_Modifier.Properties.Resources.Paypal_128;
-            this.pictureBox2.Location = new System.Drawing.Point(14, 918);
+            this.pictureBox2.Location = new System.Drawing.Point(24, 969);
             this.pictureBox2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(77, 76);
@@ -95,8 +96,9 @@
             // 
             // label4
             // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(111, 918);
+            this.label4.Location = new System.Drawing.Point(121, 969);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(1227, 60);
             this.label4.TabIndex = 5;
@@ -108,7 +110,7 @@
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 1075);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 1126);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 17, 0);
             this.statusStrip1.Size = new System.Drawing.Size(1452, 39);
@@ -123,9 +125,10 @@
             // 
             // label15
             // 
+            this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label15.Location = new System.Drawing.Point(111, 990);
+            this.label15.Location = new System.Drawing.Point(111, 1041);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(666, 38);
             this.label15.TabIndex = 35;
@@ -134,9 +137,12 @@
             // 
             // tabControl1
             // 
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(21, 264);
+            this.tabControl1.Location = new System.Drawing.Point(21, 315);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -157,9 +163,12 @@
             // 
             // ucNORModifier
             // 
+            this.ucNORModifier.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ucNORModifier.Location = new System.Drawing.Point(3, 9);
             this.ucNORModifier.Name = "ucNORModifier";
-            this.ucNORModifier.Size = new System.Drawing.Size(1388, 561);
+            this.ucNORModifier.Size = new System.Drawing.Size(1386, 561);
             this.ucNORModifier.TabIndex = 0;
             // 
             // tabPage2
@@ -176,9 +185,12 @@
             // 
             // ucUART
             // 
+            this.ucUART.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ucUART.Location = new System.Drawing.Point(0, 0);
             this.ucUART.Name = "ucUART";
-            this.ucUART.Size = new System.Drawing.Size(1391, 549);
+            this.ucUART.Size = new System.Drawing.Size(1391, 570);
             this.ucUART.TabIndex = 0;
             // 
             // label23
@@ -192,12 +204,12 @@
             this.label23.TabIndex = 47;
             this.label23.Text = "and UART stuff too... BwE can SUCK IT!";
             // 
-            // Form1
+            // fMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 30F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1452, 1114);
+            this.ClientSize = new System.Drawing.Size(1452, 1165);
             this.Controls.Add(this.label23);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.label15);
@@ -208,7 +220,9 @@
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label1);
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.Name = "Form1";
+            this.MinimumSize = new System.Drawing.Size(1476, 1229);
+            this.Name = "fMainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "PS5 NOR Modifier";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();

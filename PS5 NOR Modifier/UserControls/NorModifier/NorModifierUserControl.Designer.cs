@@ -81,6 +81,8 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             // 
             // fileLocationBox
             // 
+            this.fileLocationBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.fileLocationBox.Location = new System.Drawing.Point(5, 42);
             this.fileLocationBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.fileLocationBox.Name = "fileLocationBox";
@@ -89,6 +91,8 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             // 
             // lanMacAddressTextbox
             // 
+            this.lanMacAddressTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lanMacAddressTextbox.Enabled = false;
             this.lanMacAddressTextbox.Location = new System.Drawing.Point(865, 372);
             this.lanMacAddressTextbox.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
@@ -98,6 +102,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             // 
             // browseFileButton
             // 
+            this.browseFileButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.browseFileButton.Location = new System.Drawing.Point(1242, 40);
             this.browseFileButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.browseFileButton.Name = "browseFileButton";
@@ -109,6 +114,8 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             // 
             // wifiMacAddressTextbox
             // 
+            this.wifiMacAddressTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.wifiMacAddressTextbox.Enabled = false;
             this.wifiMacAddressTextbox.Location = new System.Drawing.Point(865, 314);
             this.wifiMacAddressTextbox.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
@@ -270,6 +277,8 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             // 
             // boardModelSelectionBox
             // 
+            this.boardModelSelectionBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.boardModelSelectionBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.boardModelSelectionBox.FormattingEnabled = true;
             this.boardModelSelectionBox.Items.AddRange(new object[] {
@@ -302,6 +311,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             // 
             // convertToDigitalEditionButton
             // 
+            this.convertToDigitalEditionButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.convertToDigitalEditionButton.Location = new System.Drawing.Point(1119, 444);
             this.convertToDigitalEditionButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.convertToDigitalEditionButton.Name = "convertToDigitalEditionButton";
@@ -313,6 +323,8 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             // 
             // serialNumberTextbox
             // 
+            this.serialNumberTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.serialNumberTextbox.Location = new System.Drawing.Point(865, 142);
             this.serialNumberTextbox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.serialNumberTextbox.Name = "serialNumberTextbox";
@@ -321,6 +333,8 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             // 
             // boardVariantSelectionBox
             // 
+            this.boardVariantSelectionBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.boardVariantSelectionBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.boardVariantSelectionBox.FormattingEnabled = true;
             this.boardVariantSelectionBox.Items.AddRange(new object[] {
