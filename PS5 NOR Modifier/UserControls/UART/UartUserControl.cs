@@ -1,7 +1,7 @@
 using System;
 using System.IO.Ports;
 using System.Xml;
-using PS5_NOR_Modifier.UserControls.UART.Events;
+using PS5_NOR_Modifier.UserControls.Events;
 
 namespace PS5_NOR_Modifier.UserControls.UART
 {
