@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -9,21 +11,33 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
     {
         public event EventHandler<StatusUpdateEventArgs>? statusUpdateEvent;
 
-        // Declare offsets to detect console version
-        long offsetOne = 0x1c7010;
-        long offsetTwo = 0x1c7030;
-        long WiFiMacOffset = 0x1C73C0;
-        string? WiFiMacValue = null;
-        long LANMacOffset = 0x1C4020;
-        string? LANMacValue = null;
-        string? offsetOneValue = null;
-        string? offsetTwoValue = null;
-        long serialOffset = 0x1c7210;
-        string? serialValue = null;
-        long variantOffset = 0x1c7226;
-        string? variantValue = null;
-        long moboSerialOffset = 0x1C7200;
-        string? moboSerialValue = null;
+        private const string NO_VALUE = "Unknown";
+
+        private const long WIFI_OFFSET = 0x1C73C0;
+        private const long SN_OFFSET = 0x1c7210;
+        private const long MB_SN_OFFSET = 0x1C7200;
+        private const long LAN_MAC_OFFSET = 0x1C4020;
+        private const long MODEL_OFFSET = 0x1C7011;
+        private const long REGION_OFFSET = 0x1C7236;
+
+        private readonly Dictionary<string, string> _regions = new Dictionary<string, string>()
+        {
+            { "00", "Japan" },
+            { "01", "US, Canada, (North America)" },
+            { "15", "US, Canada, (North America)" },
+            { "02", "Australia / New Zealand, (Oceania)" },
+            { "03", "United Kingdom / Ireland" },
+            { "04", "Europe / Middle East / Africa" },
+            { "05", "South Korea" },
+            { "06", "Southeast Asia / Hong Kong" },
+            { "07", "Taiwan" },
+            { "08", "Russia, Ukraine, India, Central Asia" },
+            { "09", "Mainland China" },
+            { "11", "Mexico, Central America, South America" },
+            { "14", "Mexico, Central America, South America" },
+            { "16", "Europe / Middle East / Africa" },
+            { "18", "Singapore, Korea, Asia" },
+        };
 
         public NorModifierUserControl()
         {
@@ -66,7 +80,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             modelInfo.Text = "...";
             fileSizeInfo.Text = "...";
             serialNumberTextbox.Text = "";
-            UpdateStatus("Status: Waiting for input");
+            UpdateStatus( "Status: Waiting for input");
         }
 
         /// <summary>
@@ -104,6 +118,23 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
 
         #endregion
 
+        private byte[]? ReadStreamBytes(BinaryReader reader, long offset, int length)
+        {
+            byte[]? result = null;
+
+            try
+            {
+                reader.BaseStream.Position = offset;
+                result = reader.ReadBytes(length);
+            }
+            catch 
+            {
+                //Hmm, something is wrong, but continue
+            }
+
+            return result;
+        }
+
         private void browseFileButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog fileDialogBox = new OpenFileDialog();
@@ -132,231 +163,103 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
                         fileLocationBox.Text = selectedPath;
 
                         // Get file length and show in bytes and MB
-                        long length = new System.IO.FileInfo(selectedPath).Length;
+                        long length = new FileInfo(selectedPath).Length;
                         fileSizeInfo.Text = length.ToString() + " bytes (" + length / 1024 / 1024 + "MB)";
 
-                        #region Extract PS5 Version
+                        using (BinaryReader reader = new BinaryReader(new FileStream(fileDialogBox.FileName, FileMode.Open)))
+                        {
+                            //Reading Motherboard Serial
+                            byte[]? rawBytes = ReadStreamBytes(reader, MB_SN_OFFSET, 16);
 
-                        try
-                        {
-                            BinaryReader reader = new BinaryReader(new FileStream(fileDialogBox.FileName, FileMode.Open));
-                            //Set the position of the reader
-                            reader.BaseStream.Position = offsetOne;
-                            //Read the offset
-                            offsetOneValue = BitConverter.ToString(reader.ReadBytes(12)).Replace("-", null);
-                            reader.Close();
-                        }
-                        catch
-                        {
-                            // Obviously this value is invalid, so null the value and move on
-                            offsetOneValue = null;
-                        }
+                            moboSerialInfo.Text = NO_VALUE;
 
-                        try
-                        {
-                            BinaryReader reader = new BinaryReader(new FileStream(fileDialogBox.FileName, FileMode.Open));
-                            //Set the position of the reader
-                            reader.BaseStream.Position = offsetOne;
-                            //Read the offset
-                            offsetTwoValue = BitConverter.ToString(reader.ReadBytes(12)).Replace("-", null);
-                            reader.Close();
-                        }
-                        catch
-                        {
-                            // Obviously this value is invalid, so null the value and move on
-                            offsetTwoValue = null;
-                        }
-
-
-                        if (offsetOneValue?.Contains("22020101") ?? false)
-                        {
-                            modelInfo.Text = "Disc Edition";
-                        }
-                        else
-                        {
-                            if (offsetTwoValue?.Contains("22030101") ?? false)
+                            if (rawBytes != null)
                             {
-                                modelInfo.Text = "Digital Edition";
+                                string mbSerialValue = BitConverter.ToString(rawBytes).Replace("-", null);
+                                moboSerialInfo.Text = HexStringToString(mbSerialValue);
                             }
-                            else
+
+                            //Reading serial number
+                            rawBytes = ReadStreamBytes(reader, SN_OFFSET, 17);
+
+                            serialNumber.Text = NO_VALUE;
+                            serialNumberTextbox.Text = NO_VALUE;
+
+                            if (rawBytes != null)
                             {
-                                modelInfo.Text = "Unknown";
+                                string sn = BitConverter.ToString(rawBytes).Replace("-", null);
+                                string readableSn = HexStringToString(sn);
+                                serialNumber.Text = readableSn;
+                                serialNumberTextbox.Text = readableSn;
+                            }
+
+                            //Reading WIFI
+                            rawBytes = ReadStreamBytes(reader, WIFI_OFFSET, 6);
+
+                            macAddressInfo.Text = NO_VALUE;
+                            wifiMacAddressTextbox.Text = NO_VALUE;
+
+                            if (rawBytes != null)
+                            {
+                                string wifi = BitConverter.ToString(rawBytes);
+                                macAddressInfo.Text = wifi;
+                                wifiMacAddressTextbox.Text = wifi;
+                            }
+
+                            //Reading LAN
+                            rawBytes = ReadStreamBytes(reader, LAN_MAC_OFFSET, 6);
+
+                            LANMacAddressInfo.Text = NO_VALUE;
+                            lanMacAddressTextbox.Text = NO_VALUE;
+
+                            if (rawBytes != null)
+                            {
+                                string lan = BitConverter.ToString(rawBytes);
+                                LANMacAddressInfo.Text = lan;
+                                lanMacAddressTextbox.Text = lan;
+                            }
+
+                            //Region
+                            rawBytes = ReadStreamBytes(reader, REGION_OFFSET, 2);
+
+                            boardVariant.Text = NO_VALUE;
+
+                            if (rawBytes != null)
+                            {
+                                string regionHex = BitConverter.ToString(rawBytes).Replace("-", null);
+                                string regionReadable = HexStringToString(regionHex);
+
+                                if (_regions.Keys.Contains(regionReadable))
+                                {
+                                    boardVariant.Text = String.Format("{0} - {1}", regionReadable, _regions[regionReadable]);
+                                }
+                            }
+
+                            //Reading Model
+                            rawBytes = ReadStreamBytes(reader, MODEL_OFFSET, 1);
+
+                            if (rawBytes != null)
+                            {
+                                string model = BitConverter.ToString(rawBytes).Replace("-", null);
+
+                                string modelText = "Unknown";
+
+                                if (model == "01")
+                                {
+                                    modelText = "Slim";
+                                }
+                                else if (model == "02")
+                                {
+                                    modelText = "Disk Edition";
+                                }
+                                else if (model == "03")
+                                {
+                                    modelText = "Digital Edition";
+                                }
+
+                                modelInfo.Text = modelText;
                             }
                         }
-
-                        #endregion
-
-                        #region Extract Motherboard Serial Number
-
-                        try
-                        {
-                            BinaryReader reader = new BinaryReader(new FileStream(fileDialogBox.FileName, FileMode.Open));
-                            //Set the position of the reader
-                            reader.BaseStream.Position = moboSerialOffset;
-                            //Read the offset
-                            moboSerialValue = BitConverter.ToString(reader.ReadBytes(16)).Replace("-", null);
-                            reader.Close();
-                        }
-                        catch
-                        {
-                            // Obviously this value is invalid, so null the value and move on
-                            moboSerialValue = null;
-                        }
-
-
-
-                        if (moboSerialValue != null)
-                        {
-                            moboSerialInfo.Text = HexStringToString(moboSerialValue);
-                        }
-                        else
-                        {
-                            moboSerialInfo.Text = "Unknown";
-                        }
-
-                        #endregion
-
-                        #region Extract Board Serial Number
-
-                        try
-                        {
-                            BinaryReader reader = new BinaryReader(new FileStream(fileDialogBox.FileName, FileMode.Open));
-                            //Set the position of the reader
-                            reader.BaseStream.Position = serialOffset;
-                            //Read the offset
-                            serialValue = BitConverter.ToString(reader.ReadBytes(17)).Replace("-", null);
-                            reader.Close();
-                        }
-                        catch
-                        {
-                            // Obviously this value is invalid, so null the value and move on
-                            serialValue = null;
-                        }
-
-
-
-                        if (serialValue != null)
-                        {
-                            serialNumber.Text = HexStringToString(serialValue);
-                            serialNumberTextbox.Text = HexStringToString(serialValue);
-
-                        }
-                        else
-                        {
-                            serialNumber.Text = "Unknown";
-                        }
-
-                        #endregion
-
-                        #region Extract WiFi Mac Address
-
-                        try
-                        {
-                            BinaryReader reader = new BinaryReader(new FileStream(fileDialogBox.FileName, FileMode.Open));
-                            //Set the position of the reader
-                            reader.BaseStream.Position = WiFiMacOffset;
-                            //Read the offset
-                            WiFiMacValue = BitConverter.ToString(reader.ReadBytes(6));
-                            reader.Close();
-                        }
-                        catch
-                        {
-                            // Obviously this value is invalid, so null the value and move on
-                            WiFiMacValue = null;
-                        }
-
-                        if (WiFiMacValue != null)
-                        {
-                            macAddressInfo.Text = WiFiMacValue;
-                            wifiMacAddressTextbox.Text = WiFiMacValue;
-                        }
-                        else
-                        {
-                            macAddressInfo.Text = "Unknown";
-                            wifiMacAddressTextbox.Text = "";
-                        }
-
-                        #endregion
-
-                        #region Extract LAN Mac Address
-
-                        try
-                        {
-                            BinaryReader reader = new BinaryReader(new FileStream(fileDialogBox.FileName, FileMode.Open));
-                            //Set the position of the reader
-                            reader.BaseStream.Position = LANMacOffset;
-                            //Read the offset
-                            LANMacValue = BitConverter.ToString(reader.ReadBytes(6));
-                            reader.Close();
-                        }
-                        catch
-                        {
-                            // Obviously this value is invalid, so null the value and move on
-                            LANMacValue = null;
-                        }
-
-                        if (LANMacValue != null)
-                        {
-                            LANMacAddressInfo.Text = LANMacValue;
-                            lanMacAddressTextbox.Text = LANMacValue;
-                        }
-                        else
-                        {
-                            LANMacAddressInfo.Text = "Unknown";
-                            lanMacAddressTextbox.Text = "";
-                        }
-
-                        #endregion
-
-                        #region Extract Board Variant
-
-                        try
-                        {
-                            BinaryReader reader = new BinaryReader(new FileStream(fileDialogBox.FileName, FileMode.Open));
-                            //Set the position of the reader
-                            reader.BaseStream.Position = variantOffset;
-                            //Read the offset
-                            variantValue = BitConverter.ToString(reader.ReadBytes(19)).Replace("-", null).Replace("FF", null);
-                            reader.Close();
-                        }
-                        catch
-                        {
-                            // Obviously this value is invalid, so null the value and move on
-                            variantValue = null;
-                        }
-
-
-
-                        if (variantValue != null)
-                        {
-                            boardVariant.Text = HexStringToString(variantValue);
-                        }
-                        else
-                        {
-                            boardVariant.Text = "Unknown";
-                        }
-
-                        boardVariant.Text += boardVariant.Text switch
-                        {
-                            _ when boardVariant.Text.EndsWith("00A") || boardVariant.Text.EndsWith("00B") => " - Japan",
-                            _ when boardVariant.Text.EndsWith("01A") || boardVariant.Text.EndsWith("01B") ||
-                                   boardVariant.Text.EndsWith("15A") || boardVariant.Text.EndsWith("15B") => " - US, Canada, (North America)",
-                            _ when boardVariant.Text.EndsWith("02A") || boardVariant.Text.EndsWith("02B") => " - Australia / New Zealand, (Oceania)",
-                            _ when boardVariant.Text.EndsWith("03A") || boardVariant.Text.EndsWith("03B") => " - United Kingdom / Ireland",
-                            _ when boardVariant.Text.EndsWith("04A") || boardVariant.Text.EndsWith("04B") => " - Europe / Middle East / Africa",
-                            _ when boardVariant.Text.EndsWith("05A") || boardVariant.Text.EndsWith("05B") => " - South Korea",
-                            _ when boardVariant.Text.EndsWith("06A") || boardVariant.Text.EndsWith("06B") => " - Southeast Asia / Hong Kong",
-                            _ when boardVariant.Text.EndsWith("07A") || boardVariant.Text.EndsWith("07B") => " - Taiwan",
-                            _ when boardVariant.Text.EndsWith("08A") || boardVariant.Text.EndsWith("08B") => " - Russia, Ukraine, India, Central Asia",
-                            _ when boardVariant.Text.EndsWith("09A") || boardVariant.Text.EndsWith("09B") => " - Mainland China",
-                            _ when boardVariant.Text.EndsWith("11A") || boardVariant.Text.EndsWith("11B") ||
-                                   boardVariant.Text.EndsWith("14A") || boardVariant.Text.EndsWith("14B")
-                                => " - Mexico, Central America, South America",
-                            _ when boardVariant.Text.EndsWith("16A") || boardVariant.Text.EndsWith("16B") => " - Europe / Middle East / Africa",
-                            _ when boardVariant.Text.EndsWith("18A") || boardVariant.Text.EndsWith("18B") => " - Singapore, Korea, Asia",
-                            _ => " - Unknown Region"
-                        };
-                        #endregion
                     }
                 }
             }
@@ -557,6 +460,11 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
                 ResetAppFields();
                 MessageBox.Show("A new BIOS file was successfully created. Please load the new BIOS file to verify the information you entered before installing onto your motherboard. Remember this software was created by TheCod3r with nothing but love. Why not show some love back by dropping me a small donation to say thanks ;).", "All done!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+
+        private void NorModifierUserControl_Load(object sender, EventArgs e)
+        {
+            ResetAppFields();
         }
     }
 }

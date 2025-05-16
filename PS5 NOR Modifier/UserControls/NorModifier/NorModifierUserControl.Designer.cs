@@ -421,6 +421,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             this.Controls.Add(this.label12);
             this.Name = "NorModifierUserControl";
             this.Size = new System.Drawing.Size(1382, 543);
+            this.Load += new System.EventHandler(this.NorModifierUserControl_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
