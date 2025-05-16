@@ -9,14 +9,14 @@ namespace PS5_NOR_Modifier.UserControls.UART
 {
     public partial class UartUserControl : UserControl
     {
+        // We want this app to work offline, so let's declare where the local "offline" database will be stored
+        private const string LOCAL_DATABASE_FILE = "errorDB.xml";
+        // Link to UART Codes knowledgebase
         private const string WIKI_LINK = "https://uart.codes/";
 
         public event EventHandler<StatusUpdateEventArgs>? statusUpdateEvent;
 
         private SerialPort _UARTSerial;
-
-        // We want this app to work offline, so let's declare where the local "offline" database will be stored
-        private const string LOCAL_DATABASE_FILE = "errorDB.xml";
 
         public UartUserControl()
         {
@@ -94,137 +94,85 @@ namespace PS5_NOR_Modifier.UserControls.UART
 
         string ParseErrorsOffline(string errorCode)
         {
-            string results = "";
+            string result = String.Empty;
 
             try
             {
-                // Check if the XML file exists
-                if (File.Exists(LOCAL_DATABASE_FILE))
+                ErrorCodesList errorCodes = XmlSerializationHelper.DeserilazeXmlFromFile<ErrorCodesList>(LOCAL_DATABASE_FILE);
+
+                if (errorCode != null)
                 {
-                    // Load the XML file
-                    XmlDocument xmlDoc = new XmlDocument();
-                    xmlDoc.Load(LOCAL_DATABASE_FILE);
+                    ErrorCode code = errorCodes.Items.Where(x => x.ErrorCodeNumber == errorCode).FirstOrDefault();
 
-                    // Get the root node
-                    XmlNode? root = xmlDoc.DocumentElement;
-                    if (root is null) return results;
-
-                    // Check if the root node is <errorCodes>
-                    if (root.Name == "errorCodes")
+                    if (code != null)
                     {
-                        // Loop through each errorCode node
-                        foreach (XmlNode errorCodeNode in root.ChildNodes)
-                        {
-                            // Check if the node is <errorCode>
-                            if (errorCodeNode.Name == "errorCode")
-                            {
-                                // Get ErrorCode and Description
-                                string errorCodeValue = errorCodeNode.SelectSingleNode("ErrorCode")?.InnerText ?? "";
-                                string description = errorCodeNode.SelectSingleNode("Description")?.InnerText ?? "";
-
-                                // Check if the current error code matches the requested error code
-                                if (errorCodeValue == errorCode)
-                                {
-                                    // Output the results
-                                    results = "Error code: " + errorCodeValue + Environment.NewLine + "Description: " + description;
-                                    break; // Exit the loop after finding the matching error code
-                                }
-                            }
-                        }
+                        result = code.Description;
                     }
-                    else
-                    {
-                        results = "Error: Invalid XML database file. Please reconfigure the application, redownload the offline database, or uncheck the option to use the offline database.";
-                    }
-                }
-                else
-                {
-                    results = "Error: Local XML file not found.";
                 }
             }
             catch (Exception ex)
             {
-                results = "Error: " + ex.Message;
+                result = "Error: " + ex.Message;
             }
 
-            return results;
+            return result;
         }
 
         /// <summary>
         /// We need to be able to send the error code we received from the console and fetch an XML result back from the server
         /// Once we have a result from the server, parse the XML data and output it in an easy to understand format for the user
         /// </summary>
-        /// <param name="ErrorCode"></param>
+        /// <param name="errorCode"></param>
         /// <returns></returns>
-        async Task<string> ParseErrorsAsync(string ErrorCode)
+        private async Task<string> ParseErrorsAsync(string errorCode)
         {
+            string result = String.Empty;
+
             // If the user has opted to parse errors with an offline database, run the parse offline function
             if (chkUseOffline.Checked == true)
             {
-                return ParseErrorsOffline(ErrorCode);
+                result = ParseErrorsOffline(errorCode);
             }
             else
             {
                 // The user wants to use the online version. Proceed at will
 
                 // Define the URL with the error code parameter
-                string url = "http://uartcodes.com/xml.php?errorCode=" + ErrorCode;
-
-                string results = "";
+                string url = "http://uartcodes.com/xml.php?errorCode=" + errorCode;
 
                 try
                 {
                     string response = "";
+
                     // Create a WebClient instance to send the request
                     using (HttpClient client = new())
                     {
                         // Send the request and retrieve the response as a string
                         response = await client.GetStringAsync(url);
                     }
-                    // Load the XML response into an XmlDocument
-                    XmlDocument xmlDoc = new XmlDocument();
-                    xmlDoc.LoadXml(response);
 
+                    ErrorCodesList errorCodes = XmlSerializationHelper.DeserilazeXmlFromString<ErrorCodesList>(response);
 
-                    // Get the root node
-                    XmlNode? root = xmlDoc.DocumentElement;
-                    if (root is null)
+                    if (errorCodes != null)
                     {
-                        throw new Exception("Error reading the file");
-                    }
+                        ErrorCode code = errorCodes.Items.Where(x => x.ErrorCodeNumber == errorCode).FirstOrDefault();
 
-                    // Check if the root node is <errorCodes>
-                    if (root.Name == "errorCodes")
-                    {
-                        // Loop through each errorCode node
-                        foreach (XmlNode errorCodeNode in root.ChildNodes)
+                        if (code != null)
                         {
-                            // Check if the node is <errorCode>
-                            if (errorCodeNode.Name == "errorCode")
-                            {
-                                // Get ErrorCode and Description
-                                string errorCode = errorCodeNode.SelectSingleNode("ErrorCode")?.InnerText ?? "";
-                                string description = errorCodeNode.SelectSingleNode("Description")?.InnerText ?? "";
-
-                                // Output the results
-                                results = description;
-                            }
+                            result = code.Description;
                         }
-                    }
-                    else
-                    {
-                        results = "An error occurred while fetching a result for this error. Please try again!";
                     }
                 }
                 catch (Exception ex)
                 {
-                    results = "Error code: "
-                        + ErrorCode
+                    result = "Error code: "
+                        + errorCode
                         + Environment.NewLine
                         + ex.Message;
                 }
-                return results;
             }
+
+            return result;
         }
 
         private void btnConnectCom_Click(object sender, EventArgs e)
@@ -360,7 +308,7 @@ namespace PS5_NOR_Modifier.UserControls.UART
                                     case "OK":
                                         var errorCode = split[2];
                                         // Now that the error code has been isolated from the rest of the junk sent by the system
-                                        // let's check it against the database. The error server will need to return XML results
+                                        // let's check it against the database. The error server will need to return XML result
                                         string errorCodeDescription = await ParseErrorsAsync(errorCode);
 
                                         ErrorCodeInfo codeInfo = new ErrorCodeInfo();
