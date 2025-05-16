@@ -1,0 +1,162 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\tests\\UART-CL.UnitTests\\UART-CL.UnitTests.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\tests\\UART-CL.UnitTests\\UART-CL.UnitTests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\tests\\UART-CL.UnitTests\\UART-CL.UnitTests.csproj",
+        "projectName": "UART-CL.UnitTests",
+        "projectPath": "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\tests\\UART-CL.UnitTests\\UART-CL.UnitTests.csproj",
+        "packagesPath": "C:\\Users\\Rory B\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\tests\\UART-CL.UnitTests\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Rory B\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {
+              "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj": {
+                "projectPath": "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "FluentAssertions": {
+              "target": "Package",
+              "version": "[7.2.0, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.1.0, )"
+            },
+            "NUnit": {
+              "target": "Package",
+              "version": "[3.13.3, )"
+            },
+            "NUnit.Analyzers": {
+              "target": "Package",
+              "version": "[3.3.0, )"
+            },
+            "NUnit3TestAdapter": {
+              "target": "Package",
+              "version": "[4.2.1, )"
+            },
+            "coverlet.collector": {
+              "target": "Package",
+              "version": "[3.1.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj",
+        "projectName": "UART-CL By TheCod3r",
+        "projectPath": "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj",
+        "packagesPath": "C:\\Users\\Rory B\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Rory B\\Documents\\PS5NorModifier\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Rory B\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "Colorful.Console": {
+              "target": "Package",
+              "version": "[1.2.15, )"
+            },
+            "System.IO.Ports": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "System.Management": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
