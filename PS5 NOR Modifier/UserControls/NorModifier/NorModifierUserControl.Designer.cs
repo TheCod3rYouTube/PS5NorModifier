@@ -58,6 +58,12 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             this.boardVariantSelectionBox = new System.Windows.Forms.ComboBox();
             this.label13 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
+            this.lblSkuValue = new System.Windows.Forms.Label();
+            this.lblSkuText = new System.Windows.Forms.Label();
+            this.lblFWVersionValue = new System.Windows.Forms.Label();
+            this.lblFWVersionText = new System.Windows.Forms.Label();
+            this.lblMD5Value = new System.Windows.Forms.Label();
+            this.lblMD5Text = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label5
@@ -78,6 +84,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             this.label20.Size = new System.Drawing.Size(185, 30);
             this.label20.TabIndex = 75;
             this.label20.Text = "LAN Mac Address:";
+            this.label20.Visible = false;
             // 
             // fileLocationBox
             // 
@@ -99,6 +106,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             this.lanMacAddressTextbox.Name = "lanMacAddressTextbox";
             this.lanMacAddressTextbox.Size = new System.Drawing.Size(508, 35);
             this.lanMacAddressTextbox.TabIndex = 74;
+            this.lanMacAddressTextbox.Visible = false;
             // 
             // browseFileButton
             // 
@@ -122,6 +130,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             this.wifiMacAddressTextbox.Name = "wifiMacAddressTextbox";
             this.wifiMacAddressTextbox.Size = new System.Drawing.Size(508, 35);
             this.wifiMacAddressTextbox.TabIndex = 73;
+            this.wifiMacAddressTextbox.Visible = false;
             // 
             // label6
             // 
@@ -142,6 +151,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             this.label17.Size = new System.Drawing.Size(190, 30);
             this.label17.TabIndex = 72;
             this.label17.Text = "WiFi MAC Address:";
+            this.label17.Visible = false;
             // 
             // label7
             // 
@@ -297,9 +307,9 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             this.label11.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label11.Location = new System.Drawing.Point(670, 100);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(152, 30);
+            this.label11.Size = new System.Drawing.Size(164, 30);
             this.label11.TabIndex = 58;
-            this.label11.Text = "Modify Values";
+            this.label11.Text = "Modify Values: ";
             // 
             // label14
             // 
@@ -313,7 +323,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             // convertToDigitalEditionButton
             // 
             this.convertToDigitalEditionButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.convertToDigitalEditionButton.Location = new System.Drawing.Point(1119, 444);
+            this.convertToDigitalEditionButton.Location = new System.Drawing.Point(1119, 743);
             this.convertToDigitalEditionButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.convertToDigitalEditionButton.Name = "convertToDigitalEditionButton";
             this.convertToDigitalEditionButton.Size = new System.Drawing.Size(257, 92);
@@ -489,10 +499,76 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             this.label12.TabIndex = 61;
             this.label12.Text = "Serial Number:";
             // 
+            // lblSkuValue
+            // 
+            this.lblSkuValue.AutoSize = true;
+            this.lblSkuValue.Location = new System.Drawing.Point(209, 566);
+            this.lblSkuValue.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.lblSkuValue.Name = "lblSkuValue";
+            this.lblSkuValue.Size = new System.Drawing.Size(28, 30);
+            this.lblSkuValue.TabIndex = 77;
+            this.lblSkuValue.Text = "...";
+            // 
+            // lblSkuText
+            // 
+            this.lblSkuText.AutoSize = true;
+            this.lblSkuText.Location = new System.Drawing.Point(5, 566);
+            this.lblSkuText.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.lblSkuText.Name = "lblSkuText";
+            this.lblSkuText.Size = new System.Drawing.Size(55, 30);
+            this.lblSkuText.TabIndex = 76;
+            this.lblSkuText.Text = "SKU:";
+            // 
+            // lblFWVersionValue
+            // 
+            this.lblFWVersionValue.AutoSize = true;
+            this.lblFWVersionValue.Location = new System.Drawing.Point(209, 623);
+            this.lblFWVersionValue.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.lblFWVersionValue.Name = "lblFWVersionValue";
+            this.lblFWVersionValue.Size = new System.Drawing.Size(28, 30);
+            this.lblFWVersionValue.TabIndex = 79;
+            this.lblFWVersionValue.Text = "...";
+            // 
+            // lblFWVersionText
+            // 
+            this.lblFWVersionText.AutoSize = true;
+            this.lblFWVersionText.Location = new System.Drawing.Point(5, 623);
+            this.lblFWVersionText.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.lblFWVersionText.Name = "lblFWVersionText";
+            this.lblFWVersionText.Size = new System.Drawing.Size(197, 30);
+            this.lblFWVersionText.TabIndex = 78;
+            this.lblFWVersionText.Text = "Current FW Version:";
+            // 
+            // lblMD5Value
+            // 
+            this.lblMD5Value.AutoSize = true;
+            this.lblMD5Value.Location = new System.Drawing.Point(209, 685);
+            this.lblMD5Value.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.lblMD5Value.Name = "lblMD5Value";
+            this.lblMD5Value.Size = new System.Drawing.Size(28, 30);
+            this.lblMD5Value.TabIndex = 81;
+            this.lblMD5Value.Text = "...";
+            // 
+            // lblMD5Text
+            // 
+            this.lblMD5Text.AutoSize = true;
+            this.lblMD5Text.Location = new System.Drawing.Point(5, 685);
+            this.lblMD5Text.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.lblMD5Text.Name = "lblMD5Text";
+            this.lblMD5Text.Size = new System.Drawing.Size(153, 30);
+            this.lblMD5Text.TabIndex = 80;
+            this.lblMD5Text.Text = "MD5 File Hash:";
+            // 
             // NorModifierUserControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 30F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.lblMD5Value);
+            this.Controls.Add(this.lblMD5Text);
+            this.Controls.Add(this.lblFWVersionValue);
+            this.Controls.Add(this.lblFWVersionText);
+            this.Controls.Add(this.lblSkuValue);
+            this.Controls.Add(this.lblSkuText);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label20);
             this.Controls.Add(this.fileLocationBox);
@@ -524,7 +600,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             this.Controls.Add(this.label13);
             this.Controls.Add(this.label12);
             this.Name = "NorModifierUserControl";
-            this.Size = new System.Drawing.Size(1382, 543);
+            this.Size = new System.Drawing.Size(1382, 842);
             this.Load += new System.EventHandler(this.NorModifierUserControl_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -563,5 +639,11 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
         private ComboBox boardVariantSelectionBox;
         private Label label13;
         private Label label12;
+        private Label lblSkuValue;
+        private Label lblSkuText;
+        private Label lblFWVersionValue;
+        private Label lblFWVersionText;
+        private Label lblMD5Value;
+        private Label lblMD5Text;
     }
 }

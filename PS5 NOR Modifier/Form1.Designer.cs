@@ -220,7 +220,7 @@
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label1);
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.MinimumSize = new System.Drawing.Size(1476, 1229);
+            this.MinimumSize = new System.Drawing.Size(1901, 1466);
             this.Name = "fMainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "PS5 NOR Modifier";

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using PS5_NOR_Modifier.UserControls.Events;
+using System.Security.Cryptography;
 
 namespace PS5_NOR_Modifier.UserControls.NorModifier
 {
@@ -20,6 +21,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
         private const long MODEL_OFFSET = 0x1C7011;
         private const long REGION_OFFSET = 0x1C7236;
         private const long SKU_OFFSET = 0x1C7230;
+        private const long CURRENT_FW_VERSION = 0x1C8C34;
 
         private readonly Dictionary<string, string> _regions = new Dictionary<string, string>()
         {
@@ -81,6 +83,8 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             modelInfo.Text = "...";
             fileSizeInfo.Text = "...";
             serialNumberTextbox.Text = "";
+            lblSkuValue.Text = "...";
+            lblFWVersionValue.Text = "...";
             serialNumberTextbox.Enabled = false;
             boardVariantSelectionBox.Enabled = false;
             boardVariantSelectionBox.SelectedIndex = -1;
@@ -207,8 +211,20 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
                             if (rawBytes != null)
                             {
                                 string skuBytes = BitConverter.ToString(rawBytes).Replace("-", null);
-                                string skuText = HexStringToString(skuBytes).Split(' ')[0];
+                                string skuFullText = HexStringToString(skuBytes);
+                                lblSkuValue.Text = skuFullText;
+                                string skuText = skuFullText.Split(' ')[0];
                                 boardVariantSelectionBox.SelectedIndex = boardVariantSelectionBox.FindStringExact(skuText);
+                            }
+
+                            //Reading Current Firmware Version
+                            rawBytes = ReadStreamBytes(reader, CURRENT_FW_VERSION, 4);
+
+                            if (rawBytes != null)
+                            {
+                                Array.Reverse(rawBytes);
+                                string firmwareVersion = BitConverter.ToString(rawBytes).Replace("-", ".");
+                                lblFWVersionValue.Text = firmwareVersion;
                             }
 
                             //Reading WIFI
@@ -284,6 +300,22 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
                             boardVariantSelectionBox.Enabled = true;
                             boardModelSelectionBox.Enabled = true;
                         }
+
+                        //Calculate MD5 File hash
+
+                        string md5Hash = NO_VALUE;
+
+                        using (var md5 = MD5.Create())
+                        {
+                            using (var stream = File.OpenRead(fileDialogBox.FileName))
+                            {
+                                byte[] hash = md5.ComputeHash(stream);
+
+                                md5Hash = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                            }
+                        }
+
+                        lblMD5Value.Text = md5Hash;
                     }
                 }
             }
