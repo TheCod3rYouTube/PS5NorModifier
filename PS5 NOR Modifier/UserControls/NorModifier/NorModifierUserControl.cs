@@ -19,12 +19,12 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
         private const long LAN_MAC_OFFSET = 0x1C4020;
         private const long MODEL_OFFSET = 0x1C7011;
         private const long REGION_OFFSET = 0x1C7236;
+        private const long SKU_OFFSET = 0x1C7230;
 
         private readonly Dictionary<string, string> _regions = new Dictionary<string, string>()
         {
             { "00", "Japan" },
             { "01", "US, Canada, (North America)" },
-            { "15", "US, Canada, (North America)" },
             { "02", "Australia / New Zealand, (Oceania)" },
             { "03", "United Kingdom / Ireland" },
             { "04", "Europe / Middle East / Africa" },
@@ -35,6 +35,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             { "09", "Mainland China" },
             { "11", "Mexico, Central America, South America" },
             { "14", "Mexico, Central America, South America" },
+            { "15", "US, Canada, (North America)" },
             { "16", "Europe / Middle East / Africa" },
             { "18", "Singapore, Korea, Asia" },
         };
@@ -80,6 +81,11 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
             modelInfo.Text = "...";
             fileSizeInfo.Text = "...";
             serialNumberTextbox.Text = "";
+            serialNumberTextbox.Enabled = false;
+            boardVariantSelectionBox.Enabled = false;
+            boardVariantSelectionBox.SelectedIndex = -1;
+            boardModelSelectionBox.Enabled = false;
+            boardModelSelectionBox.SelectedIndex = -1;
             UpdateStatus( "Status: Waiting for input");
         }
 
@@ -193,6 +199,18 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
                                 serialNumberTextbox.Text = readableSn;
                             }
 
+                            //Reading SKU
+                            rawBytes = ReadStreamBytes(reader, SKU_OFFSET, 13);
+
+                            boardModelSelectionBox.SelectedIndex = -1;
+
+                            if (rawBytes != null)
+                            {
+                                string skuBytes = BitConverter.ToString(rawBytes).Replace("-", null);
+                                string skuText = HexStringToString(skuBytes).Split(' ')[0];
+                                boardVariantSelectionBox.SelectedIndex = boardVariantSelectionBox.FindStringExact(skuText);
+                            }
+
                             //Reading WIFI
                             rawBytes = ReadStreamBytes(reader, WIFI_OFFSET, 6);
 
@@ -242,7 +260,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
                             {
                                 string model = BitConverter.ToString(rawBytes).Replace("-", null);
 
-                                string modelText = "Unknown";
+                                string modelText = NO_VALUE;
 
                                 if (model == "01")
                                 {
@@ -250,7 +268,7 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
                                 }
                                 else if (model == "02")
                                 {
-                                    modelText = "Disk Edition";
+                                    modelText = "Disc Edition";
                                 }
                                 else if (model == "03")
                                 {
@@ -258,7 +276,13 @@ namespace PS5_NOR_Modifier.UserControls.NorModifier
                                 }
 
                                 modelInfo.Text = modelText;
+
+                                boardModelSelectionBox.SelectedIndex = boardModelSelectionBox.FindStringExact(modelText);
                             }
+
+                            serialNumberTextbox.Enabled = true;
+                            boardVariantSelectionBox.Enabled = true;
+                            boardModelSelectionBox.Enabled = true;
                         }
                     }
                 }
