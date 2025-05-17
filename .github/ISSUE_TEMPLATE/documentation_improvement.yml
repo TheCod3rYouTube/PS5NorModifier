@@ -1,0 +1,25 @@
+name: Documentation Improvement Request
+description: Request documentation improvements
+title: "[Documentation]: "
+labels: ["Documentation", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: "## Documentation Improvement"
+  - type: input
+    id: doc_link
+    attributes:
+      label: Documentation Link
+      description: Which documentation needs improvement?
+    validations:
+      required: true
+  - type: textarea
+    id: missing_info
+    attributes:
+      label: Missing/Incorrect Information
+    validations:
+      required: true
+  - type: textarea
+    id: suggested_changes
+    attributes:
+      label: Suggested Changes

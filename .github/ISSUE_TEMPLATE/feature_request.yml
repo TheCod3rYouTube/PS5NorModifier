@@ -1,0 +1,33 @@
+name: Feature Request
+description: Request a feature.
+title: "[Feature]: "
+labels: ["feature", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: "## Feature Request"
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem are you trying to solve?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Additional Checks
+      options:
+        - label: I've searched existing issues to avoid duplicates
+          required: true
+        - label: I'm willing to contribute to this feature
