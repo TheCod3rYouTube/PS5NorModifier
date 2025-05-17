@@ -1,10 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.IO.Ports;
 using System.Xml;
-using System.Windows.Forms.Design;
 
 namespace PS5_NOR_Modifier;
 
@@ -15,7 +12,7 @@ public sealed partial class MainForm : Form
 
     private static readonly SerialPort UARTSerial = new ();
 
-    private readonly CancellationTokenSource _errorsCTSource = new ();
+    private readonly CancellationTokenSource errorsCTSource = new ();
 
     public MainForm()
     {
