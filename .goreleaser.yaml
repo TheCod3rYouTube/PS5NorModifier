@@ -1,0 +1,10 @@
+version: 2
+project_name: UART-CL By TheCod3r
+builds:
+  - skip: true
+before:
+  hooks:
+    - make build VERSION={{.Version}}
+release:
+  extra_files:
+    - glob: ./build/*.zip
