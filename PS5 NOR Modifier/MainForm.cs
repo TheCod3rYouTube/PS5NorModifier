@@ -436,7 +436,7 @@ public sealed partial class MainForm : Form
         Utilities.TryCatchErrors(() =>
         {
             if (!UARTSerial.IsOpen)
-                return;
+                throw new Exception("Please connect to UART before attempting to read the error codes.");
 
             UARTSerial.Close();
             btnConnectCom.Enabled = true;
