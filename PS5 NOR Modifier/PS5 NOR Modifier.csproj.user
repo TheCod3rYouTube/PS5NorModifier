@@ -4,7 +4,7 @@
     <_LastSelectedProfileId>C:\Users\TheCod3r\source\repos\PS5 NOR Modifier\PS5 NOR Modifier\Properties\PublishProfiles\FolderProfile.pubxml</_LastSelectedProfileId>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Update="Form1.cs">
+    <Compile Update="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
