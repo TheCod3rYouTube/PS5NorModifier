@@ -15,7 +15,7 @@ Console.Title = appTitle;
 
 #region Check if error database exists
 // Let's check and see if the database exists. If not, download it!
-if (!System.IO.File.Exists("errorDB.xml"))
+if (!File.Exists("errorDB.xml"))
 {
     PS5UARTUtilities.ShowHeader();
     Console.WriteLine("Downloading latest database file. Please wait...");
