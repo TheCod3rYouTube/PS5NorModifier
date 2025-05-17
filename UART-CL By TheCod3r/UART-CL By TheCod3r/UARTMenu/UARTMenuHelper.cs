@@ -206,7 +206,7 @@ public static class UARTMenuHelper
 
                 var UARTCommand = readLine();
 
-                if (UARTCommand == "exit")
+                if (UARTCommand.ToLower() == "exit")
                 {
                     break;
                 }

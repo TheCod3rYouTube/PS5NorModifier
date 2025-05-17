@@ -648,7 +648,7 @@ public class SubMenuHelper
                     // The user did not enter a valid string
                     writeLine("Please enter a valid model number to continue...");
                 }
-                else if (newModel == "exit")
+                else if (newModel.ToLower() == "exit")
                 {
                     // The user wants to exit this menu
                     break;
@@ -720,7 +720,7 @@ public class SubMenuHelper
                 // The serial number is blank
                 writeLine("Invalid serial number entered. The new serial should be characters and letters.");
             }
-            else if (newSerial == "exit")
+            else if (newSerial.ToLower() == "exit")
             {
                 jobDone = true;
                 break;
@@ -810,7 +810,7 @@ public class SubMenuHelper
                 // The user did not enter a valid string
                 writeLine("Please enter a valid model number to continue...");
             }
-            else if (newSerial == "exit")
+            else if (newSerial.ToLower() == "exit")
             {
                 // The user wants to exit this menu
                 break;

@@ -126,7 +126,7 @@ public class SubMenuHelper_Tests
     }
 
     [Test]
-    public void LoadDumpFile_ExitTyped_ReturnsExit()
+    public void LoadDumpFile_ExitTyped_ReturnsNullPath()
     {
         var inputs = new Queue<string>(new[] { "exit" });
 
@@ -136,7 +136,7 @@ public class SubMenuHelper_Tests
             getExtension: _ => "",
             sleep: _ => { });
 
-        path.Should().Be("exit");
+        path.Should().BeNullOrEmpty();
     }
 
     [Test]
