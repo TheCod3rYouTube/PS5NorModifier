@@ -15,7 +15,7 @@ public sealed partial class MainForm : Form
 
     private static readonly SerialPort UARTSerial = new ();
 
-    private CancellationTokenSource errorsCTSource = new ();
+    private readonly CancellationTokenSource _errorsCTSource = new ();
 
     public MainForm()
     {
