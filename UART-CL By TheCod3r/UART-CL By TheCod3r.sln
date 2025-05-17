@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UART-CL By TheCod3r", "UART-CL By TheCod3r\UART-CL By TheCod3r.csproj", "{8B5DA648-23A0-4C54-A0D2-F6B5E326F308}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UART-CL By TheCod3r", "UART-CL By TheCod3r\UART-CL By TheCod3r.csproj", "{8B5DA648-23A0-4C54-A0D2-F6B5E326F308}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UART-CL.UnitTests", "tests\UART-CL.UnitTests\UART-CL.UnitTests.csproj", "{16134BBC-A161-4463-9DE7-8B57F593D4A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{8B5DA648-23A0-4C54-A0D2-F6B5E326F308}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B5DA648-23A0-4C54-A0D2-F6B5E326F308}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B5DA648-23A0-4C54-A0D2-F6B5E326F308}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16134BBC-A161-4463-9DE7-8B57F593D4A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16134BBC-A161-4463-9DE7-8B57F593D4A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16134BBC-A161-4463-9DE7-8B57F593D4A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16134BBC-A161-4463-9DE7-8B57F593D4A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
