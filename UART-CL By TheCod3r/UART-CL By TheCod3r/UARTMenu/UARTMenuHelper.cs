@@ -1,48 +1,48 @@
 ﻿using System.IO.Ports;
+using UART_CL_By_TheCod3r.SubMenu;
+using UART_CL_By_TheCod3r.Utilities;
 
-namespace UART_CL_By_TheCod3r;
+namespace UART_CL_By_TheCod3r.UARTMenu;
 
 public static class UARTMenuHelper
 {
-    public static bool GetErrorCodesFromPS5(
-        bool isTest = false,
-        string[]? mockPorts = null,
-        Func<int, int>? promptPortSelection = null,
-        Func<string, SerialPort>? serialPortFactory = null,
+    public static bool GetErrorCodesFromPS5(Func<string[]>? getAvailablePorts = null,
+        Func<int, Func<string?>?, int>? promptPortSelection = null,
+        Func<string, SerialPort>? configureSerialPorts = null,
+        Action<SerialPort, string, Action<string>?>? openSerialPort = null,
         Func<string, string>? parseErrors = null,
         Func<SerialPort, List<string>>? collectErrorLines = null,
-        Action<Exception>? printErrorMessage = null,
-        Action? waitForUser = null)
+        Func<string?>? readLine = null,
+        Action<string>? writeLine = null)
     {
-        var ports = isTest && mockPorts != null ? mockPorts : GetAvailablePorts();
+        getAvailablePorts ??= GetAvailablePorts;
+        promptPortSelection ??= PromptPortSelection;
+        configureSerialPorts ??= ConfigureSerialPort;
+        openSerialPort ??= OpenSerialPort;
+        collectErrorLines ??= CollectErrorLines;
+        readLine ??= Console.ReadLine;
+        writeLine ??= Console.WriteLine;
+
+        var ports = getAvailablePorts();
 
         if (ports.Length == 0)
         {
-            if (!isTest)
-            {
-                ShowNoDevicesMessage(); 
-            }
+            ShowNoDevicesMessage(readLine, writeLine);
             return true;
         }
 
         PrintAvailableDevices(ports);
 
-        var selectedPortIndex = (promptPortSelection ?? PromptPortSelection).Invoke(ports.Length);
+        var selectedPortIndex = promptPortSelection(ports.Length, readLine);
         var selectedPort = ports[selectedPortIndex - 1];
 
         try
         {
-            var serialPort = (serialPortFactory ?? ConfigureSerialPort).Invoke(selectedPort);
+            var serialPort = configureSerialPorts(selectedPort);
 
-            if (!isTest)
-            {
-                OpenSerialPort(serialPort, selectedPort); 
-            }
+            openSerialPort(serialPort, selectedPort, writeLine);
 
-            var errorLinesFunc = collectErrorLines
-                ?? (sp => CollectErrorLines(sp));
-
-            var UARTLines = errorLinesFunc(serialPort);
+            var UARTLines = collectErrorLines(serialPort);
 
             foreach (var l in UARTLines)
             {
@@ -58,69 +58,67 @@ public static class UARTMenuHelper
                         if (errorCode.StartsWith("FFFFFF"))
                         {
                             Console.ForegroundColor = ConsoleColor.Blue;
-                            Console.WriteLine("No error displayed");
+                            writeLine("No error displayed");
                             Console.ResetColor();
                         }
                         else
                         {
                             Console.ForegroundColor = ConsoleColor.Green;
                             var result = (parseErrors ?? PS5UARTUtilities.ParseErrors).Invoke(errorCode);
-                            Console.WriteLine(result);
+                            writeLine(result);
                             Console.ResetColor();
                         }
                         break;
                 }
             }
 
-            Console.WriteLine("");
-            Console.WriteLine("Press Enter to continue...");
-
-            switch (waitForUser)
-            {
-                case null:
-                    Console.ReadLine();
-                    break;
-                default:
-                    waitForUser.Invoke();
-                    break;
-            }
+            writeLine("");
+            writeLine("Press Enter to continue...");
+            readLine();
 
             serialPort.Close();
         }
         catch (Exception ex)
         {
-            (printErrorMessage ?? PrintErrorMessage).Invoke(ex);
-            if (!isTest)
-                Console.ReadLine();
+            PrintErrorMessage(ex, writeLine);
+            readLine();
         }
 
         return true;
     }
 
-    public static bool ClearUARTCodes(bool isTest = false,
-        string[]? fakePorts = null,
-        Func<string, SerialPort>? serialPortFactory = null,
-        Func<int, int>? promptPortSelection = null,
-        Func<SerialPort, List<string>>? customSerialRead = null,
-        Action<Exception>? printErrorMessage = null)
+    public static bool ClearUARTCodes(Func<string[]>? getAvailablePorts = null,
+        Func<string, SerialPort>? configureSerialPort = null,
+        Action<SerialPort, string, Action<string>?>? openSerialPort = null,
+        Func<int, Func<string?>?, int>? promptPortSelection = null,
+        Func<SerialPort, List<string>>? readUARTLines = null,
+        Func<string?>? readLine = null,
+        Action<string>? writeLine = null,
+        Action<SerialPort, string>? writeLineToPort = null,
+        Action<SerialPort>? closePort = null)
     {
+        getAvailablePorts ??= GetAvailablePorts;
+        configureSerialPort ??= ConfigureSerialPort;
+        openSerialPort ??= OpenSerialPort;
+        promptPortSelection ??= PromptPortSelection;
+        readUARTLines ??= ReadUARTLines;
+        readLine ??= Console.ReadLine;
+        writeLine ??= Console.WriteLine;
+
         // Declare a string array for a list of available port names
-        var ports = isTest && fakePorts != null ? fakePorts : GetAvailablePorts();
+        var ports = getAvailablePorts();
 
         // No COM ports found. Let the user know and go back to the main menu
         if (ports.Length == 0)
         {
-            if (!isTest)
-            {
-                ShowNoDevicesMessage(); 
-            }
+            ShowNoDevicesMessage(readLine, writeLine);
             return true;
         }
 
         // Devices were found. Iterate through and present them in the form of a menu
         PrintAvailableDevices(ports);
 
-        var selectedPortIndex = (promptPortSelection ?? PromptPortSelection).Invoke(ports.Length);
+        var selectedPortIndex = promptPortSelection(ports.Length, readLine);
 
         // Get the selected port and store it inside the selectedPort string
         var selectedPort = ports[selectedPortIndex - 1];
@@ -128,103 +126,85 @@ public static class UARTMenuHelper
         // Now we can wipe the error codes. We're going to wrap this in a try loop to prevent unexpected crashes
         try
         {
-            var serialPort = (serialPortFactory ?? ConfigureSerialPort).Invoke(selectedPort);
+            var serialPort = configureSerialPort(selectedPort);
 
-            if (!isTest)
-            {
-                
-                // Open the selected port for use
-                OpenSerialPort(serialPort, selectedPort);
+            // Open the selected port for use
+            openSerialPort(serialPort, selectedPort, writeLine);
 
-                var checksum = PS5UARTUtilities.CalculateChecksum("errlog clear");
-                serialPort.WriteLine(checksum); 
-            }
+            var checksum = PS5UARTUtilities.CalculateChecksum("errlog clear");
 
-            var UARTLinesFunc = customSerialRead
-                ?? (sp => ReadUARTLines(sp));
+            if (writeLineToPort != null)
+                writeLineToPort(serialPort, checksum);
+            else
+                serialPort.WriteLine(checksum);
 
-            var UARTLines = UARTLinesFunc(serialPort);
-
-            if (customSerialRead == null)
-            {
-                do
-                {
-                    var line = serialPort.ReadLine();
-                    UARTLines.Add(line);
-                } while (serialPort.BytesToRead != 0);
-            }
+            var UARTLines = readUARTLines(serialPort);
 
             foreach (var l in UARTLines)
             {
-                Console.WriteLine(l);
+                writeLine(l);
             }
 
-            Console.WriteLine("Press Enter to continue...");
+            writeLine("Press Enter to continue...");
 
             // Job done. Continue
-            if (!isTest)
-            {
-                Console.ReadLine(); 
-            }
+            readLine();
 
             // Before exiting, close and free up the selected device
-            serialPort.Close();
+            if (closePort != null)
+                closePort(serialPort);
+            else
+                serialPort.Close();
         }
         catch (Exception ex)
         {
-            (printErrorMessage ?? PrintErrorMessage).Invoke(ex);
-            if (!isTest)
-                Console.ReadLine();
+            PrintErrorMessage(ex, writeLine);
+            readLine();
         }
         return true;
     }
 
-    public static bool RunCustomUARTCommand(
-        bool isTest = false,
-        string[]? fakePorts = null,
-        Func<string, SerialPort>? serialPortFactory = null,
-        Func<int, int>? promptPortSelection = null,
-        Func<SerialPort, List<string>>? customSerialRead = null,
-        Action<string>? consoleWrite = null,
-        Func<string?>? consoleReadLine = null,
-        Action? waitForUser = null,
-        Action<Exception>? printErrorMessage = null)
+    public static bool RunCustomUARTCommand(Func<string[]>? getAvailablePorts = null,
+        Func<string, SerialPort>? configureSerialPort = null,
+        Action<SerialPort, string, Action<string>?>? openSerialPort = null,
+        Func<int, Func<string?>?, int>? promptPortSelection = null,
+        Func<SerialPort, List<string>>? readUARTLines = null,
+        Func<string?>? readLine = null,
+        Action<string>? writeLine = null,
+        Action<SerialPort, string>? writeLineToPort = null,
+        Action<SerialPort>? closePort = null)
     {
-        var ports = isTest && fakePorts != null ? fakePorts : GetAvailablePorts();
+        getAvailablePorts ??= GetAvailablePorts;
+        configureSerialPort ??= ConfigureSerialPort;
+        openSerialPort ??= OpenSerialPort;
+        promptPortSelection ??= PromptPortSelection;
+        readUARTLines ??= ReadUARTLines;
+        readLine ??= Console.ReadLine;
+        writeLine ??= Console.WriteLine;
+
+        var ports = getAvailablePorts();
 
         if (ports.Length == 0)
         {
-            if (!isTest)
-            {
-                ShowNoDevicesMessage();
-            }
+            ShowNoDevicesMessage(readLine, writeLine);
             return true;
         }
 
-        if (!isTest)
-        {
-            PrintAvailableDevices(ports);
-        }
+        PrintAvailableDevices(ports);
 
-        var selectedPortIndex = (promptPortSelection ?? PromptPortSelection).Invoke(ports.Length);
+        var selectedPortIndex = promptPortSelection(ports.Length, readLine);
         var selectedPort = ports[selectedPortIndex - 1];
 
         try
         {
-            var serialPort = (serialPortFactory ?? ConfigureSerialPort).Invoke(selectedPort);
-            if (!isTest)
-            {
-                OpenSerialPort(serialPort, selectedPort);
-            }
+            var serialPort = configureSerialPort(selectedPort);
+            openSerialPort(serialPort, selectedPort, writeLine);
 
             while (true)
             {
-                if (!isTest)
-                {
-                    Console.Write("Please enter a custom command to send (type exit to quit): ");
-                }
+                Console.Write("Please enter a custom command to send (type exit to quit): ");
 
-                var UARTCommand = (consoleReadLine ?? Console.ReadLine)?.Invoke();
+                var UARTCommand = readLine();
 
                 if (UARTCommand == "exit")
                 {
@@ -234,31 +214,34 @@ public static class UARTMenuHelper
                 {
                     var checksum = PS5UARTUtilities.CalculateChecksum(UARTCommand);
 
-                    if (!isTest)
-                    {
-                        serialPort.WriteLine(checksum); 
-                    }
+                    if (writeLineToPort != null)
+                        writeLineToPort(serialPort, checksum);
+                    else
+                        serialPort.WriteLine(checksum);
 
-                    var UARTLines = (customSerialRead ?? ReadUARTLines).Invoke(serialPort);
+                    var UARTLines = readUARTLines(serialPort);
 
                     foreach (var line in UARTLines)
                     {
-                        (consoleWrite ??Console.WriteLine).Invoke(line);
+                        writeLine(line);
                     }
 
-                    (waitForUser ?? (() => Console.ReadLine())).Invoke();
+                    readLine();
                 }
                 else
                 {
-                    (consoleWrite ?? Console.WriteLine).Invoke("Please enter a valid command.");
+                    writeLine("Please enter a valid command.");
                 }
             }
 
-            serialPort.Close();
+            if (closePort != null)
+                closePort(serialPort);
+            else
+                serialPort.Close();
         }
         catch (Exception ex)
         {
-            (printErrorMessage ?? Console.WriteLine).Invoke(ex);
+            PrintErrorMessage(ex, writeLine);
         }
 
         return true;
@@ -269,7 +252,7 @@ public static class UARTMenuHelper
         // This is a sub menu for working with BIOS files. IMO it's not very elegant to have sub menus but at least this way
         // we don't have to use different apps for working with BIOS files...
 
-        SubMenuHelper.RunSubMenu(appTitle, regionMap);
+        SubMenuService.RunSubMenu(appTitle, regionMap);
         return true;
     }
 
@@ -354,12 +337,15 @@ public static class UARTMenuHelper
     #region Private methods for repeated logic
     private static string[] GetAvailablePorts() => SerialPort.GetPortNames();
 
-    private static void ShowNoDevicesMessage()
+    private static void ShowNoDevicesMessage(Func<string?>? readLine = null,
+        Action<string>? writeLine = null)
     {
-        Console.WriteLine("No communication devices were found on this system.");
-        Console.WriteLine("Please insert a UART compatible device and try again.");
-        Console.WriteLine("Press Enter to continue...");
-        Console.ReadLine();
+        writeLine ??= Console.WriteLine;
+        readLine ??= Console.ReadLine;
+        writeLine("No communication devices were found on this system.");
+        writeLine("Please insert a UART compatible device and try again.");
+        writeLine("Press Enter to continue...");
+        readLine();
     }
 
     private static void PrintAvailableDevices(string[] ports)
@@ -372,19 +358,21 @@ public static class UARTMenuHelper
         }
     }
 
-    private static int PromptPortSelection(int max)
+    private static int PromptPortSelection(int max, Func<string?>? readLine = null)
     {
+        readLine ??= Console.ReadLine;
+
         int selectedPortIndex;
         do
         {
             Console.WriteLine();
             Console.Write("Enter the number of the COM port you want to use: ");
-        } while (!int.TryParse(Console.ReadLine(), out selectedPortIndex) || selectedPortIndex < 1 || selectedPortIndex > max);
+        } while (!int.TryParse(readLine(), out selectedPortIndex) || selectedPortIndex < 1 || selectedPortIndex > max);
 
         return selectedPortIndex;
     }
 
-    private static SerialPort ConfigureSerialPort(string portName) => 
+    private static SerialPort ConfigureSerialPort(string portName) =>
         new(portName)
         {
             // Configure settings for the selected device
@@ -392,13 +380,15 @@ public static class UARTMenuHelper
             RtsEnable = true  // We need to enable ready to send (RTS) mode
         };
 
-    private static void OpenSerialPort(SerialPort serialPort, string selectedPort)
+    private static void OpenSerialPort(SerialPort serialPort, string selectedPort,
+        Action<string>? writeLine = null)
     {
+        writeLine ??= Console.WriteLine;
         // Open the selected port for use
         serialPort.Open();
         // Let's display the selected port (change the color to blue) so the user is aware of what device is in use
         Console.ForegroundColor = ConsoleColor.Blue;
-        Console.WriteLine("Selected port: " + PS5UARTUtilities.GetFriendlyName(selectedPort));
+        writeLine("Selected port: " + PS5UARTUtilities.GetFriendlyName(selectedPort));
         // Reset the foreground color to default before proceeding
         Console.ResetColor();
     }
@@ -438,12 +428,14 @@ public static class UARTMenuHelper
         return lines;
     }
 
-    private static void PrintErrorMessage(Exception ex)
+    private static void PrintErrorMessage(Exception ex,
+        Action<string>? writeLine = null)
     {
-        Console.WriteLine("An error occurred while connecting to your selected device.");
-        Console.WriteLine("Error details:");
-        Console.WriteLine(ex.Message);
-        Console.WriteLine("Press Enter to continue...");
+        writeLine ??= Console.WriteLine;
+        writeLine("An error occurred while connecting to your selected device.");
+        writeLine("Error details:");
+        writeLine(ex.Message);
+        writeLine("Press Enter to continue...");
     }
     #endregion
 }

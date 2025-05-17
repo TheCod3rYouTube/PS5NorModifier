@@ -1,4 +1,5 @@
-﻿using UART_CL_By_TheCod3r;
+﻿using UART_CL_By_TheCod3r.UARTMenu;
+using UART_CL_By_TheCod3r.Utilities;
 
 #region Reminders (remove before publishing)
 // Add check inside sub menu to confirm that the selected .bin file is a valid PS5 dump
@@ -7,7 +8,7 @@
 // Set the name of the application
 string appTitle = "UART-CL by TheCod3r";
 
-bool showMenu = false;
+var showMenu = false;
 
 // Set the application title
 Console.Title = appTitle;
@@ -87,74 +88,6 @@ while (showMenu)
 #region Main
 static bool MainMenu(string appTitle, Dictionary<string, string> regionMap)
 {
-
-    Console.Clear();
-    PS5UARTUtilities.ShowHeader();
-    Console.ForegroundColor = ConsoleColor.Red;
-    Console.WriteLine("Choose an option:");
-    Console.ResetColor();
-    Console.WriteLine("1. Get error codes from PS5");
-    Console.WriteLine("2. Clear error codes on PS5");
-    Console.WriteLine("3. Enter custom UART command");
-    Console.WriteLine("4. BIOS Dump Tools");
-    Console.WriteLine("5. View readme guide");
-    // Thanks for leaving this here!
-    Console.ForegroundColor = ConsoleColor.Green;
-    Console.WriteLine("6. Buy TheCod3r a coffee");
-    Console.ResetColor();
-    Console.WriteLine("7. Update error database");
-    Console.WriteLine("X. Exit application");
-    Console.ForegroundColor = ConsoleColor.Red;
-    Console.Write("\nEnter your choice: ");
-    Console.ResetColor();
-
-    #region Menu Options
-    switch (Console.ReadLine())
-    {
-        #region Get Error Codes From PS5
-        case "1":
-            return UARTMenuHelper.GetErrorCodesFromPS5();
-        #endregion
-        #region Clear UART codes
-        case "2":
-            return UARTMenuHelper.ClearUARTCodes();
-        #endregion
-        #region Custom UART command
-        case "3":
-            return UARTMenuHelper.RunCustomUARTCommand();
-        #endregion
-        #region Launch readme
-        case "5":
-            return UARTMenuHelper.ShowReadMe();
-        #endregion
-        #region BIOS Dump Tools (Sub Menu)
-        case "4":
-            return UARTMenuHelper.LaunchBIOSDumpSubMenu(appTitle, regionMap);
-        #endregion
-        #region Buy me a coffee
-        case "6":
-            return UARTMenuHelper.BuyTheCod3erACoffee();
-        #endregion
-        #region Update XML database
-        case "7":
-            return UARTMenuHelper.UpdateXmlDatabase();
-        #endregion
-        #region Exit Application
-        case "X":
-            // Run the exit environment command to close the application
-            Environment.Exit(0);
-            return true;
-        case "x":
-            // Run the exit environment command to close the application
-            Environment.Exit(0);
-            return true;
-        #endregion
-        default:
-            Console.WriteLine("Invalid choice. Please try again.");
-            Console.WriteLine("Press Enter to continue...");
-            Console.ReadLine();
-            return true;
-    }
-    #endregion
+    return UARTMenuService.MainMenu(appTitle, regionMap);
 }
 #endregion

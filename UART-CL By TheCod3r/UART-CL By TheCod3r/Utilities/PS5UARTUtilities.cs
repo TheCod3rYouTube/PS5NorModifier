@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using System.Xml;
 
-namespace UART_CL_By_TheCod3r;
+namespace UART_CL_By_TheCod3r.Utilities;
 
 public static class PS5UARTUtilities
 {
@@ -16,7 +16,7 @@ public static class PS5UARTUtilities
         int sum = 0;
         foreach (char c in str)
         {
-            sum += (int)c;
+            sum += c;
         }
         return str + ":" + (sum & 0xFF).ToString("X2");
     }
@@ -58,7 +58,7 @@ public static class PS5UARTUtilities
     {
         if (hexString.Length % 2 != 0)
         {
-            throw new ArgumentException(String.Format(CultureInfo.InvariantCulture, "The binary key cannot have an odd number of digits: {0}", hexString));
+            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "The binary key cannot have an odd number of digits: {0}", hexString));
         }
 
         byte[] data = new byte[hexString.Length / 2];
@@ -235,5 +235,5 @@ public static class PS5UARTUtilities
         }
     }
 
-#endregion
+    #endregion
 }
