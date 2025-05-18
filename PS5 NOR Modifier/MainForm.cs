@@ -308,11 +308,11 @@ public sealed partial class MainForm : Form
 
             string macMillersAddress = Utilities.ExtractWiFiMacAddress(binaryReader);
             macAddressInfo.Text = macMillersAddress;
-            wifiMacAddressTextbox.Text = macMillersAddress == "Unknown" ? macMillersAddress : string.Empty;
+            wifiMacAddressTextbox.Text = macMillersAddress != "Unknown" ? macMillersAddress : string.Empty;
 
             string lanAddress = Utilities.ExtractLANMacAddress(binaryReader);
-            LANMacAddressInfo.Text = lanAddress == "Unknown" ? lanAddress : string.Empty;
-            lanMacAddressTextbox.Text = lanAddress == "Unknown" ? lanAddress : string.Empty;
+            LANMacAddressInfo.Text = lanAddress;
+            lanMacAddressTextbox.Text = lanAddress != "Unknown" ? lanAddress : string.Empty;
 
             boardVariant.Text = Utilities.ExtractBoardVariant(binaryReader, closeReader: true);
         });
