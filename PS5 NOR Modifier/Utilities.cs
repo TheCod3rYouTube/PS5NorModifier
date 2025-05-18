@@ -48,6 +48,20 @@ public static class Utilities
         }
     }
 
+    public static async Task TryCatchErrorsAsync(Task asyncAction, Action<Exception>? catchAction = null)
+    {
+        try
+        {
+            await asyncAction;
+        }
+
+        catch (Exception ex)
+        {
+            ThrowError(ex.Message);
+            catchAction?.Invoke(ex);
+        }
+    }
+
     public static void ThrowError(in string errmsg)
     {
         MessageBox.Show(errmsg, "An Error Has Occurred", MessageBoxButtons.OK, MessageBoxIcon.Error);

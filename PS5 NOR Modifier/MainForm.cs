@@ -451,56 +451,60 @@ public sealed partial class MainForm : Form
     /// <param name="e"></param>
     private void BtnGetErrorCodes_Click(object sender, EventArgs e)
     {
-        Utilities.TryCatchErrors(async () =>
+        _ = Utilities.TryCatchErrorsAsync
+            (
+                GetErrorCodesAsync(errorsCTSource.Token),
+                (Exception ex) => toolStripStatusLabel.Text = "An error occurred while reading error codes from UART. Please try again..."
+            );
+    }
+
+    private async Task GetErrorCodesAsync(CancellationToken cancellationToken)
+    {
+        // Let's read the error codes from UART
+        txtUARTOutput.Text = string.Empty;
+
+        if (!UARTSerial.IsOpen)
+            throw new Exception("Please connect to UART before attempting to read the error codes.");
+
+        List<string> UARTLines = new();
+
+        for (var i = 0; i <= 10; i++)
         {
-            // Let's read the error codes from UART
-            txtUARTOutput.Text = string.Empty;
-
-            if (!UARTSerial.IsOpen)
-                throw new Exception("Please connect to UART before attempting to read the error codes.");
-
-            List<string> UARTLines = new();
-
-            for (var i = 0; i <= 10; i++)
+            var command = $"errlog {i}";
+            var checksum = Utilities.CalculateChecksum(command);
+            UARTSerial.WriteLine(checksum);
+            do
             {
-                var command = $"errlog {i}";
-                var checksum = Utilities.CalculateChecksum(command);
-                UARTSerial.WriteLine(checksum);
-                do
+                var line = UARTSerial.ReadLine();
+                if (!string.Equals($"{command}:{checksum:X2}", line, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    var line = UARTSerial.ReadLine();
-                    if (!string.Equals($"{command}:{checksum:X2}", line, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        UARTLines.Add(line);
-                    }
-                } while (UARTSerial.BytesToRead != 0);
+                    UARTLines.Add(line);
+                }
+            } while (UARTSerial.BytesToRead != 0);
 
-                foreach (var l in UARTLines)
+            foreach (var l in UARTLines)
+            {
+                var split = l.Split(' ');
+                if (!split.Any()) continue;
+                switch (split[0])
                 {
-                    var split = l.Split(' ');
-                    if (!split.Any()) continue;
-                    switch (split[0])
-                    {
-                        case "NG":
-                            break;
-                        case "OK":
-                            var errorCode = split[2];
-                            // Now that the error code has been isolated from the rest of the junk sent by the system
-                            // let's check it against the database. The error server will need to return XML results
-                            string errorResult = await ParseErrorsAsync(errorCode, errorsCTSource.Token)
-                                .ConfigureAwait(true); // Explicitly return to UI thread context. 
+                    case "NG":
+                        break;
+                    case "OK":
+                        var errorCode = split[2];
+                        // Now that the error code has been isolated from the rest of the junk sent by the system
+                        // let's check it against the database. The error server will need to return XML results
+                        string errorResult = await ParseErrorsAsync(errorCode, cancellationToken)
+                            .ConfigureAwait(true); // Explicitly return to UI thread context. 
 
-                            if (!txtUARTOutput.Text.Contains(errorResult))
-                            {
-                                txtUARTOutput.AppendText(errorResult + Environment.NewLine);
-                            }
-                            break;
-                    }
+                        if (!txtUARTOutput.Text.Contains(errorResult))
+                        {
+                            txtUARTOutput.AppendText(errorResult + Environment.NewLine);
+                        }
+                        break;
                 }
             }
-        },
-
-        (Exception ex) => toolStripStatusLabel.Text = "An error occurred while reading error codes from UART. Please try again...");
+        }
     }
 
     // If the app is closed before UART is terminated, we need to at least try to close the COM port gracefully first
@@ -511,15 +515,8 @@ public sealed partial class MainForm : Form
         if (!UARTSerial.IsOpen)
             return;
 
-        try
-        {
-            UARTSerial.Close();
-        }
-
-        catch (Exception ex)
-        {
-            MessageBox.Show(ex.Message, "An error occurred...", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
+        Utilities.TryCatchErrors(() => 
+                    UARTSerial.Close());
     }
 
     /// <summary>
