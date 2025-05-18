@@ -496,7 +496,7 @@ public sealed partial class MainForm : Form
                         // Now that the error code has been isolated from the rest of the junk sent by the system
                         // let's check it against the database. The error server will need to return XML results
                         string errorResult = await ParseErrorsAsync(errorCode, cancellationToken)
-                            .ConfigureAwait(true); // Explicitly return to UI thread context. 
+                            .ConfigureAwait(true); // Explicitly return to this thread context, just to be safe might not be needed.
 
                         if (!txtUARTOutput.Text.Contains(errorResult))
                         {
