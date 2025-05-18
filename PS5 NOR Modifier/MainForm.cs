@@ -455,7 +455,7 @@ public sealed partial class MainForm : Form
             (
                 GetErrorCodesAsync(errorsCTSource.Token),
                 (Exception ex) => toolStripStatusLabel.Text = "An error occurred while reading error codes from UART. Please try again..."
-            );
+            ).ConfigureAwait(false);
     }
 
     private async Task GetErrorCodesAsync(CancellationToken cancellationToken)
