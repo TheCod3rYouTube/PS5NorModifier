@@ -458,6 +458,7 @@ public sealed partial class MainForm : Form
             ).ConfigureAwait(false);
     }
 
+    // You should generally avoid async voids when possible, let the task manager worry about the thread contexts.
     private async Task GetErrorCodesAsync(CancellationToken cancellationToken)
     {
         // Let's read the error codes from UART
