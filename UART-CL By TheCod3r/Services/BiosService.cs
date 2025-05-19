@@ -1,8 +1,11 @@
-﻿using System.IO.Hashing;
+﻿using System.ComponentModel;
+using System.IO.Hashing;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using UART_CL_By_TheCod3r.Data;
 using UART_CL_By_TheCod3r.Enumerators;
+using UART_CL_By_TheCod3r.Exceptions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace UART_CL_By_TheCod3r.Services;
 
@@ -27,8 +30,11 @@ public class BiosService(ILogger<BiosService> logger)
 	/// <summary>
 	/// Reads the BIOS file and extracts properties such as edition, region, console serial number, motherboard serial number, model, WiFi MAC address, and LAN MAC address.
 	/// </summary>
-	/// <param name="filePath">The path to the BIOS bin file</param>
+	/// <param name="filePath">The path to the BIOS dump file</param>
 	/// <returns>A BiosInfo containing the BIOS properties</returns>
+	/// <exception cref="FileNotFoundException">Thrown if the dump file cannot be found</exception>
+	/// <exception cref="BiosReadException">Thrown if a property cannot be read from the dump file</exception>
+	/// <exception cref="InvalidDataException">Thrown if the dump header checksum validation fails</exception>
 	public BiosInfo ReadBios(string filePath)
 	{
 		if (!File.Exists(filePath))
@@ -46,11 +52,11 @@ public class BiosService(ILogger<BiosService> logger)
 		{
 			logger.LogError(ex, "BIOS file could not be opened.");
 
-			throw;
+			throw new BiosReadException("BIOS file could not be opened.", ex);
 		}
 
 		// Read the header and validate that this is a BIOS file\
-		uint headerChecksum = 0x0;
+		uint headerChecksum;
 		try
 		{
 			reader.BaseStream.Position = 0;
@@ -66,7 +72,7 @@ public class BiosService(ILogger<BiosService> logger)
 			reader.Close();
 			reader.Dispose();
 
-			throw;
+			throw new BiosReadException("BIOS header extraction failed.", ex);
 		}
 
 		if (_knownHeaderChecksum != headerChecksum)
@@ -101,7 +107,7 @@ public class BiosService(ILogger<BiosService> logger)
 			reader.Close();
 			reader.Dispose();
 
-			throw;
+			throw new BiosReadException("BIOS edition extraction failed.", ex);
 		}
 
 		Edition edition;
@@ -122,7 +128,7 @@ public class BiosService(ILogger<BiosService> logger)
 			reader.Close();
 			reader.Dispose();
 
-			throw;
+			throw new BiosReadException("BIOS edition parsing failed.", ex);
 		}
 
 		logger.LogInformation("Detected edition: {Edition}", edition);
@@ -143,7 +149,7 @@ public class BiosService(ILogger<BiosService> logger)
 			reader.Close();
 			reader.Dispose();
 
-			throw;
+			throw new BiosReadException("BIOS model extraction failed.", ex);
 		}
 
 		var region = model[^3..] switch
@@ -199,7 +205,7 @@ public class BiosService(ILogger<BiosService> logger)
 			reader.Close();
 			reader.Dispose();
 
-			throw;
+			throw new BiosReadException("BIOS console serial number extraction failed.", ex);
 		}
 
 		string motherboardSerial;
@@ -218,7 +224,7 @@ public class BiosService(ILogger<BiosService> logger)
 			reader.Close();
 			reader.Dispose();
 
-			throw;
+			throw new BiosReadException("BIOS motherboard serial number extraction failed.", ex);
 		}
 
 		string wifiMac;
@@ -237,7 +243,7 @@ public class BiosService(ILogger<BiosService> logger)
 			reader.Close();
 			reader.Dispose();
 
-			throw;
+			throw new BiosReadException("BIOS WiFi MAC address extraction failed.", ex);
 		}
 
 		string lanMac;
@@ -256,7 +262,7 @@ public class BiosService(ILogger<BiosService> logger)
 			reader.Close();
 			reader.Dispose();
 
-			throw;
+			throw new BiosReadException("BIOS LAN MAC address extraction failed.", ex);
 		}
 
 		var errors = new List<BiosError>();
@@ -286,7 +292,7 @@ public class BiosService(ILogger<BiosService> logger)
 			reader.Close();
 			reader.Dispose();
 
-			throw;
+			throw new BiosReadException("BIOS log extraction failed.", ex);
 		}
 
 		reader.Close();
@@ -315,17 +321,7 @@ public class BiosService(ILogger<BiosService> logger)
 	{
 		var editionBytes = edition.GetBytes();
 
-		BinaryWriter writer;
-		try
-		{
-			writer = new BinaryWriter(new FileStream(bios.Path, FileMode.Open));
-		}
-		catch (Exception ex)
-		{
-			logger.LogError(ex, "BIOS file could not be opened.");
-			throw;
-		}
-
+		using var writer = OpenBios(bios.Path);
 		try
 		{
 			writer.BaseStream.Position = _editionOffsetOne;
@@ -338,7 +334,7 @@ public class BiosService(ILogger<BiosService> logger)
 		catch (Exception ex)
 		{
 			logger.LogError(ex, "Failed to write console edition at the provided offsets.");
-			throw;
+			throw new BiosWriteException("Failed to write console edition at the provided offsets.", ex);
 		}
 		finally
 		{
@@ -360,23 +356,14 @@ public class BiosService(ILogger<BiosService> logger)
 
 		if (bytes.Length > 17)
 		{
-			logger.LogError("Serial number is too long. Maximum length is 17 bytes.");
-			throw new ArgumentException("Serial number is too long. Maximum length is 17 bytes.", nameof(serial));
+			logger.LogError("Console serial number is too long. Maximum length is 17 bytes.");
+			throw new ArgumentException("Console serial number is too long. Maximum length is 17 bytes.", nameof(serial));
 		}
 
 		Array.Copy(bytes, paddedBytes, bytes.Length);
+		logger.LogInformation("Attempting to write the console serial number: {Serial}-{Bytes}", serial, paddedBytes);
 
-		BinaryWriter writer;
-		try
-		{
-			writer = new BinaryWriter(new FileStream(bios.Path, FileMode.Open));
-		}
-		catch (Exception ex)
-		{
-			logger.LogError(ex, "BIOS file could not be opened.");
-			throw;
-		}
-
+		using var writer = OpenBios(bios.Path);
 		try
 		{
 			writer.BaseStream.Position = _serialOffset;
@@ -387,7 +374,7 @@ public class BiosService(ILogger<BiosService> logger)
 		catch (Exception ex)
 		{
 			logger.LogError(ex, "Failed to write console serial number at the provided offset.");
-			throw;
+			throw new BiosWriteException("Failed to write console serial number at the provided offset.", ex);
 		}
 		finally
 		{
@@ -415,18 +402,9 @@ public class BiosService(ILogger<BiosService> logger)
 		}
 
 		Array.Copy(bytes, paddedBytes, bytes.Length);
+		logger.LogInformation("Attempting to write the motherboard serial number: {Serial}-{Bytes}", serial, paddedBytes);
 
-		BinaryWriter writer;
-		try
-		{
-			writer = new BinaryWriter(new FileStream(bios.Path, FileMode.Open));
-		}
-		catch (Exception ex)
-		{
-			logger.LogError(ex, "BIOS file could not be opened.");
-			throw;
-		}
-
+		using var writer = OpenBios(bios.Path);
 		try
 		{
 			writer.BaseStream.Position = _moboSerialOffset;
@@ -437,7 +415,7 @@ public class BiosService(ILogger<BiosService> logger)
 		catch (Exception ex)
 		{
 			logger.LogError(ex, "Failed to write motherboard serial number at the provided offset.");
-			throw;
+			throw new BiosWriteException("Failed to write motherboard serial number at the provided offset.", ex);
 		}
 		finally
 		{
@@ -464,18 +442,9 @@ public class BiosService(ILogger<BiosService> logger)
 		}
 
 		Array.Copy(bytes, paddedBytes, bytes.Length);
+		logger.LogInformation("Attempting to write the model number: {Model}-{Bytes}", model, paddedBytes);
 
-		BinaryWriter writer;
-		try
-		{
-			writer = new BinaryWriter(new FileStream(bios.Path, FileMode.Open));
-		}
-		catch (Exception ex)
-		{
-			logger.LogError(ex, "BIOS file could not be opened.");
-			throw;
-		}
-
+		using var writer = OpenBios(bios.Path);
 		try
 		{
 			writer.BaseStream.Position = _modelOffset;
@@ -486,7 +455,7 @@ public class BiosService(ILogger<BiosService> logger)
 		catch (Exception ex)
 		{
 			logger.LogError(ex, "Failed to write model number at the provided offset.");
-			throw;
+			throw new BiosWriteException("Failed to write model number at the provided offset.", ex);
 		}
 		finally
 		{
@@ -494,5 +463,27 @@ public class BiosService(ILogger<BiosService> logger)
 			writer.Close();
 			writer.Dispose();
 		}
+	}
+
+	/// <summary>
+	/// Opens the BIOS file for reading and writing.
+	/// </summary>
+	/// <param name="filePath">The path to the dump file</param>
+	/// <returns>A BinaryWriter for the dump file</returns>
+	/// <exception cref="BiosReadException">Thrown when the dump file cannot be read</exception>
+	private BinaryWriter OpenBios(string filePath)
+	{
+		BinaryWriter writer;
+		try
+		{
+			writer = new BinaryWriter(new FileStream(filePath, FileMode.Open));
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "BIOS file could not be opened.");
+			throw new BiosReadException("BIOS file could not be opened.", ex);
+		}
+
+		return writer;
 	}
 }
