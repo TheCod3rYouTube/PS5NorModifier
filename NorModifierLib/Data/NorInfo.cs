@@ -3,9 +3,9 @@
 namespace NorModifierLib.Data;
 
 /// <summary>
-/// Represents the properties extracted from a BIOS file.
+/// Represents the properties extracted from a NOR file.
 /// </summary>
-public class BiosInfo
+public class NorInfo
 {
 	public string Path { get; set; } = string.Empty;
 	public Edition Edition { get; set; }
@@ -16,5 +16,5 @@ public class BiosInfo
 	public string Model { get; set; } = string.Empty;
 	public string WiFiMac { get; set; } = string.Empty;
 	public string LanMac { get; set; } = string.Empty;
-	public IEnumerable<BiosError> Errors { get; set; } = [];
+	public IEnumerable<NorError> Errors { get; set; } = [];
 }

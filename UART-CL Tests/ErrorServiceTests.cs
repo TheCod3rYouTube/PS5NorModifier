@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using RichardSzalay.MockHttp;
-using UART_CL_By_TheCod3r.Services;
+using NorModifierLib.Services;
 using NSubstitute;
 
 namespace UART_CL_Tests;
