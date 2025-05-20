@@ -365,7 +365,7 @@ namespace PS5_NOR_Modifier
 
             if (fileDialogBox.ShowDialog() == DialogResult.OK)
             {
-                if(fileDialogBox.CheckFileExists == false)
+                if (!File.Exists(fileDialogBox.FileName))
                 {
                     throwError("The file you selected could not be found. Please check the file exists and is a valid BIN file.");
                 }
