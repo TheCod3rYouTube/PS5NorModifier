@@ -1,3 +1,0 @@
-C:\Users\TheCod3r\source\repos\UART-CL By TheCod3r\UART-CL By TheCod3r\bin\Release\net6.0\publish\linux-x64\UART-CL By TheCod3r.pdb
-C:\Users\TheCod3r\source\repos\UART-CL By TheCod3r\UART-CL By TheCod3r\bin\Release\net6.0\publish\linux-x64\libSystem.IO.Ports.Native.so
-C:\Users\TheCod3r\source\repos\UART-CL By TheCod3r\UART-CL By TheCod3r\bin\Release\net6.0\publish\linux-x64\UART-CL By TheCod3r
