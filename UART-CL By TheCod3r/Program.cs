@@ -19,7 +19,7 @@ services.AddLogging(builder =>
 services.AddHttpClient();
 
 services.AddSingleton<ErrorCodeService>();
-services.AddSingleton<BiosService>();
+services.AddSingleton<NorService>();
 services.AddSingleton<UartService>();
 
 var registrar = new TypeRegistrar(services);
@@ -31,10 +31,10 @@ app.Configure(config =>
 {
 	config.Settings.ApplicationName = "UART-CL";
 
-	config.AddCommand<BiosCommands>("bios")
-		.WithDescription("View and modify BIOS dumps. Will read and display BIOS properties when no options are specified.")
-		.WithExample("bios", "./bios.bin")
-		.WithExample("bios", "./bios.bin", "--serial AJ11111111");
+	config.AddCommand<NorCommands>("nor")
+		.WithDescription("View and modify NOR dumps. Will read and display NOR properties when no options are specified.")
+		.WithExample("nor", "./nor.bin")
+		.WithExample("nor", "./nor.bin", "--serial AJ11111111");
 	config.AddCommand<UartCommands>("uart")
 		.WithDescription("Read and clear errors from the console UART. Will read and display errors when no options are specified.")
 		.WithExample("uart", "COM3")
