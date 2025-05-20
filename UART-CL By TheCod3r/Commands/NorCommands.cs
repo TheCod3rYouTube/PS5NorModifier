@@ -13,11 +13,11 @@ public class NorCommands(ILogger<NorCommands> logger, NorService norService) : C
 	public class Settings : CommandSettings
 	{
 		[CommandArgument(0, "<FILENAME>")]
-		[Description("Path to the BIOS file")]
+		[Description("Path to the NOR dump file")]
 		public string Path { get; set; } = string.Empty;
 
 		[CommandOption("-e|--edition <EDITION>")]
-		[Description("Change the edition of the BIOS (Disc, Digital, or Slim)")]
+		[Description("Change the edition of the NOR dump (Disc, Digital, or Slim)")]
 		public Edition? Edition { get; set; }
 
 		[CommandOption("-s|--serial <SERIAL>")]
@@ -36,62 +36,62 @@ public class NorCommands(ILogger<NorCommands> logger, NorService norService) : C
 	public override int Execute(CommandContext context, Settings settings)
 	{
 		AnsiConsole.WriteLine();
-		logger.LogInformation("Executing BIOS command with settings: {Settings}", settings);
+		logger.LogInformation("Executing NOR dump command with settings: {Settings}", settings);
 
-		NorInfo biosInfo;
+		NorInfo norInfo;
 		try
 		{
-			biosInfo = norService.ReadNor(settings.Path);
+			norInfo = norService.ReadNor(settings.Path);
 		}
 		catch
 		{
-			logger.LogError("Failed to read BIOS file.");
-			AnsiConsole.MarkupLine("[red]Failed to read BIOS file. See log for details.[/]");
+			logger.LogError("Failed to read NOR dump file.");
+			AnsiConsole.MarkupLine("[red]Failed to read NOR dump file. See log for details.[/]");
 			return -1;
 		}
 
 		var table = new Table()
 		{
-			Title = new TableTitle("BIOS Properties"),
+			Title = new TableTitle("NOR dump Properties"),
 		};
 		var redStyle = new Style(Color.Red);
 		var blueStyle = new Style(Color.Blue);
 		var greenStyle = new Style(Color.Green);
 
-		// No properties are going to be changed, so just display the current BIOS properties
+		// No properties are going to be changed, so just display the current NOR dump properties
 		if (settings.Edition is null &&
 			settings.ConsoleSerial is null &&
 			settings.MotherboardSerial is null &&
 			settings.Model is null)
 		{
-			logger.LogInformation("Displaying BIOS properties without modification.");
+			logger.LogInformation("Displaying NOR dump properties without modification.");
 
 			table.AddColumn(new TableColumn("Property").Centered());
 			table.AddColumn(new TableColumn("Value").Centered());
 
 			table.AddRow(new Text[] { 
 				new("PS5 Version", redStyle), 
-				new(biosInfo.Edition.ToString(), blueStyle), 
+				new(norInfo.Edition.ToString(), blueStyle), 
 			});
 			table.AddRow(new Text[] { 
 				new("Model", redStyle), 
-				new(biosInfo.Model, blueStyle), 
+				new(norInfo.Model, blueStyle), 
 			});
 			table.AddRow(new Text[] { 
 				new("Serial", redStyle), 
-				new(biosInfo.ConsoleSerialNumber, blueStyle), 
+				new(norInfo.ConsoleSerialNumber, blueStyle), 
 			});
 			table.AddRow(new Text[] { 
 				new("Motherboard Serial", redStyle), 
-				new(biosInfo.MotherboardSerialNumber, blueStyle), 
+				new(norInfo.MotherboardSerialNumber, blueStyle), 
 			});
 			table.AddRow(new Text[] { 
 				new("WiFi MAC Addr", redStyle), 
-				new(biosInfo.WiFiMac, blueStyle), 
+				new(norInfo.WiFiMac, blueStyle), 
 			});
 			table.AddRow(new Text[] { 
 				new("LAN MAC Addr", redStyle), 
-				new(biosInfo.LanMac, blueStyle), 
+				new(norInfo.LanMac, blueStyle), 
 			});
 
 			AnsiConsole.Write(table);
@@ -112,7 +112,7 @@ public class NorCommands(ILogger<NorCommands> logger, NorService norService) : C
 			logTable.AddColumn(new TableColumn("Env Temp").Centered());
 			logTable.AddColumn(new TableColumn("SoC Temp").Centered());
 
-			var errors = biosInfo.Errors.Take(5);
+			var errors = norInfo.Errors.Take(5);
 
 			if (!errors.Any())
 			{
@@ -158,7 +158,7 @@ public class NorCommands(ILogger<NorCommands> logger, NorService norService) : C
 
 			try
 			{
-				norService.SetEdition(biosInfo, edition);
+				norService.SetEdition(norInfo, edition);
 			}
 			catch
 			{
@@ -176,7 +176,7 @@ public class NorCommands(ILogger<NorCommands> logger, NorService norService) : C
 
 			try
 			{
-				norService.SetConsoleSerial(biosInfo, serial);
+				norService.SetConsoleSerial(norInfo, serial);
 			}
 			catch
 			{
@@ -194,7 +194,7 @@ public class NorCommands(ILogger<NorCommands> logger, NorService norService) : C
 
 			try
 			{
-				norService.SetMotherboardSerial(biosInfo, motherboardSerial);
+				norService.SetMotherboardSerial(norInfo, motherboardSerial);
 			}
 			catch
 			{
@@ -212,7 +212,7 @@ public class NorCommands(ILogger<NorCommands> logger, NorService norService) : C
 
 			try
 			{
-				norService.SetModel(biosInfo, model);
+				norService.SetModel(norInfo, model);
 			}
 			catch
 			{
@@ -224,15 +224,15 @@ public class NorCommands(ILogger<NorCommands> logger, NorService norService) : C
 			AnsiConsole.MarkupLine("[green]Successfully set model.[/]");
 		}
 
-		NorInfo modifiedBiosInfo;
+		NorInfo modifiedNorInfo;
 		try
 		{
-			modifiedBiosInfo = norService.ReadNor(settings.Path);
+			modifiedNorInfo = norService.ReadNor(settings.Path);
 		}
 		catch
 		{
-			logger.LogError("Failed to read modified BIOS file.");
-			AnsiConsole.MarkupLine("[red]Failed to read modified BIOS file. See log for details.[/]");
+			logger.LogError("Failed to read modified NOR dump file.");
+			AnsiConsole.MarkupLine("[red]Failed to read modified NOR dump file. See log for details.[/]");
 			return -1;
 		}
 
@@ -242,33 +242,33 @@ public class NorCommands(ILogger<NorCommands> logger, NorService norService) : C
 
 		table.AddRow(new Text[] {
 				new("PS5 Version", redStyle), 
-				new(biosInfo.Edition.ToString(), blueStyle), 
-				new(modifiedBiosInfo.Edition.ToString(), greenStyle), 
+				new(norInfo.Edition.ToString(), blueStyle), 
+				new(modifiedNorInfo.Edition.ToString(), greenStyle), 
 			});
 		table.AddRow(new Text[] {
 				new("Model", redStyle), 
-				new(biosInfo.Model, blueStyle),
-				new(modifiedBiosInfo.Model, greenStyle), 
+				new(norInfo.Model, blueStyle),
+				new(modifiedNorInfo.Model, greenStyle), 
 			});
 		table.AddRow(new Text[] {
 				new("Serial", redStyle),
-				new(biosInfo.ConsoleSerialNumber, blueStyle), 
-				new(modifiedBiosInfo.ConsoleSerialNumber, greenStyle), 
+				new(norInfo.ConsoleSerialNumber, blueStyle), 
+				new(modifiedNorInfo.ConsoleSerialNumber, greenStyle), 
 			});
 		table.AddRow(new Text[] {
 				new("Motherboard Serial", redStyle), 
-				new(biosInfo.MotherboardSerialNumber, blueStyle),
-				new(modifiedBiosInfo.MotherboardSerialNumber, greenStyle), 
+				new(norInfo.MotherboardSerialNumber, blueStyle),
+				new(modifiedNorInfo.MotherboardSerialNumber, greenStyle), 
 			});
 		table.AddRow(new Text[] {
 				new("WiFi MAC Addr", redStyle), 
-				new(biosInfo.WiFiMac, blueStyle),
-				new(modifiedBiosInfo.WiFiMac, greenStyle), 
+				new(norInfo.WiFiMac, blueStyle),
+				new(modifiedNorInfo.WiFiMac, greenStyle), 
 			});
 		table.AddRow(new Text[] {
 				new("LAN MAC Addr", redStyle), 
-				new(biosInfo.LanMac, blueStyle),
-				new(modifiedBiosInfo.LanMac, greenStyle), 
+				new(norInfo.LanMac, blueStyle),
+				new(modifiedNorInfo.LanMac, greenStyle), 
 			});
 
 		AnsiConsole.Write(table);
