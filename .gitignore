@@ -3,11 +3,5 @@
 ################################################################################
 
 /.vs
-/UART-CL By TheCod3r/bin
-/UART-CL By TheCod3r/obj
-/UART-CL Tests/bin/Debug/net9.0
-/UART-CL Tests/obj
-/PS5 NOR Modifier/bin
-/PS5 NOR Modifier/obj
-/NorModifierLib/bin/Debug/net9.0
-/NorModifierLib/obj
+bin
+obj
