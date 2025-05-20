@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UART-CL Tests", "UART-CL Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NorModifierLib", "NorModifierLib\NorModifierLib.csproj", "{5E047A92-075B-4C7F-87CA-B708320F80A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NorModifierWeb", "NorModifierWeb\NorModifierWeb.csproj", "{677BEA2B-3A03-CA22-A4A6-DB26F4EB8238}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,14 @@ Global
 		{5E047A92-075B-4C7F-87CA-B708320F80A9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5E047A92-075B-4C7F-87CA-B708320F80A9}.Release|x86.ActiveCfg = Release|Any CPU
 		{5E047A92-075B-4C7F-87CA-B708320F80A9}.Release|x86.Build.0 = Release|Any CPU
+		{677BEA2B-3A03-CA22-A4A6-DB26F4EB8238}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{677BEA2B-3A03-CA22-A4A6-DB26F4EB8238}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{677BEA2B-3A03-CA22-A4A6-DB26F4EB8238}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{677BEA2B-3A03-CA22-A4A6-DB26F4EB8238}.Debug|x86.Build.0 = Debug|Any CPU
+		{677BEA2B-3A03-CA22-A4A6-DB26F4EB8238}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{677BEA2B-3A03-CA22-A4A6-DB26F4EB8238}.Release|Any CPU.Build.0 = Release|Any CPU
+		{677BEA2B-3A03-CA22-A4A6-DB26F4EB8238}.Release|x86.ActiveCfg = Release|Any CPU
+		{677BEA2B-3A03-CA22-A4A6-DB26F4EB8238}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

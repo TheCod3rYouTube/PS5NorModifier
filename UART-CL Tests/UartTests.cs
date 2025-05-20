@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Text;
-using UART_CL_By_TheCod3r;
-using UART_CL_By_TheCod3r.Data;
+using NorModifierLib;
+using NorModifierLib.Data;
 
 namespace UART_CL_Tests;
 
@@ -39,7 +39,7 @@ public class UartTests
 		var checksum = "27";
 
 		// Act
-		var calculatedChecksum = Uart.CalculateChecksum(str);
+		var calculatedChecksum = Helpers.CalculateChecksum(str);
 
 		// Assert
 		Assert.Equal(checksum, calculatedChecksum);
@@ -53,7 +53,7 @@ public class UartTests
 
 		// Act
 		var oldChecksum = OldCalculateChecksum(str);
-		var newChecksum = Uart.CreateTransmittableCommand(str);
+		var newChecksum = Helpers.CreateTransmittableCommand(str);
 
 		// Assert
 		Assert.Equal(oldChecksum, newChecksum);
@@ -68,7 +68,7 @@ public class UartTests
 
 		// Act
 		var oldString = OldHexStringToString(str);
-		var newString = Uart.HexStringToString(str);
+		var newString = Helpers.HexStringToString(str);
 
 		// Assert
 		Assert.Equal(oldString, newString);
@@ -103,7 +103,7 @@ public class UartTests
 
 		// Act
 		var oldPattern = OldPatternAt(array, pattern);
-		var newPattern = Uart.PatternAt(array, pattern);
+		var newPattern = Helpers.PatternAt(array, pattern);
 
 		// Assert
 		Assert.Equal(expected: 2, oldPattern.Count());

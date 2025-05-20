@@ -8,7 +8,7 @@ using NorModifierLib.Data;
 
 namespace UART_CL_By_TheCod3r.Commands;
 
-public class BiosCommands(ILogger<BiosCommands> logger, BiosService biosService) : Command<BiosCommands.Settings>
+public class NorCommands(ILogger<NorCommands> logger, NorService norService) : Command<NorCommands.Settings>
 {
 	public class Settings : CommandSettings
 	{
@@ -38,10 +38,10 @@ public class BiosCommands(ILogger<BiosCommands> logger, BiosService biosService)
 		AnsiConsole.WriteLine();
 		logger.LogInformation("Executing BIOS command with settings: {Settings}", settings);
 
-		BiosInfo biosInfo;
+		NorInfo biosInfo;
 		try
 		{
-			biosInfo = biosService.ReadBios(settings.Path);
+			biosInfo = norService.ReadNor(settings.Path);
 		}
 		catch
 		{
@@ -158,7 +158,7 @@ public class BiosCommands(ILogger<BiosCommands> logger, BiosService biosService)
 
 			try
 			{
-				biosService.SetEdition(biosInfo, edition);
+				norService.SetEdition(biosInfo, edition);
 			}
 			catch
 			{
@@ -176,7 +176,7 @@ public class BiosCommands(ILogger<BiosCommands> logger, BiosService biosService)
 
 			try
 			{
-				biosService.SetConsoleSerial(biosInfo, serial);
+				norService.SetConsoleSerial(biosInfo, serial);
 			}
 			catch
 			{
@@ -194,7 +194,7 @@ public class BiosCommands(ILogger<BiosCommands> logger, BiosService biosService)
 
 			try
 			{
-				biosService.SetMotherboardSerial(biosInfo, motherboardSerial);
+				norService.SetMotherboardSerial(biosInfo, motherboardSerial);
 			}
 			catch
 			{
@@ -212,7 +212,7 @@ public class BiosCommands(ILogger<BiosCommands> logger, BiosService biosService)
 
 			try
 			{
-				biosService.SetModel(biosInfo, model);
+				norService.SetModel(biosInfo, model);
 			}
 			catch
 			{
@@ -224,10 +224,10 @@ public class BiosCommands(ILogger<BiosCommands> logger, BiosService biosService)
 			AnsiConsole.MarkupLine("[green]Successfully set model.[/]");
 		}
 
-		BiosInfo modifiedBiosInfo;
+		NorInfo modifiedBiosInfo;
 		try
 		{
-			modifiedBiosInfo = biosService.ReadBios(settings.Path);
+			modifiedBiosInfo = norService.ReadNor(settings.Path);
 		}
 		catch
 		{

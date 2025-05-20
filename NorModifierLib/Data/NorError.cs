@@ -1,10 +1,10 @@
 ﻿namespace NorModifierLib.Data;
 
 /// <summary>
-/// Represents a BIOS error.
+/// Represents a NOR error.
 /// </summary>
 /// <param name="errorBytes">The raw bytes of the error as read from the device.</param>
-public class BiosError(byte[] errorBytes)
+public class NorError(byte[] errorBytes)
 {
 	/// <summary>
 	/// The error code description.
@@ -87,7 +87,7 @@ public class BiosError(byte[] errorBytes)
 	// Unused - padding
 	// private byte[] _padding => errorBytes[24..32];
 
-	public static implicit operator string(BiosError error) => error.ToString();
+	public static implicit operator string(NorError error) => error.ToString();
 
 	public override string ToString()
 	{
@@ -273,8 +273,8 @@ public class BiosError(byte[] errorBytes)
 	private static readonly Dictionary<uint, string> _powerStateDescriptionsA = new() {
 		{ 0x00, "SysReady" }, 
 		{ 0x01, "MaOnStby" }, 
-		{ 0x20, "BIOS" }, 
-		{ 0x30, "BIOS" }, 
+		{ 0x20, "NOR" }, 
+		{ 0x30, "NOR" }, 
 		{ 0x40, "EAP_Rdy" }, 
 		{ 0xFF, "HstOsOFF" }, 
 	};
