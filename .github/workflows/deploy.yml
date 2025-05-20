@@ -3,7 +3,7 @@ name: Deploy Blazor App to GitHub Pages
 on:
   push:
     branches:
-      - 'master'
+      - 'main'
   workflow_dispatch:
 
 permissions:
