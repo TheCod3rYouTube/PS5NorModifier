@@ -13,7 +13,7 @@ public class CustomHelpProvider(ICommandAppSettings settings) : HelpProvider(set
 {
 	public override IEnumerable<IRenderable> GetFooter(ICommandModel model, ICommandInfo? command)
 	{
-		var style = settings?.HelpProviderStyles?.Usage?.Header ?? null;
+		var style = new Style(Color.Yellow, Color.Default, Decoration.None);
 
 		return [
 			Text.NewLine,

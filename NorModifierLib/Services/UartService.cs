@@ -1,8 +1,8 @@
 ﻿using System.IO.Ports;
 using Microsoft.Extensions.Logging;
-using UART_CL_By_TheCod3r.Data;
+using NorModifierLib.Data;
 
-namespace UART_CL_By_TheCod3r.Services;
+namespace NorModifierLib.Services;
 
 public class UartService(ILogger<UartService> logger)
 {
@@ -33,7 +33,7 @@ public class UartService(ILogger<UartService> logger)
 		}
 
 		var command = "errlog clear";
-		var transmitCommand = Uart.CreateTransmittableCommand(command);
+		var transmitCommand = Helpers.CreateTransmittableCommand(command);
 
 		port.WriteLine(transmitCommand);
 
@@ -75,7 +75,7 @@ public class UartService(ILogger<UartService> logger)
 		for (var i = 0; i <= 255; i++)
 		{
 			var command = $"errlog {i}";
-			var transmitCommand = Uart.CreateTransmittableCommand(command);
+			var transmitCommand = Helpers.CreateTransmittableCommand(command);
 
 			port.WriteLine(transmitCommand);
 			var line = port.ReadLine();

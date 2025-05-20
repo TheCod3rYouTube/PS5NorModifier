@@ -1,8 +1,7 @@
 {
   "profiles": {
     "UART-CL By TheCod3r": {
-      "commandName": "Project",
-      "commandLineArgs": "bios z:\\bios.bin"
+      "commandName": "Project"
     }
   }
 }

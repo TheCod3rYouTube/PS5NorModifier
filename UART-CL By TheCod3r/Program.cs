@@ -4,7 +4,7 @@ using Spectre.Console.Cli;
 using UART_CL_By_TheCod3r.Commands;
 using UART_CL_By_TheCod3r.Core;
 using UART_CL_By_TheCod3r.Help;
-using UART_CL_By_TheCod3r.Services;
+using NorModifierLib.Services;
 
 var logFile = Path.Combine(AppContext.BaseDirectory, "log.txt");
 

@@ -1,4 +1,4 @@
-﻿namespace UART_CL_By_TheCod3r.Enumerators;
+﻿namespace NorModifierLib.Enumerators;
 
 /// <summary>
 /// Extenion methods for the <see cref="Edition"/> enumeration.

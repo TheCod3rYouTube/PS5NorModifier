@@ -1,7 +1,7 @@
 ﻿using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 
-namespace UART_CL_By_TheCod3r.Services;
+namespace NorModifierLib.Services;
 
 public class ErrorCodeService(ILogger<ErrorCodeService> logger, HttpClient client)
 {

@@ -1,4 +1,4 @@
-﻿namespace UART_CL_By_TheCod3r.Data
+﻿namespace NorModifierLib.Data
 {
 	/// <summary>
 	/// Represents the properties of an error code.
@@ -21,6 +21,6 @@
 		/// <summary>
 		/// Validates the checksum of the error code as retrieved from the device against the calculated checksum.
 		/// </summary>
-		public bool ChecksumValid => Checksum == Uart.CalculateChecksum(errorCode[..^3]);
+		public bool ChecksumValid => Checksum == Helpers.CalculateChecksum(errorCode[..^3]);
 	}
 }

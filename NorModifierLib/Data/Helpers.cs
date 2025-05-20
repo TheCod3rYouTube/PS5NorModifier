@@ -1,8 +1,8 @@
 ﻿using System.Text;
 
-namespace UART_CL_By_TheCod3r;
+namespace NorModifierLib.Data;
 
-public static class Uart
+public static class Helpers
 {
 	/// <summary>
 	/// Creates a transmittable command with the checksum

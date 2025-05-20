@@ -1,13 +1,11 @@
-﻿using System.ComponentModel;
-using System.IO.Hashing;
+﻿using System.IO.Hashing;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using UART_CL_By_TheCod3r.Data;
-using UART_CL_By_TheCod3r.Enumerators;
-using UART_CL_By_TheCod3r.Exceptions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using NorModifierLib.Data;
+using NorModifierLib.Enumerators;
+using NorModifierLib.Exceptions;
 
-namespace UART_CL_By_TheCod3r.Services;
+namespace NorModifierLib.Services;
 
 /// <summary>
 /// Service for reading and modifying BIOS files.

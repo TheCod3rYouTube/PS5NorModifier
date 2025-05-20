@@ -1,10 +1,10 @@
 ﻿using Spectre.Console;
 using Spectre.Console.Cli;
-using UART_CL_By_TheCod3r.Enumerators;
+using NorModifierLib.Enumerators;
 using System.ComponentModel;
 using Microsoft.Extensions.Logging;
-using UART_CL_By_TheCod3r.Services;
-using UART_CL_By_TheCod3r.Data;
+using NorModifierLib.Services;
+using NorModifierLib.Data;
 
 namespace UART_CL_By_TheCod3r.Commands;
 

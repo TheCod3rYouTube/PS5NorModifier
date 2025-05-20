@@ -1,4 +1,4 @@
-﻿namespace UART_CL_By_TheCod3r.Data;
+﻿namespace NorModifierLib.Data;
 
 /// <summary>
 /// Represents a BIOS error.

@@ -1,4 +1,4 @@
-﻿namespace UART_CL_By_TheCod3r.Enumerators;
+﻿namespace NorModifierLib.Enumerators;
 
 /// <summary>
 /// Enumeration for the different editions of the device.

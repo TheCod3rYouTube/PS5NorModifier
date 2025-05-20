@@ -1,6 +1,6 @@
-﻿using UART_CL_By_TheCod3r.Enumerators;
+﻿using NorModifierLib.Enumerators;
 
-namespace UART_CL_By_TheCod3r.Data;
+namespace NorModifierLib.Data;
 
 /// <summary>
 /// Represents the properties extracted from a BIOS file.
