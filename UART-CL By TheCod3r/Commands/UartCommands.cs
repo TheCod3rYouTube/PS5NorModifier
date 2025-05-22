@@ -4,6 +4,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using NorModifierLib.Data;
 using NorModifierLib.Services;
+using UART_CL_By_TheCod3r.Data;
 
 namespace UART_CL_By_TheCod3r.Commands;
 
@@ -24,12 +25,25 @@ public class UartCommands(ILogger<UartCommands> logger, UartService uartService,
 	{
 		logger.LogInformation("Executing UART command with settings: {Settings}", settings);
 
+		SerialPort serialPort;
+		try
+		{
+			serialPort = new SerialPort(settings.Path);
+			serialPort.Open();
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "Failed to open serial port: {Path}", settings.Path);
+			AnsiConsole.MarkupLineInterpolated($"[red]Failed to open serial port: {settings.Path}. See log for details.[/]");
+			return -1;
+		}
+
 		// Clear errors flag specified
 		if (settings.Clear is true)
 		{
 			try
 			{
-				uartService.ClearErrors(settings.Path);
+				await uartService.ClearErrorsAsync(serialPort);
 				logger.LogInformation("Cleared errors.");
 				AnsiConsole.MarkupLine("[green]Cleared errors.[/]");
 			}
@@ -42,10 +56,10 @@ public class UartCommands(ILogger<UartCommands> logger, UartService uartService,
 		}
 
 		// No option/flag specified, default behavior is list errors
-		IEnumerable<ErrorCode> errors;
+		IEnumerable<UartError> errors;
 		try
 		{
-			errors = uartService.GetErrors(settings.Path);
+			errors = await uartService.GetErrorsAsync(serialPort);
 		}
 		catch
 		{
@@ -54,27 +68,58 @@ public class UartCommands(ILogger<UartCommands> logger, UartService uartService,
 			return -1;
 		}
 
+		// Display top 5 log entries
+		var logTable = new Table()
+		{
+			Title = new TableTitle("Error Log"),
+		};
+		var redStyle = new Style(Color.Red);
+		var blueStyle = new Style(Color.Blue);
+		var greenStyle = new Style(Color.Green);
+
+		logTable.AddColumn(new TableColumn("Error").Centered());
+		logTable.AddColumn(new TableColumn("RTC").Centered());
+		logTable.AddColumn(new TableColumn("Power State").Centered());
+		logTable.AddColumn(new TableColumn("Boot Cause").Centered());
+		logTable.AddColumn(new TableColumn("Device Power").Centered());
+		logTable.AddColumn(new TableColumn("Sequence Number").Centered());
+		logTable.AddColumn(new TableColumn("Env Temp").Centered());
+		logTable.AddColumn(new TableColumn("SoC Temp").Centered());
+
 		if (!errors.Any())
 		{
-			logger.LogInformation("No errors logged.");
-			AnsiConsole.MarkupLine("[green]No errors logged.[/]");
-			return 0;
+			logTable.AddRow(new Text("No Errors", greenStyle));
 		}
 
 		foreach (var error in errors)
 		{
-			try
-			{
-				string errorDescription = await errorCodeService.ParseError(error.SecondPart);
-				logger.LogInformation("Retrieved error code description: {ErrorCode} - {Description}", error.SecondPart, errorDescription);
-				AnsiConsole.MarkupLineInterpolated($"[green]Found error: {error.SecondPart} - {errorDescription}.");
-			}
-			catch
-			{
-				logger.LogError("Failed to parse error code: {ErrorCode}", error);
-				AnsiConsole.MarkupLineInterpolated($"[red]Failed to parse error code: {error.SecondPart}. See log for details.[/]");
-			}
+			logTable.AddRow([new Text($"{error.RawCode:X8}", blueStyle).Centered(),
+					new Text($"{error.Rtc:X8}", blueStyle).Centered(),
+					new Text($"{error.RawPowerState:X8}", blueStyle).Centered(),
+					new Text($"{error.RawBootCause:X8}", blueStyle).Centered(),
+					new Text($"{error.RawDevicePowerManagement:X4}", blueStyle).Centered(),
+					new Text($"{error.RawSequenceNumber:X4}", blueStyle).Centered(),
+					new Text($"{error.RawEnvironmentTemperature:X4}", blueStyle).Centered(),
+					new Text($"{error.RawChipTemperature:X4}", blueStyle).Centered(),
+				]);
+			logTable.AddRow([
+				new Text(error.Code, greenStyle),
+					new Text(string.Empty),
+					new Text($"{error.PowerStateA}-{error.PowerStateB}", greenStyle),
+					new Text(error.BootCause, greenStyle),
+					new Markup($"[{(error.HdmiPower ? """green""" : """red""")}]HDMI[/] " +
+						$"[{(error.BddPower ? """green""" : """red""")}]BDD[/] " +
+						$"[{(error.HdmiCecPower ? """green""" : """red""")}]HDMI-CEC[/] " +
+						$"[{(error.UsbPower ? """green""" : """red""")}]USB[/] " +
+						$"[{(error.WifiPower ? """green""" : """red""")}]WiFi[/]"),
+					new Text(error.SequenceNumber.Replace(", ", Environment.NewLine), greenStyle),
+					new Text(error.EnvironmentTemperature, greenStyle),
+					new Text(error.ChipTemperature, greenStyle),
+				]);
+			logTable.AddEmptyRow();
 		}
+
+		AnsiConsole.Write(logTable);
 
 		return 0;
 	}

@@ -7,4 +7,17 @@
 
 <MudSnackbarProvider />
 
-@Body
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudText Typo="Typo.h5" Class="ml-3">NOR Modifier Web</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Edge="Edge.End" Href="https://github.com/xxbiohazrdxx/PS5NorModifier" />
+    </MudAppBar>
+    <MudDrawer Open="true" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Memory" IconColor="Color.Inherit">NOR</MudNavLink>
+        <MudNavLink Href="/uart" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ImportExport" IconColor="Color.Inherit">UART</MudNavLink>
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>

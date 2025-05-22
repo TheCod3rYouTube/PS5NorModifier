@@ -1,123 +1,80 @@
-﻿using System.IO.Ports;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NorModifierLib.Data;
+using NorModifierLib.Exceptions;
+using NorModifierLib.Interfaces;
 
 namespace NorModifierLib.Services;
 
-public class UartService(ILogger<UartService> logger)
+public class UartService(ILogger<UartService> logger) : IUartService
 {
 	/// <summary>
 	/// Clears the error codes from the device
 	/// </summary>
-	/// <param name="serialPort">The name or path to the serial port device</param>
-	public void ClearErrors(string serialPort)
+	/// <param name="serialPort">An ISerialPort object that facilitates serial communication with the device</param>
+	public async Task ClearErrorsAsync(ISerialPort serialPort)
 	{
-		logger.LogInformation("Attempting to clear errors on serial port: {Path}", serialPort);
-
-		SerialPort port;
-		try
-		{
-			port = new SerialPort(serialPort)
-			{
-				BaudRate = 115200,
-				RtsEnable = true
-			};
-			port.Open();
-
-			logger.LogInformation("Successfully opened serial port: {Path}", serialPort);
-		}
-		catch (Exception ex)
-		{
-			logger.LogError(ex, "Failed to open serial port: {Path}", serialPort);
-			throw;
-		}
-
 		var command = "errlog clear";
 		var transmitCommand = Helpers.CreateTransmittableCommand(command);
 
-		port.WriteLine(transmitCommand);
+		await serialPort.WriteLineAsync(transmitCommand);
 
 		logger.LogInformation("Transmitted command: {Command}", transmitCommand);
 		logger.LogInformation("Cleared error codes");
-
-		port.Close();
-		port.Dispose();
 	}
 
 	/// <summary>
 	/// Gets the error codes from the device
 	/// </summary>
-	/// <param name="serialPort">The name or path to the serial port device</param>
+	/// <param name="serialPort">An ISerialPort object that facilitates serial communication with the device</param>
 	/// <returns>The errors read from the UART</returns>
-	public IEnumerable<ErrorCode> GetErrors(string serialPort)
+	public async Task<IEnumerable<UartError>> GetErrorsAsync(ISerialPort serialPort)
 	{
-		logger.LogInformation("Attempting to get errors on serial port: {Path}", serialPort);
-
-		SerialPort port;
-		try
-		{
-			port = new SerialPort(serialPort)
-			{
-				BaudRate = 115200,
-				RtsEnable = true
-			};
-			port.Open();
-
-			logger.LogInformation("Successfully opened serial port: {Path}", serialPort);
-		}
-		catch (Exception ex)
-		{
-			logger.LogError(ex, "Failed to open serial port: {Path}", serialPort);
-			throw;
-		}
-
-		var retVal = new List<ErrorCode>();
+		var retVal = new List<UartError>();
 		for (var i = 0; i <= 255; i++)
 		{
 			var command = $"errlog {i}";
 			var transmitCommand = Helpers.CreateTransmittableCommand(command);
 
-			port.WriteLine(transmitCommand);
-			var line = port.ReadLine();
+			await serialPort.WriteLineAsync(transmitCommand);
+			var response = await serialPort.ReadLineAsync();
 
 			logger.LogInformation("Transmitted command: {Command}", transmitCommand);
 
 			// End of the error list
-			if (string.Equals("NG", line[..2], StringComparison.InvariantCultureIgnoreCase))
+			if (string.Equals("NG", response[..2], StringComparison.InvariantCultureIgnoreCase))
 			{
 				logger.LogInformation("Received NG response, end of the error list.");
 				break;
 			}
 
 			// Unknown response
-			if (!string.Equals("OK", line[..2], StringComparison.InvariantCultureIgnoreCase))
+			if (!string.Equals("OK", response[..2], StringComparison.InvariantCultureIgnoreCase))
 			{
-				logger.LogError("Unexpected response received. Expected 'OK', but got: {Response}", line);
-				throw new InvalidDataException(line);
+				logger.LogError("Unexpected response received. Expected response to begin with 'OK', but got: {Response}.", response);
+				throw new UartResponseInvalidException($"Unexpected response received. Expected response to begin with 'OK', but got: {response}.");
 			}
 
 			// Invalid response
-			if (line.Length != 70)
+			if (response.Length != 70)
 			{
-				logger.LogError("Invalid response length. Expected 70 characters, but got: {Length}", line.Length);
-				throw new InvalidDataException(line);
+				logger.LogError("Invalid response length. Expected 70 characters, but got: {Length}. Response: {Response}.", response.Length, response);
+				throw new UartResponseInvalidException($"Invalid response length. Expected 70 characters, but got: {response.Length}. Response {response}");
 			}
 
-			var error = new ErrorCode(line);
+			var responseChecksum = response[^2..];
+			var calculatedChecksum = Helpers.CalculateChecksum(response[..^3]);
 
 			// Response validation checksum did not match
-			if (!error.ChecksumValid)
+			if (!string.Equals(responseChecksum, calculatedChecksum, StringComparison.InvariantCultureIgnoreCase))
 			{
-				logger.LogError("Invalid response checksum: {Response}", line);
-				throw new InvalidDataException(line);
+				logger.LogError("Invalid response checksum: Expected: {Expected}, but got {Calculated}. Response: {Response}.", responseChecksum, calculatedChecksum, response);
+				throw new UartResponseInvalidException($"Invalid response checksum: Expected: {responseChecksum}, but got {calculatedChecksum}. Response: {response}.");
 			}
 
-			logger.LogInformation("Received response: {Response}", line);
-			retVal.Add(error);
+			logger.LogInformation("Received response: {Response}.", response);
+			var errorBytes = Convert.FromHexString(response[12..^3].Replace(" ", string.Empty));
+			retVal.Add(new(errorBytes));
 		}
-
-		port.Close();
-		port.Dispose();
 
 		return retVal;
 	}

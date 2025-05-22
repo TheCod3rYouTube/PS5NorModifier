@@ -1,0 +1,188 @@
+﻿@page "/uart"
+
+@using NorModifierLib.Interfaces
+@using NorModifierLib.Data
+@using NorModifierWeb.Data
+
+<MudOverlay DarkBackground="true" Visible="!_serialSupported">
+    <MudText Typo="Typo.h6" Class="text-center">This browser does not support the WebSerial API.</MudText>
+</MudOverlay>
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-4">
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.ImportExport" OnClick="ReadErrors">
+                Read Errors from UART
+            </MudButton>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Clear" OnClick="ClearErrors">
+                Clear Errors from UART
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+
+    <MudDivider Class="my-4" />
+
+    <MudTable T="UartError" Items="_errors" Dense="true">
+        <NoRecordsContent>
+            <MudText Align="Align.Center">No errors.</MudText>
+        </NoRecordsContent>
+        <HeaderContent>
+            <MudTh>Error</MudTh>
+            <MudTh>RTC</MudTh>
+            <MudTh>Power State</MudTh>
+            <MudTh>Boot Cause</MudTh>
+            <MudTh>Device Power</MudTh>
+            <MudTh>Sequence Number</MudTh>
+            <MudTh>Env Temp</MudTh>
+            <MudTh>SoC Temp</MudTh>
+            <MudTh>Raw Error Data</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Code</MudTd>
+            <MudTd>@context.Rtc</MudTd>
+            <MudTd>@context.PowerStateA - @context.PowerStateB</MudTd>
+            <MudTd>@context.BootCause</MudTd>
+            <MudTd>
+                <MudText Inline="true" Color="@(context.HdmiPower ? Color.Success : Color.Error)">HDMI</MudText>
+                <MudText Inline="true" Color="@(context.BddPower ? Color.Success : Color.Error)">BDD</MudText>
+                <MudText Inline="true" Color="@(context.HdmiCecPower ? Color.Success : Color.Error)">HDMI-CEC</MudText>
+                <MudText Inline="true" Color="@(context.UsbPower ? Color.Success : Color.Error)">USB</MudText>
+                <MudText Inline="true" Color="@(context.WifiPower ? Color.Success : Color.Error)">WiFi</MudText>
+            </MudTd>
+            <MudTd>@context.SequenceNumber</MudTd>
+            <MudTd>@context.EnvironmentTemperature</MudTd>
+            <MudTd>@context.ChipTemperature</MudTd>
+            <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPress(context.GetHashCode()))">@((_showRawError.TryGetValue(context.GetHashCode(), out bool show) && show) ? "Hide" : "Show")</MudButton></MudTd>
+        </RowTemplate>
+        <ChildRowContent>
+            @if (_showRawError.TryGetValue(context.GetHashCode(), out bool show) && show)
+            {
+                <MudTr>
+                    <td colspan="4">
+                        <MudCard Elevation="0">
+                            <MudCardContent Style="display: flex; gap: 8px;">
+                                <MudItem>
+                                    <MudText>Error</MudText>
+                                    <MudText>@($"{context.RawCode:X8}")</MudText>
+                                </MudItem>
+                                <MudItem>
+                                    <MudText>RTC</MudText>
+                                    <MudText>@($"{context.Rtc:X8}")</MudText>
+                                </MudItem>
+                                <MudItem>
+                                    <MudText>Power State</MudText>
+                                    <MudText>@($"{context.RawPowerState:X8}")</MudText>
+                                </MudItem>
+                                <MudItem>
+                                    <MudText>Boot Cause</MudText>
+                                    <MudText>@($"{context.RawBootCause:X8}")</MudText>
+                                </MudItem>
+                                <MudItem>
+                                    <MudText>Device Power</MudText>
+                                    <MudText>@($"{context.RawDevicePowerManagement:X4}")</MudText>
+                                </MudItem>
+                                <MudItem>
+                                    <MudText>Sequence Number</MudText>
+                                    <MudText>@($"{context.RawSequenceNumber:X4}")</MudText>
+                                </MudItem>
+                                <MudItem>
+                                    <MudText>Env Temp</MudText>
+                                    <MudText>@($"{context.RawEnvironmentTemperature:X4}")</MudText>
+                                </MudItem>
+                                <MudItem>
+                                    <MudText>SoC Temp</MudText>
+                                    <MudText>@($"{context.RawChipTemperature:X4}")</MudText>
+                                </MudItem>
+                            </MudCardContent>
+                        </MudCard>
+                    </td>
+                </MudTr>
+            }
+        </ChildRowContent>
+    </MudTable>
+</MudContainer>
+
+@code
+{
+    [Inject]
+    private ILogger<Home> logger { get; set; } = default!;
+
+    [Inject]
+    private IDialogService dialogService { get; set; } = default!;
+
+    [Inject]
+    private WebSerialPort serialPort { get; set; } = default!;
+
+    [Inject]
+    private IUartService uartService { get; set; } = default!;
+
+    private bool _serialSupported;
+
+    private IEnumerable<UartError> _errors = [];
+    private Dictionary<int, bool> _showRawError = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _serialSupported = await serialPort.IsSupported();
+    }
+
+    private async Task ReadErrors()
+    {
+        if (!await serialPort.OpenAsync())
+        {
+            await dialogService.ShowMessageBox("Error", "Failed to connect to UART.", "OK");
+            return;
+        }
+
+        try
+        {
+            _errors = await uartService.GetErrorsAsync(serialPort);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error reading UART errors");
+            await dialogService.ShowMessageBox("Error", "Failed to read errors from UART.", "OK");
+        }
+        finally
+        {
+            await serialPort.CloseAsync();
+        }
+    }
+
+    private async Task ClearErrors()
+    {
+        if (!await serialPort.OpenAsync())
+        {
+            await dialogService.ShowMessageBox("Error", "Failed to connect to UART.", "OK");
+            return;
+        }
+
+        try
+        {
+            await uartService.ClearErrorsAsync(serialPort);
+            await dialogService.ShowMessageBox("Success", "Error log has been cleared.", "OK");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error clearing UART errors");
+            await dialogService.ShowMessageBox("Error", "Failed to clear errors from UART.", "OK");
+        }
+        finally
+        {
+            await serialPort.CloseAsync();
+        }
+    }
+
+    private void ShowBtnPress(int errorHashCode)
+    {
+        if (_showRawError.TryGetValue(errorHashCode, out bool show))
+        {
+            _showRawError[errorHashCode] = !show;
+        }
+        else
+        {
+            _showRawError.Add(errorHashCode, true);
+        }
+    }
+}

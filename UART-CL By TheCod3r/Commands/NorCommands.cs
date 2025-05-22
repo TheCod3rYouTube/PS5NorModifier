@@ -36,7 +36,7 @@ public class NorCommands(ILogger<NorCommands> logger, NorService norService) : C
 	public override int Execute(CommandContext context, Settings settings)
 	{
 		AnsiConsole.WriteLine();
-		logger.LogInformation("Executing NOR dump command with settings: {Settings}", settings);
+		logger.LogInformation("Executing NOR command with settings: {Settings}", settings);
 
 		NorInfo norInfo;
 		try
@@ -52,46 +52,46 @@ public class NorCommands(ILogger<NorCommands> logger, NorService norService) : C
 
 		var table = new Table()
 		{
-			Title = new TableTitle("NOR dump Properties"),
+			Title = new TableTitle("NOR Properties"),
 		};
 		var redStyle = new Style(Color.Red);
 		var blueStyle = new Style(Color.Blue);
 		var greenStyle = new Style(Color.Green);
 
-		// No properties are going to be changed, so just display the current NOR dump properties
+		// No properties are going to be changed, so just display the current NOR properties
 		if (settings.Edition is null &&
 			settings.ConsoleSerial is null &&
 			settings.MotherboardSerial is null &&
 			settings.Model is null)
 		{
-			logger.LogInformation("Displaying NOR dump properties without modification.");
+			logger.LogInformation("Displaying NOR properties without modification.");
 
 			table.AddColumn(new TableColumn("Property").Centered());
 			table.AddColumn(new TableColumn("Value").Centered());
 
-			table.AddRow(new Text[] { 
-				new("PS5 Version", redStyle), 
-				new(norInfo.Edition.ToString(), blueStyle), 
+			table.AddRow(new Text[] {
+				new("PS5 Version", redStyle),
+				new(norInfo.Edition.ToString(), blueStyle),
 			});
-			table.AddRow(new Text[] { 
-				new("Model", redStyle), 
-				new(norInfo.Model, blueStyle), 
+			table.AddRow(new Text[] {
+				new("Model", redStyle),
+				new(norInfo.Model, blueStyle),
 			});
-			table.AddRow(new Text[] { 
-				new("Serial", redStyle), 
-				new(norInfo.ConsoleSerialNumber, blueStyle), 
+			table.AddRow(new Text[] {
+				new("Serial", redStyle),
+				new(norInfo.ConsoleSerialNumber, blueStyle),
 			});
-			table.AddRow(new Text[] { 
-				new("Motherboard Serial", redStyle), 
-				new(norInfo.MotherboardSerialNumber, blueStyle), 
+			table.AddRow(new Text[] {
+				new("Motherboard Serial", redStyle),
+				new(norInfo.MotherboardSerialNumber, blueStyle),
 			});
-			table.AddRow(new Text[] { 
-				new("WiFi MAC Addr", redStyle), 
-				new(norInfo.WiFiMac, blueStyle), 
+			table.AddRow(new Text[] {
+				new("WiFi MAC Addr", redStyle),
+				new(norInfo.WiFiMac, blueStyle),
 			});
-			table.AddRow(new Text[] { 
-				new("LAN MAC Addr", redStyle), 
-				new(norInfo.LanMac, blueStyle), 
+			table.AddRow(new Text[] {
+				new("LAN MAC Addr", redStyle),
+				new(norInfo.LanMac, blueStyle),
 			});
 
 			AnsiConsole.Write(table);
@@ -131,14 +131,14 @@ public class NorCommands(ILogger<NorCommands> logger, NorService norService) : C
 					new Text($"{error.RawChipTemperature:X4}", blueStyle).Centered(),
 				]);
 				logTable.AddRow([
-					new Text(error.Code, greenStyle), 
+					new Text(error.Code, greenStyle),
 					new Text(string.Empty),
-					new Text($"{error.PowerStateA}-{error.PowerStateB}", greenStyle), 
-					new Text(error.BootCause, greenStyle), 
-					new Markup($"[{(error.HdmiPower ? """green""" : """red""")}]HDMI[/] " + 
-						$"[{(error.BddPower ? """green""" : """red""")}]BDD[/] " + 
-						$"[{(error.HdmiCecPower ? """green""" : """red""")}]HDMI-CEC[/] " + 
-						$"[{(error.UsbPower ? """green""" : """red""")}]USB[/] " + 
+					new Text($"{error.PowerStateA}-{error.PowerStateB}", greenStyle),
+					new Text(error.BootCause, greenStyle),
+					new Markup($"[{(error.HdmiPower ? """green""" : """red""")}]HDMI[/] " +
+						$"[{(error.BddPower ? """green""" : """red""")}]BDD[/] " +
+						$"[{(error.HdmiCecPower ? """green""" : """red""")}]HDMI-CEC[/] " +
+						$"[{(error.UsbPower ? """green""" : """red""")}]USB[/] " +
 						$"[{(error.WifiPower ? """green""" : """red""")}]WiFi[/]"),
 					new Text(error.SequenceNumber.Replace(", ", Environment.NewLine), greenStyle),
 					new Text(error.EnvironmentTemperature, greenStyle),
@@ -241,34 +241,34 @@ public class NorCommands(ILogger<NorCommands> logger, NorService norService) : C
 		table.AddColumn(new TableColumn("Modified Value").Centered());
 
 		table.AddRow(new Text[] {
-				new("PS5 Version", redStyle), 
-				new(norInfo.Edition.ToString(), blueStyle), 
-				new(modifiedNorInfo.Edition.ToString(), greenStyle), 
+				new("PS5 Version", redStyle),
+				new(norInfo.Edition.ToString(), blueStyle),
+				new(modifiedNorInfo.Edition.ToString(), greenStyle),
 			});
 		table.AddRow(new Text[] {
-				new("Model", redStyle), 
+				new("Model", redStyle),
 				new(norInfo.Model, blueStyle),
-				new(modifiedNorInfo.Model, greenStyle), 
+				new(modifiedNorInfo.Model, greenStyle),
 			});
 		table.AddRow(new Text[] {
 				new("Serial", redStyle),
-				new(norInfo.ConsoleSerialNumber, blueStyle), 
-				new(modifiedNorInfo.ConsoleSerialNumber, greenStyle), 
+				new(norInfo.ConsoleSerialNumber, blueStyle),
+				new(modifiedNorInfo.ConsoleSerialNumber, greenStyle),
 			});
 		table.AddRow(new Text[] {
-				new("Motherboard Serial", redStyle), 
+				new("Motherboard Serial", redStyle),
 				new(norInfo.MotherboardSerialNumber, blueStyle),
-				new(modifiedNorInfo.MotherboardSerialNumber, greenStyle), 
+				new(modifiedNorInfo.MotherboardSerialNumber, greenStyle),
 			});
 		table.AddRow(new Text[] {
-				new("WiFi MAC Addr", redStyle), 
+				new("WiFi MAC Addr", redStyle),
 				new(norInfo.WiFiMac, blueStyle),
-				new(modifiedNorInfo.WiFiMac, greenStyle), 
+				new(modifiedNorInfo.WiFiMac, greenStyle),
 			});
 		table.AddRow(new Text[] {
-				new("LAN MAC Addr", redStyle), 
+				new("LAN MAC Addr", redStyle),
 				new(norInfo.LanMac, blueStyle),
-				new(modifiedNorInfo.LanMac, greenStyle), 
+				new(modifiedNorInfo.LanMac, greenStyle),
 			});
 
 		AnsiConsole.Write(table);

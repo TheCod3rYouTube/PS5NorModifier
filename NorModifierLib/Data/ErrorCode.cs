@@ -4,6 +4,7 @@
 	/// Represents the properties of an error code.
 	/// </summary>
 	/// <param name="errorCode">The raw string of the error as read from the device.</param>
+	[Obsolete("Use NorError instead")]
 	public class ErrorCode(string errorCode)
     {
 		//OK 00000000 80C00140 0000008D FFFF0005 00000100 2157 0016 46E4 1A80:27
@@ -22,5 +23,7 @@
 		/// Validates the checksum of the error code as retrieved from the device against the calculated checksum.
 		/// </summary>
 		public bool ChecksumValid => Checksum == Helpers.CalculateChecksum(errorCode[..^3]);
+
+		public byte[] ErrorBytes => Convert.FromHexString(errorCode[3..^3].Replace(" ", string.Empty));
 	}
 }

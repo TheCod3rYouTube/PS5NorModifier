@@ -8,6 +8,7 @@ namespace UART_CL_Tests;
 public class UartTests
 {
 	[Fact]
+	[Obsolete("The classes tested by this test are no longer used.")]
 	public void ParseErrorCode_Test()
 	{
 		// Arrange
@@ -29,6 +30,19 @@ public class UartTests
 		Assert.Equal("1A80", errorCode.NinthPart);
 		Assert.Equal("27", errorCode.Checksum);
 		Assert.True(checksumValid);
+	}
+
+	[Fact]
+	public void ParseUartError_Test()
+	{
+		// Arrange
+		var rawError = Convert.FromHexString("80C001400000008DFFFF0005000001002157001646E41A80");
+
+		// Act
+		var errorCode = new UartError(rawError);
+
+		// Assert
+		Assert.Equal("Power Button", errorCode.BootCause);
 	}
 
 	[Fact]

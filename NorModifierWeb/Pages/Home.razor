@@ -1,143 +1,136 @@
 ﻿@page "/"
+
 @using NorModifierLib.Interfaces
 @using NorModifierLib.Data
 
-<MudThemeProvider />
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-4">
 
-<MudLayout>
-    <MudAppBar Elevation="1">
-        <MudText Typo="Typo.h5" Class="ml-3">NOR Modifier Web</MudText>
-        <MudSpacer />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Edge="Edge.End" Href="https://github.com/xxbiohazrdxx/PS5NorModifier" />
-    </MudAppBar>
-    <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-4">
-
-            <MudGrid>
-                <MudItem xs="12" sm="6">
-                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadFile">
-                        <ActivatorContent>
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
-                                Upload NOR
-                            </MudButton>
-                        </ActivatorContent>
-                    </MudFileUpload>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Download" OnClick="DownloadNor">
-                        Download Modified NOR
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudFileUpload T="IBrowserFile" FilesChanged="UploadFile">
+                <ActivatorContent>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                        Upload NOR
                     </MudButton>
-                </MudItem>
-            </MudGrid>
+                </ActivatorContent>
+            </MudFileUpload>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Download" OnClick="DownloadNor" Disabled="disable">
+                Download Modified NOR
+            </MudButton>
+        </MudItem>
+    </MudGrid>
 
-            <MudDivider Class="my-4" />
+    <MudDivider Class="my-4" />
 
-            <MudGrid>
-                <MudItem xs="12" sm="6">
-                    <MudSelect T="Edition" Label="Edition" @bind-Value="_norInfo.Edition" FullWidth="true" Disabled="disable" >
-                        <MudSelectItem Value="Edition.Disc">Disc</MudSelectItem>
-                        <MudSelectItem Value="Edition.Digital">Digital</MudSelectItem>
-                        <MudSelectItem Value="Edition.Slim">Slim</MudSelectItem>
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudTextField Label="Model" @bind-Value="_norInfo.Model" FullWidth="true" MaxLength="9" Disabled="disable" />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudTextField Label="Serial" @bind-Value="_norInfo.ConsoleSerialNumber" FullWidth="true" MaxLength="17" Disabled="disable" />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudTextField Label="Motherboard Serial" @bind-Value="_norInfo.MotherboardSerialNumber" FullWidth="true" MaxLength="16" Disabled="disable" />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudTextField Label="WiFi MAC" @bind-Value="_norInfo.WiFiMac" FullWidth="true" ReadOnly Disabled="disable" />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudTextField Label="LAN MAC" @bind-Value="_norInfo.LanMac" FullWidth="true" ReadOnly Disabled="disable" />
-                </MudItem>
-            </MudGrid>
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudSelect T="Edition" Label="Edition" @bind-Value="_norInfo.Edition" FullWidth="true" Disabled="disable" >
+                <MudSelectItem Value="Edition.Disc">Disc</MudSelectItem>
+                <MudSelectItem Value="Edition.Digital">Digital</MudSelectItem>
+                <MudSelectItem Value="Edition.Slim">Slim</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField Label="Model" @bind-Value="_norInfo.Model" FullWidth="true" MaxLength="9" Disabled="disable" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField Label="Serial" @bind-Value="_norInfo.ConsoleSerialNumber" FullWidth="true" MaxLength="17" Disabled="disable" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField Label="Motherboard Serial" @bind-Value="_norInfo.MotherboardSerialNumber" FullWidth="true" MaxLength="16" Disabled="disable" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField Label="WiFi MAC" @bind-Value="_norInfo.WiFiMac" FullWidth="true" ReadOnly Disabled="disable" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField Label="LAN MAC" @bind-Value="_norInfo.LanMac" FullWidth="true" ReadOnly Disabled="disable" />
+        </MudItem>
+    </MudGrid>
 
-            <MudDivider Class="my-4" />
+    <MudDivider Class="my-4" />
 
-            <MudTable T="NorError" Items="_norInfo.Errors" Dense="true">
-                <HeaderContent>
-                    <MudTh>Error</MudTh>
-                    <MudTh>RTC</MudTh>
-                    <MudTh>Power State</MudTh>
-                    <MudTh>Boot Cause</MudTh>
-                    <MudTh>Device Power</MudTh>
-                    <MudTh>Sequence Number</MudTh>
-                    <MudTh>Env Temp</MudTh>
-                    <MudTh>SoC Temp</MudTh>
-                    <MudTh>Raw Error Data</MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd>@context.Code</MudTd>
-                    <MudTd>@context.Rtc</MudTd>
-                    <MudTd>@context.PowerStateA - @context.PowerStateB</MudTd>
-                    <MudTd>@context.BootCause</MudTd>
-                    <MudTd>
-                        <MudText Inline="true" Color="@(context.HdmiPower ? Color.Success : Color.Error)">HDMI</MudText> 
-                        <MudText Inline="true" Color="@(context.BddPower ? Color.Success : Color.Error)">BDD</MudText>
-                        <MudText Inline="true" Color="@(context.HdmiCecPower ? Color.Success : Color.Error)">HDMI-CEC</MudText>
-                        <MudText Inline="true" Color="@(context.UsbPower ? Color.Success : Color.Error)">USB</MudText>
-                        <MudText Inline="true" Color="@(context.WifiPower ? Color.Success : Color.Error)">WiFi</MudText>
-                    </MudTd>
-                    <MudTd>@context.SequenceNumber</MudTd>
-                    <MudTd>@context.EnvironmentTemperature</MudTd>
-                    <MudTd>@context.ChipTemperature</MudTd>
-                    <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPress(context.GetHashCode()))">@((_showRawError.TryGetValue(context.GetHashCode(), out bool show) && show) ? "Hide" : "Show")</MudButton></MudTd>
-                </RowTemplate>
-                <ChildRowContent>
-                    @if (_showRawError.TryGetValue(context.GetHashCode(), out bool show) && show)
-                    {
-                        <MudTr>
-                            <td colspan="4">
-                                <MudCard Elevation="0">
-                                    <MudCardContent Style="display: flex; gap: 8px;">
-                                        <MudItem>
-                                            <MudText>Error</MudText>
-                                            <MudText>@($"{context.RawCode:X8}")</MudText>
-                                        </MudItem>
-                                        <MudItem>
-                                            <MudText>RTC</MudText>
-                                            <MudText>@($"{context.Rtc:X8}")</MudText>
-                                        </MudItem>
-                                        <MudItem>
-                                            <MudText>Power State</MudText>
-                                            <MudText>@($"{context.RawPowerState:X8}")</MudText>
-                                        </MudItem>
-                                        <MudItem>
-                                            <MudText>Boot Cause</MudText>
-                                            <MudText>@($"{context.RawBootCause:X8}")</MudText>
-                                        </MudItem>
-                                        <MudItem>
-                                            <MudText>Device Power</MudText>
-                                            <MudText>@($"{context.RawDevicePowerManagement:X4}")</MudText>
-                                        </MudItem>
-                                        <MudItem>
-                                            <MudText>Sequence Number</MudText>
-                                            <MudText>@($"{context.RawSequenceNumber:X4}")</MudText>
-                                        </MudItem>
-                                        <MudItem>
-                                            <MudText>Env Temp</MudText>
-                                            <MudText>@($"{context.RawEnvironmentTemperature:X4}")</MudText>
-                                        </MudItem>
-                                        <MudItem>
-                                            <MudText>SoC Temp</MudText>
-                                            <MudText>@($"{context.RawChipTemperature:X4}")</MudText>
-                                        </MudItem>
-                                    </MudCardContent>
-                                </MudCard>
-                            </td>
-                        </MudTr>
-                    }
-                </ChildRowContent>
-            </MudTable>
+    <MudTable T="NorError" Items="_norInfo.Errors" Dense="true">
+        <NoRecordsContent>
+            <MudText Align="Align.Center">No errors.</MudText>
+        </NoRecordsContent>
+        <HeaderContent>
+            <MudTh>Error</MudTh>
+            <MudTh>RTC</MudTh>
+            <MudTh>Power State</MudTh>
+            <MudTh>Boot Cause</MudTh>
+            <MudTh>Device Power</MudTh>
+            <MudTh>Sequence Number</MudTh>
+            <MudTh>Env Temp</MudTh>
+            <MudTh>SoC Temp</MudTh>
+            <MudTh>Raw Error Data</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Code</MudTd>
+            <MudTd>@context.Rtc</MudTd>
+            <MudTd>@context.PowerStateA - @context.PowerStateB</MudTd>
+            <MudTd>@context.BootCause</MudTd>
+            <MudTd>
+                <MudText Inline="true" Color="@(context.HdmiPower ? Color.Success : Color.Error)">HDMI</MudText> 
+                <MudText Inline="true" Color="@(context.BddPower ? Color.Success : Color.Error)">BDD</MudText>
+                <MudText Inline="true" Color="@(context.HdmiCecPower ? Color.Success : Color.Error)">HDMI-CEC</MudText>
+                <MudText Inline="true" Color="@(context.UsbPower ? Color.Success : Color.Error)">USB</MudText>
+                <MudText Inline="true" Color="@(context.WifiPower ? Color.Success : Color.Error)">WiFi</MudText>
+            </MudTd>
+            <MudTd>@context.SequenceNumber</MudTd>
+            <MudTd>@context.EnvironmentTemperature</MudTd>
+            <MudTd>@context.ChipTemperature</MudTd>
+            <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPress(context.GetHashCode()))">@((_showRawError.TryGetValue(context.GetHashCode(), out bool show) && show) ? "Hide" : "Show")</MudButton></MudTd>
+        </RowTemplate>
+        <ChildRowContent>
+            @if (_showRawError.TryGetValue(context.GetHashCode(), out bool show) && show)
+            {
+                <MudTr>
+                    <td colspan="4">
+                        <MudCard Elevation="0">
+                            <MudCardContent Style="display: flex; gap: 8px;">
+                                <MudItem>
+                                    <MudText>Error</MudText>
+                                    <MudText>@($"{context.RawCode:X8}")</MudText>
+                                </MudItem>
+                                <MudItem>
+                                    <MudText>RTC</MudText>
+                                    <MudText>@($"{context.Rtc:X8}")</MudText>
+                                </MudItem>
+                                <MudItem>
+                                    <MudText>Power State</MudText>
+                                    <MudText>@($"{context.RawPowerState:X8}")</MudText>
+                                </MudItem>
+                                <MudItem>
+                                    <MudText>Boot Cause</MudText>
+                                    <MudText>@($"{context.RawBootCause:X8}")</MudText>
+                                </MudItem>
+                                <MudItem>
+                                    <MudText>Device Power</MudText>
+                                    <MudText>@($"{context.RawDevicePowerManagement:X4}")</MudText>
+                                </MudItem>
+                                <MudItem>
+                                    <MudText>Sequence Number</MudText>
+                                    <MudText>@($"{context.RawSequenceNumber:X4}")</MudText>
+                                </MudItem>
+                                <MudItem>
+                                    <MudText>Env Temp</MudText>
+                                    <MudText>@($"{context.RawEnvironmentTemperature:X4}")</MudText>
+                                </MudItem>
+                                <MudItem>
+                                    <MudText>SoC Temp</MudText>
+                                    <MudText>@($"{context.RawChipTemperature:X4}")</MudText>
+                                </MudItem>
+                            </MudCardContent>
+                        </MudCard>
+                    </td>
+                </MudTr>
+            }
+        </ChildRowContent>
+    </MudTable>
 
-        </MudContainer>
-    </MudMainContent>
-</MudLayout>
+</MudContainer>
 
 @code
 {
@@ -161,7 +154,7 @@
 
     private async Task UploadFile(IBrowserFile file)
     {
-        if (file.Size > 3 * 1024 * 1024)
+        if (file.Size > 3 * 1024 * 1024) // Dumps should always be 2MB but this gives us a bit of overhead
         {
             await dialogService.ShowMessageBox("Error", "The selected file is too large. NOR dumps should be 2MB in size.", "OK");
             return;
@@ -169,7 +162,7 @@
 
         try
         {
-            using var uploadStream = file.OpenReadStream(3 * 1024 * 1024); // Dumps should always be 2MB but this gives us a bit of overhead
+            using var uploadStream = file.OpenReadStream(3 * 1024 * 1024);
 
             using var binaryWriter = new BinaryWriter(new FileStream(TempPath, FileMode.Create));
             using var fileStream = binaryWriter.BaseStream;
