@@ -71,80 +71,71 @@ public sealed partial class MainForm : Form
     private async Task<string> ParseErrorsAsync(string ErrorCode, CancellationToken cancellationToken)
     {
         // If the user has opted to parse errors with an offline database, run the parse offline function
-        if (chkUseOffline.Checked == true)
-        {
+        if (chkUseOffline.Checked)
             return ParseErrorsOffline(ErrorCode);
-        }
-        else
+
+        // The user wants to use the online version. Proceed at will
+        // Define the URL with the error code parameter
+        string url = "http://uartcodes.com/xml.php?errorCode=" + ErrorCode;
+
+        string results = string.Empty;
+
+        try
         {
-            // The user wants to use the online version. Proceed at will
-
-            // Define the URL with the error code parameter
-            string url = "http://uartcodes.com/xml.php?errorCode=" + ErrorCode;
-
-            string results = string.Empty;
-
-            try
+            string response = string.Empty;
+            // Create a WebClient instance to send the request
+            using (HttpClient client = new())
             {
-                string response = string.Empty;
-                // Create a WebClient instance to send the request
-                using (HttpClient client = new())
-                {
-                    // Send the request and retrieve the response as a string
-                    response = await client.GetStringAsync(url, cancellationToken)
-                        .ConfigureAwait(false);
-                }
-                // Load the XML response into an XmlDocument
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(response);
-
-
-                // Get the root node
-                XmlNode? root = xmlDoc.DocumentElement;
-                if (root is null)
-                {
-                    throw new Exception("Error reading the file");
-                }
-
-                // Check if the root node is <errorCodes>
-                if (root.Name == "errorCodes")
-                {
-                    // Loop through each errorCode node
-                    foreach (XmlNode errorCodeNode in root.ChildNodes)
-                    {
-                        // Check if the node is <errorCode>
-                        if (errorCodeNode.Name == "errorCode")
-                        {
-                            // Get ErrorCode and Description
-                            string errorCode = errorCodeNode.SelectSingleNode("ErrorCode")?.InnerText ?? string.Empty;
-                            string description = errorCodeNode.SelectSingleNode("Description")?.InnerText ?? string.Empty;
-
-                            // Output the results
-                            results = "Error code: "
-                                + errorCode
-                                + Environment.NewLine
-                                + "Description: "
-                                + description;
-                        }
-                    }
-                }
-                else
-                {
-                    results = "Error code: "
-                                + ErrorCode
-                                + Environment.NewLine
-                                + "An error occurred while fetching a result for this error. Please try again!";
-                }
+                // Send the request and retrieve the response as a string
+                response = await client.GetStringAsync(url, cancellationToken)
+                    .ConfigureAwait(false);
             }
-            catch (Exception ex)
+            // Load the XML response into an XmlDocument
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response);
+
+
+            // Get the root node
+            XmlNode? root = xmlDoc.DocumentElement;
+            if (root is null)
+                throw new Exception("Error reading the file");
+
+            // Check if the root node is <errorCodes>
+            if (root.Name != "errorCodes")
+                throw new Exception("Error code: "
+                            + ErrorCode
+                            + Environment.NewLine
+                            + "An error occurred while fetching a result for this error. Please try again!");
+
+            // Loop through each errorCode node
+            foreach (XmlNode errorCodeNode in root.ChildNodes)
             {
+                // Check if the node is <errorCode>
+                if (errorCodeNode.Name != "errorCode")
+                    continue;
+
+                // Get ErrorCode and Description
+                string errorCode = errorCodeNode.SelectSingleNode("ErrorCode")?.InnerText ?? string.Empty;
+                string description = errorCodeNode.SelectSingleNode("Description")?.InnerText ?? string.Empty;
+
+                // Output the results
                 results = "Error code: "
-                    + ErrorCode
+                    + errorCode
                     + Environment.NewLine
-                    + ex.Message;
+                    + "Description: "
+                    + description;
             }
-            return results;
         }
+
+        catch (Exception ex)
+        {
+            results = "Error code: "
+                + ErrorCode
+                + Environment.NewLine
+                + ex.Message;
+        }
+
+        return results;
     }
 
     private string ParseErrorsOffline(string errorCode)
@@ -179,19 +170,19 @@ public sealed partial class MainForm : Form
             foreach (XmlNode errorCodeNode in root.ChildNodes)
             {
                 // Check if the node is <errorCode>
-                if (errorCodeNode.Name == "errorCode")
-                {
-                    // Get ErrorCode and Description
-                    string errorCodeValue = errorCodeNode.SelectSingleNode("ErrorCode")?.InnerText ?? string.Empty;
-                    string description = errorCodeNode.SelectSingleNode("Description")?.InnerText ?? string.Empty;
+                if (errorCodeNode.Name != "errorCode")
+                    continue;
 
-                    // Check if the current error code matches the requested error code
-                    if (errorCodeValue == errorCode)
-                    {
-                        // Output the results
-                        results = "Error code: " + errorCodeValue + Environment.NewLine + "Description: " + description;
-                        break; // Exit the loop after finding the matching error code
-                    }
+                // Get ErrorCode and Description
+                string errorCodeValue = errorCodeNode.SelectSingleNode("ErrorCode")?.InnerText ?? string.Empty;
+                string description = errorCodeNode.SelectSingleNode("Description")?.InnerText ?? string.Empty;
+
+                // Check if the current error code matches the requested error code
+                if (errorCodeValue == errorCode)
+                {
+                    // Output the results
+                    results = "Error code: " + errorCodeValue + Environment.NewLine + "Description: " + description;
+                    break; // Exit the loop after finding the matching error code
                 }
             }
 
