@@ -64,70 +64,47 @@
             <MudTh>Sequence Number</MudTh>
             <MudTh>Env Temp</MudTh>
             <MudTh>SoC Temp</MudTh>
-            <MudTh>Raw Error Data</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd>@context.Code</MudTd>
-            <MudTd>@context.Rtc</MudTd>
-            <MudTd>@context.PowerStateA - @context.PowerStateB</MudTd>
-            <MudTd>@context.BootCause</MudTd>
             <MudTd>
-                <MudText Inline="true" Color="@(context.HdmiPower ? Color.Success : Color.Error)">HDMI</MudText> 
-                <MudText Inline="true" Color="@(context.BddPower ? Color.Success : Color.Error)">BDD</MudText>
-                <MudText Inline="true" Color="@(context.HdmiCecPower ? Color.Success : Color.Error)">HDMI-CEC</MudText>
-                <MudText Inline="true" Color="@(context.UsbPower ? Color.Success : Color.Error)">USB</MudText>
-                <MudText Inline="true" Color="@(context.WifiPower ? Color.Success : Color.Error)">WiFi</MudText>
+                <MudText Typo="Typo.caption">@($"{context.RawCode:X8}")</MudText>
+                <MudText>@context.Code</MudText>
             </MudTd>
-            <MudTd>@context.SequenceNumber</MudTd>
-            <MudTd>@context.EnvironmentTemperature</MudTd>
-            <MudTd>@context.ChipTemperature</MudTd>
-            <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPress(context.GetHashCode()))">@((_showRawError.TryGetValue(context.GetHashCode(), out bool show) && show) ? "Hide" : "Show")</MudButton></MudTd>
+            <MudTd>
+                <MudText Typo="Typo.caption">@($"{context.Rtc:X8}")</MudText>
+                <MudText>@context.Rtc</MudText>
+            </MudTd>
+            <MudTd>
+                <MudText Typo="Typo.caption">@($"{context.RawPowerState:X8}")</MudText>
+                <MudText>@context.PowerStateA - @context.PowerStateB</MudText>
+            </MudTd>
+            <MudTd>
+                <MudText Typo="Typo.caption">@($"{context.RawBootCause:X8}")</MudText>
+                <MudText>@context.BootCause</MudText>
+            </MudTd>
+            <MudTd>
+                <MudText Typo="Typo.caption">@($"{context.RawDevicePowerManagement:X4}")</MudText>
+                <div>
+                    <MudText Inline="true" Color="@(context.HdmiPower ? Color.Success : Color.Error)">HDMI</MudText> 
+                    <MudText Inline="true" Color="@(context.BddPower ? Color.Success : Color.Error)">BDD</MudText>
+                    <MudText Inline="true" Color="@(context.HdmiCecPower ? Color.Success : Color.Error)">HDMI-CEC</MudText>
+                    <MudText Inline="true" Color="@(context.UsbPower ? Color.Success : Color.Error)">USB</MudText>
+                    <MudText Inline="true" Color="@(context.WifiPower ? Color.Success : Color.Error)">WiFi</MudText>
+                </div>
+            </MudTd>
+            <MudTd>
+                <MudText Typo="Typo.caption">@($"{context.RawSequenceNumber:X4}")</MudText>
+                <MudText>@context.SequenceNumber</MudText>
+            </MudTd>
+            <MudTd>
+                <MudText Typo="Typo.caption">@($"{context.RawEnvironmentTemperature:X4}")</MudText>
+                <MudText>@context.EnvironmentTemperature</MudText>
+            </MudTd>
+            <MudTd>
+                <MudText Typo="Typo.caption">@($"{context.RawChipTemperature:X4}")</MudText>
+                <MudText>@context.ChipTemperature</MudText>
+            </MudTd>
         </RowTemplate>
-        <ChildRowContent>
-            @if (_showRawError.TryGetValue(context.GetHashCode(), out bool show) && show)
-            {
-                <MudTr>
-                    <td colspan="4">
-                        <MudCard Elevation="0">
-                            <MudCardContent Style="display: flex; gap: 8px;">
-                                <MudItem>
-                                    <MudText>Error</MudText>
-                                    <MudText>@($"{context.RawCode:X8}")</MudText>
-                                </MudItem>
-                                <MudItem>
-                                    <MudText>RTC</MudText>
-                                    <MudText>@($"{context.Rtc:X8}")</MudText>
-                                </MudItem>
-                                <MudItem>
-                                    <MudText>Power State</MudText>
-                                    <MudText>@($"{context.RawPowerState:X8}")</MudText>
-                                </MudItem>
-                                <MudItem>
-                                    <MudText>Boot Cause</MudText>
-                                    <MudText>@($"{context.RawBootCause:X8}")</MudText>
-                                </MudItem>
-                                <MudItem>
-                                    <MudText>Device Power</MudText>
-                                    <MudText>@($"{context.RawDevicePowerManagement:X4}")</MudText>
-                                </MudItem>
-                                <MudItem>
-                                    <MudText>Sequence Number</MudText>
-                                    <MudText>@($"{context.RawSequenceNumber:X4}")</MudText>
-                                </MudItem>
-                                <MudItem>
-                                    <MudText>Env Temp</MudText>
-                                    <MudText>@($"{context.RawEnvironmentTemperature:X4}")</MudText>
-                                </MudItem>
-                                <MudItem>
-                                    <MudText>SoC Temp</MudText>
-                                    <MudText>@($"{context.RawChipTemperature:X4}")</MudText>
-                                </MudItem>
-                            </MudCardContent>
-                        </MudCard>
-                    </td>
-                </MudTr>
-            }
-        </ChildRowContent>
     </MudTable>
 
 </MudContainer>
@@ -194,18 +171,6 @@
         {
             logger.LogError(ex, "Unknown error reading NOR.");
             await dialogService.ShowMessageBox("Error", "Internal error.", "OK");
-        }
-    }
-
-    private void ShowBtnPress(int errorHashCode)
-    {
-        if (_showRawError.TryGetValue(errorHashCode, out bool show))
-        {
-            _showRawError[errorHashCode] = !show;
-        }
-        else
-        {
-            _showRawError.Add(errorHashCode, true);
         }
     }
 
