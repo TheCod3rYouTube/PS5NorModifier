@@ -9,7 +9,7 @@ async function serialRequestPort() {
         serialPort = await navigator.serial.requestPort();
         return true;
     }
-    catch (ex) {
+    catch (err) {
         console.error("Serial request error:", err);
         return false;
     }
@@ -21,7 +21,7 @@ async function serialOpen(baudRate) {
         //await serialPort.setSignals({ rts: true });
         return true;
     }
-    catch (ex) {
+    catch (err) {
         console.error("Serial open error:", err);
         return false;
     }

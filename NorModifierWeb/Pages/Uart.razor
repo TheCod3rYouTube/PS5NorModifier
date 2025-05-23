@@ -131,7 +131,7 @@
     {
         if (!await serialPort.OpenAsync())
         {
-            await dialogService.ShowMessageBox("Error", "Failed to connect to UART.", "OK");
+            await dialogService.ShowMessageBox("Error", "Failed to open serial port.", "OK");
             return;
         }
 
