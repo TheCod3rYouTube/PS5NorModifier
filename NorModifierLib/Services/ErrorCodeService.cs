@@ -3,6 +3,11 @@ using Microsoft.Extensions.Logging;
 
 namespace NorModifierLib.Services;
 
+/// <summary>
+/// A service for communicating with the error code database.
+/// </summary>
+/// <param name="logger">ILogger interface to receive log data.</param>
+/// <param name="client">A HttpClient to download the error code database from the web.</param>
 public class ErrorCodeService(ILogger<ErrorCodeService> logger, HttpClient client)
 {
 	private XDocument _xml = null!;

@@ -2,6 +2,9 @@
 
 namespace NorModifierLib.Data;
 
+/// <summary>
+/// Helper class to calculate checksums and create transmittable commands.
+/// </summary>
 public static class Helpers
 {
 	/// <summary>

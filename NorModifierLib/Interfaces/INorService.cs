@@ -3,6 +3,9 @@ using NorModifierLib.Enumerators;
 
 namespace NorModifierLib.Interfaces;
 
+/// <summary>
+/// Interface for a service used to read and write NOR dumps.
+/// </summary>
 public interface INorService
 {
 	public NorInfo ReadNor(string filePath);

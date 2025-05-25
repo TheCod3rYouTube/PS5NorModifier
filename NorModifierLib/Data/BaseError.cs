@@ -1,6 +1,9 @@
 ﻿namespace NorModifierLib.Data;
 
-public abstract class BaseError()
+/// <summary>
+/// Base class containing the raw values for error codes retrieved both NOR dumps and UART communication.
+/// </summary>
+public abstract class BaseError
 {
 	/// <summary>
 	/// The raw error code value.

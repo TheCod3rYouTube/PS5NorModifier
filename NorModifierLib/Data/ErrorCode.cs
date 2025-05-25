@@ -24,6 +24,9 @@
 		/// </summary>
 		public bool ChecksumValid => Checksum == Helpers.CalculateChecksum(errorCode[..^3]);
 
+		/// <summary>
+		/// Gets the error code as a byte array.
+		/// </summary>
 		public byte[] ErrorBytes => Convert.FromHexString(errorCode[3..^3].Replace(" ", string.Empty));
 	}
 }

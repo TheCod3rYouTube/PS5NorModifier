@@ -5,6 +5,10 @@ using NorModifierLib.Interfaces;
 
 namespace NorModifierLib.Services;
 
+/// <summary>
+/// Service for UART communication.
+/// </summary>
+/// <param name="logger">ILogger interface to receive log data.</param>
 public class UartService(ILogger<UartService> logger) : IUartService
 {
 	/// <summary>
