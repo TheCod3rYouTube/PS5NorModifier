@@ -129,18 +129,24 @@
     private NorInfo _norInfo = new();
     private Dictionary<int, bool> _showRawError = new();
 
+    /// <summary>
+    /// Uploads a NOR dump, validates it, then reads error logs and properties. 
+    /// </summary>
+    /// <param name="file">The NOR dump uploaded from the browser.</param>
+    /// <returns>A Task for the upload and NOR read operation.</returns>
     private async Task UploadFile(IBrowserFile file)
     {
-        if (file.Size > 3 * 1024 * 1024) // Dumps should always be 2MB but this gives us a bit of overhead
+        // Limit the file size to 3MB. This is a bit of overhead for the 2MB NOR dumps.
+        if (file.Size > 3 * 1024 * 1024)
         {
             await dialogService.ShowMessageBox("Error", "The selected file is too large. NOR dumps should be 2MB in size.", "OK");
             return;
         }
 
+        // Copy the uploaded file to a temporary location, then read the NOR dump. If an exeception is thrown, log it and show an error message.
         try
         {
             using var uploadStream = file.OpenReadStream(3 * 1024 * 1024);
-
             using var binaryWriter = new BinaryWriter(new FileStream(TempPath, FileMode.Create));
             using var fileStream = binaryWriter.BaseStream;
 
@@ -174,8 +180,13 @@
         }
     }
 
-    private async Task DownloadNor()
+    /// <summary>
+	/// Modifies the local copy of the NOR dump using the specified proeprties, then initiates a download to the client of the modified NOR dump.
+	/// </summary>
+	/// <returns>A Task for the modify and download NOR operation.</returns>
+	private async Task DownloadNor()
     {
+		// Modify the NOR dump using the specified properties. If an exception is thrown, log it and show an error message.
         try
         {
 			norService.SetEdition(_norInfo, _norInfo.Edition);
@@ -204,6 +215,7 @@
             await dialogService.ShowMessageBox("Error", "Internal error.", "OK");
         }
 
+		// Attempt to download the modified NOR dump. If an exception is thrown, log it and show an error message.
         try
         {
             using var binaryReader = new BinaryReader(new FileStream(TempPath, FileMode.Open));

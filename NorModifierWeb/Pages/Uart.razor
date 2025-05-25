@@ -104,14 +104,20 @@
         _serialSupported = await serialPort.IsSupported();
     }
 
+    /// <summary>
+    /// Attempts to open the web serial port and read the error messages from the UART.
+    /// </summary>
+    /// <returns>A Task for the error read operation.</returns>
     private async Task ReadErrors()
     {
+        // Attempt to open the web serial port, if unsuccessful, show an error message and return
         if (!await serialPort.OpenAsync())
         {
             await dialogService.ShowMessageBox("Error", "Failed to open serial port.", "OK");
             return;
         }
 
+        // Attempt to read the error messages from the UART, if unsuccessful, log the error and show an error message
         try
         {
             _errors = await uartService.GetErrorsAsync(serialPort);
@@ -127,14 +133,20 @@
         }
     }
 
-    private async Task ClearErrors()
+    /// <summary>
+	/// Attempts to open the web se rial port and clear the error messages from the UART.
+	/// </summary>
+	/// <returns>A Task for the error clear operation.</returns>
+	private async Task ClearErrors()
     {
+		// Attempt to open the web serial port, if unsuccessful, show an error message and return
         if (!await serialPort.OpenAsync())
         {
             await dialogService.ShowMessageBox("Error", "Failed to connect to UART.", "OK");
             return;
         }
 
+		// Attempt to clear the error messages from the UART, if unsuccessful, log the error and show an error message
         try
         {
             await uartService.ClearErrorsAsync(serialPort);
