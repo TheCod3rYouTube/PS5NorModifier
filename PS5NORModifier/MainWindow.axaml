@@ -1,0 +1,85 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dialogHost="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+        xmlns:local="clr-namespace:PS5NORModifier"
+        mc:Ignorable="d" d:DesignWidth="847" d:DesignHeight="590"
+        Width="847" Height="557"
+        x:Class="PS5NORModifier.MainWindow"
+        Title="PS5 NOR Modifier" FontSize="12" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid RowDefinitions="85 55 * 81 22" ColumnDefinitions="*" Margin="10 10 10 0">
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <Image Source="Assets/PS5 Nor Logo.png" />
+                <StackPanel Margin="10 0 0 0">
+                    <Label FontWeight="Bold" FontSize="28" HorizontalAlignment="Right">PS5 NOR Modifier</Label>
+                    <Label FontWeight="SemiBold" FontStyle="Italic" HorizontalAlignment="Right">
+                        <Label.Content>and UART stuff too... BwE can SUCK IT!</Label.Content>
+                        <Label.Styles>
+                            <Style Selector="Label>AccessText">
+                                <Setter Property="Padding" Value="0 0 2 0" />
+                            </Style>
+                        </Label.Styles>
+                    </Label>
+                </StackPanel>
+            </StackPanel>
+            <TextBlock Grid.Row="1" TextWrapping="Wrap">
+                The PS5 NOR modifier is a cross-platform GUI tool created by TheCod3r to make rewriting NOR flash rom files quick and easy. TheCod3r is a hardware technician and amateur software developer who spends a lot of time on research and development for the PS5, Xbox Series consoles, etc. Remember that this takes time, so if you find any value in my software, please consider supporting me with a donation.
+            </TextBlock>
+            <TabControl Grid.Row="2" Background="#20000000" Padding="0">
+                <TabItem Header="NOR Modifier">
+                    <local:NORModifier Name="NorModifier" />
+                </TabItem>
+                <TabItem Header="UART Communication">
+                    <local:UARTCommunication Name="UartCommunication" />
+                </TabItem>
+            </TabControl>
+            <Grid Grid.Row="3" RowDefinitions="*" ColumnDefinitions="Auto *" Margin="0 3">
+                <Button Grid.Row="0" Grid.Column="0" Name="PayPalLink" Classes="link" Click="PayPalLink_OnClick">
+                    <Image Source="Assets/Paypal-128.png" />
+                </Button>
+                <Grid Grid.Row="0" Grid.Column="1" RowDefinitions="* Auto" Margin="10 4 0 4">
+                    <TextBlock Grid.Row="0" TextWrapping="Wrap">
+                        Please consider supporting my work and time with a small donation. Your contribution will make my wallet happy and help feed my coffee addiction!
+                        <InlineUIContainer>
+                            <Button Name="DonateLink" Classes="link" Click="DonateLink_OnClick">Click here to donate to me.</Button>
+                        </InlineUIContainer>
+                        Even a dollar helps :) Don't forget to subscribe to me on YouTube, too!
+                    </TextBlock>
+                    <TextBlock Grid.Row="1" FontSize="16" FontWeight="Bold">
+                        This project is sponsored by
+                        <InlineUIContainer>
+                            <Button Name="SponsorLink" Classes="link" Click="SponsorLink_OnClick">www.consolefix.shop</Button>
+                        </InlineUIContainer>
+                    </TextBlock>
+                </Grid>
+            </Grid>
+            <Label Grid.Row="4" Name="StatusLabel">Status: Waiting for input</Label>
+        </Grid>
+        <dialogHost:DialogHost Name="Dialog" CloseOnClickAway="True">
+            <dialogHost:DialogHost.DialogContent>
+                
+            </dialogHost:DialogHost.DialogContent>
+        </dialogHost:DialogHost>
+    </Grid>
+    <Window.Styles>
+        <Style Selector="TabItem">
+            <Setter Property="Padding" Value="4" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.link">
+            <Setter Property="Foreground" Value="#7080FF" />
+            <Setter Property="BorderBrush" Value="#7080FF" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.link:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+    </Window.Styles>
+</Window>
