@@ -1,19 +1,10 @@
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using System.IO.Ports;
-using System;
-using System.Threading;
-using System.Collections.Generic;
-using static System.Windows.Forms.LinkLabel;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using System.Net;
 using System.Xml;
-using System.Security.Policy;
 
 namespace PS5_NOR_Modifier
 {
@@ -80,16 +71,23 @@ namespace PS5_NOR_Modifier
 
         #endregion
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            // Upon first launch, we need to get a list of COM ports available for UART
+        private void RefreshPorts() {
             string[] ports = SerialPort.GetPortNames();
             comboComPorts.Items.Clear();
-            comboComPorts.Items.AddRange(ports);
-            comboComPorts.SelectedIndex = 0;
+            if (ports.Length == 0) {
+                MessageBox.Show("No serial ports detected.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } else {
+                comboComPorts.Items.AddRange(ports);
+                comboComPorts.SelectedIndex = 0;
+            }
             btnConnectCom.Enabled = true;
             btnDisconnectCom.Enabled = false;
         }
+
+        /// <summary>
+        /// Upon first launch, we need to get a list of COM ports available for UART.
+        /// </summary>
+        private void Form1_Load(object sender, EventArgs e) => RefreshPorts();
 
         // Declare offsets to detect console version
         long offsetOne = 0x1c7010;
@@ -823,16 +821,10 @@ namespace PS5_NOR_Modifier
 
         }
 
-        private void btnRefreshPorts_Click(object sender, EventArgs e)
-        {
-            // When the "refresh ports" button is pressed, we need to refresh the list of available COM ports for UART
-            string[] ports = SerialPort.GetPortNames();
-            comboComPorts.Items.Clear();
-            comboComPorts.Items.AddRange(ports);
-            comboComPorts.SelectedIndex = 0;
-            btnConnectCom.Enabled = true;
-            btnDisconnectCom.Enabled = false;
-        }
+        /// <summary>
+        /// When the "refresh ports" button is pressed, we need to refresh the list of available COM ports for UART.
+        /// </summary>
+        private void btnRefreshPorts_Click(object sender, EventArgs e) => RefreshPorts();
 
         private void btnConnectCom_Click(object sender, EventArgs e)
         {
