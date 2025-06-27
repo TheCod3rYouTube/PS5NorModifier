@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Management;
 using System.Text;
@@ -60,15 +61,39 @@ public static class Utilities
             return data;
         }
 
-        public static IEnumerable<int> FindPattern(byte[] source, byte[] pattern)
+        /// <summary>
+        /// Finds all occurrences of a byte[] needle in a byte[] haystack.
+        /// 
+        /// NOTE: This method uses ReadOnlySpan<T> for efficient memory access, SIMD, and optimized search 
+        /// algorithm (Span.IndexOf() is alredy optimized for performance without needing to implement our 
+        /// own Boyer-Moore style algorithm), and is suitable for large arrays. 
+        /// </summary>
+        /// <param name="haystack">Source</param>
+        /// <param name="needle">Bytes to match</param>
+        /// <returns>All indicies at which needle occurs in haystack</returns>
+        public static IEnumerable<int> FindPattern(byte[] haystack, byte[] needle)
         {
-            for (int i = 0; i < source.Length; i++)
+            List<int> indices = new List<int>();
+            ReadOnlySpan<byte> haystackSpan = haystack.AsSpan();
+            ReadOnlySpan<byte> needleSpan = needle.AsSpan();
+            
+            int offset = 0;
+            while (haystackSpan.Length >= needleSpan.Length)
             {
-                if (source.Skip(i).Take(pattern.Length).SequenceEqual(pattern))
-                {
-                    yield return i;
-                }
+                // find next occurrence in the *current* span
+                int idx = haystackSpan.IndexOf(needleSpan);
+                if (idx < 0)
+                    break;              // no more matches
+
+                // record the match position in the *original* array
+                indices.Add(offset + idx);
+
+                // advance past this match
+                var moveBy = idx + needleSpan.Length;
+                offset += moveBy;
+                haystackSpan = haystackSpan.Slice(moveBy);
             }
+            return indices;
         }
     }
 
